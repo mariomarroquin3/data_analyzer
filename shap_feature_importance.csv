@@ -1,0 +1,12 @@
+feature,shap_importance
+fdi_percent_gdp,1.1327245346148274
+tourist_arrivals_log,0.8705966742073548
+inflation,0.3345275643384793
+exports_percent_gdp,0.14828474108121037
+political_stability,0.12341876987055819
+unemployment,0.12115879471761426
+homicide_rate_log,0.11486846178187299
+rule_of_law,0.10456584324951697
+gdp_per_capita_log,0.08626721701301504
+control_corruption,0.05987357050646077
+population_log,0.045326271512358914

@@ -1,0 +1,12 @@
+feature,importance
+fdi_percent_gdp,0.18721432181002584
+tourist_arrivals_log,0.1497103982901958
+exports_percent_gdp,0.1234981181004788
+unemployment,0.1097087452094306
+rule_of_law,0.09035135895819461
+homicide_rate_log,0.07441833322551093
+inflation,0.06673212145684929
+control_corruption,0.054079216680888796
+political_stability,0.0514327621847744
+gdp_per_capita_log,0.049796905023448315
+population_log,0.04305771906020256
