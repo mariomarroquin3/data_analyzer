@@ -1,0 +1,71 @@
+{
+  "EQ1": {
+    "dep": "inst_avg",
+    "key_var": "homicide_rate_log_lag1",
+    "n_obs": 171,
+    "rsq_within": 0.07376914777239574,
+    "coef_key_cl": -0.14040684915342183,
+    "se_key_cl": 0.1358462828203557,
+    "pval_key_cl": 0.30318450734028457,
+    "coef_key_dk": -0.14040684915342183,
+    "se_key_dk": 0.12818203666606454,
+    "pval_key_dk": 0.2753045902685858
+  },
+  "EQ2": {
+    "dep": "fdi_percent_gdp",
+    "key_var": "inst_avg",
+    "n_obs": 179,
+    "rsq_within": 0.2473808130644709,
+    "coef_key_cl": 0.9000011314252557,
+    "se_key_cl": 0.4647991244863234,
+    "pval_key_cl": 0.05481441833899403,
+    "coef_key_dk": 0.9000011314252557,
+    "se_key_dk": 0.5690021999766218,
+    "pval_key_dk": 0.11593873544473166
+  },
+  "EQ3": {
+    "dep": "gdp_growth",
+    "key_vars": [
+      "fdi_percent_gdp",
+      "inst_avg"
+    ],
+    "n_obs": 179,
+    "rsq_within": 0.09486503562424209,
+    "params_cl": {
+      "fdi_percent_gdp": 0.13707943138978196,
+      "inst_avg": 0.5133072450571838,
+      "gdp_per_capita_log": 0.888732783619129,
+      "inflation": -0.11263876276467172,
+      "exports_percent_gdp": 0.06351339653169935,
+      "population_log": -0.7332847443840004,
+      "unemployment": -0.21011260509641178
+    },
+    "pvals_cl": {
+      "fdi_percent_gdp": 0.2125866078285812,
+      "inst_avg": 0.7463842592745118,
+      "gdp_per_capita_log": 0.4856779106478233,
+      "inflation": 0.00016435272276393853,
+      "exports_percent_gdp": 0.09866270831592328,
+      "population_log": 0.909164668476298,
+      "unemployment": 0.06418186963781913
+    },
+    "params_dk": {
+      "fdi_percent_gdp": 0.13707943138978196,
+      "inst_avg": 0.5133072450571838,
+      "gdp_per_capita_log": 0.888732783619129,
+      "inflation": -0.11263876276467172,
+      "exports_percent_gdp": 0.06351339653169935,
+      "population_log": -0.7332847443840004,
+      "unemployment": -0.21011260509641178
+    },
+    "pvals_dk": {
+      "fdi_percent_gdp": 0.5075230803488902,
+      "inst_avg": 0.6684133845989781,
+      "gdp_per_capita_log": 0.5014527020284745,
+      "inflation": 0.005204661297786073,
+      "exports_percent_gdp": 0.21413491756040748,
+      "population_log": 0.8928646449691235,
+      "unemployment": 0.019158580203773035
+    }
+  }
+}

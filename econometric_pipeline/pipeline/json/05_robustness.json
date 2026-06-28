@@ -1,0 +1,637 @@
+{
+  "eq1_loco": [
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "Full sample (baseline)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.019684417354993235,
+      "se": 0.11635143758068961,
+      "pval": 0.8659543423775289,
+      "rsq_within": 0.17504474554949212,
+      "n_obs": 149,
+      "label": "Excl. COL",
+      "converged": true
+    },
+    {
+      "coef": -0.2546655740975846,
+      "se": 0.1382528382788626,
+      "pval": 0.06807011721767853,
+      "rsq_within": 0.045350207443116464,
+      "n_obs": 149,
+      "label": "Excl. CRI",
+      "converged": true
+    },
+    {
+      "coef": -0.09897454874286717,
+      "se": 0.1569216268478254,
+      "pval": 0.5294711672288241,
+      "rsq_within": 0.004410201469201014,
+      "n_obs": 150,
+      "label": "Excl. DOM",
+      "converged": true
+    },
+    {
+      "coef": -0.15233424202286938,
+      "se": 0.13961174432065393,
+      "pval": 0.2774779010979158,
+      "rsq_within": 0.14098130767058403,
+      "n_obs": 151,
+      "label": "Excl. GTM",
+      "converged": true
+    },
+    {
+      "coef": -0.15538526918460757,
+      "se": 0.1489575026904538,
+      "pval": 0.29908511451183717,
+      "rsq_within": 0.09837119582021003,
+      "n_obs": 149,
+      "label": "Excl. HND",
+      "converged": true
+    },
+    {
+      "coef": -0.12767122778762258,
+      "se": 0.09296216789417912,
+      "pval": 0.17226415337661138,
+      "rsq_within": 0.10398118381311106,
+      "n_obs": 152,
+      "label": "Excl. NIC",
+      "converged": true
+    },
+    {
+      "coef": -0.10870519552020884,
+      "se": 0.14012458349127382,
+      "pval": 0.4394880601122708,
+      "rsq_within": 0.19249488114971103,
+      "n_obs": 149,
+      "label": "Excl. PAN",
+      "converged": true
+    },
+    {
+      "coef": -0.26676140348056515,
+      "se": 0.12405656673107646,
+      "pval": 0.033642185060763996,
+      "rsq_within": -8.501479703261314,
+      "n_obs": 148,
+      "label": "Excl. SLV",
+      "converged": true
+    }
+  ],
+  "eq2_loco": [
+    {
+      "coef": 0.9000011314252557,
+      "se": 0.4647991244863234,
+      "pval": 0.05481441833899403,
+      "rsq_within": 0.2473808130644709,
+      "n_obs": 179,
+      "label": "Full sample (baseline)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 1.7059553806832006,
+      "se": 0.7673298134399374,
+      "pval": 0.02807228631044767,
+      "rsq_within": 0.2562576224355987,
+      "n_obs": 156,
+      "label": "Excl. COL",
+      "converged": true
+    },
+    {
+      "coef": 0.763982290715641,
+      "se": 0.5851034606630564,
+      "pval": 0.19414488469228974,
+      "rsq_within": 0.2569862118166907,
+      "n_obs": 156,
+      "label": "Excl. CRI",
+      "converged": true
+    },
+    {
+      "coef": 0.6558889206817861,
+      "se": 0.36594949616487593,
+      "pval": 0.07558483262000637,
+      "rsq_within": 0.24630791888836034,
+      "n_obs": 157,
+      "label": "Excl. DOM",
+      "converged": true
+    },
+    {
+      "coef": 0.8322064986043418,
+      "se": 0.2539693698296657,
+      "pval": 0.0013674959246960938,
+      "rsq_within": 0.20921699119097603,
+      "n_obs": 158,
+      "label": "Excl. GTM",
+      "converged": true
+    },
+    {
+      "coef": 0.7092116730107788,
+      "se": 0.5282421580252779,
+      "pval": 0.18193961086866395,
+      "rsq_within": 0.20772878045754273,
+      "n_obs": 156,
+      "label": "Excl. HND",
+      "converged": true
+    },
+    {
+      "coef": 0.7702415923054445,
+      "se": 0.6706082188872455,
+      "pval": 0.25296141260648763,
+      "rsq_within": 0.23335782892722579,
+      "n_obs": 159,
+      "label": "Excl. NIC",
+      "converged": true
+    },
+    {
+      "coef": 0.8801870499179204,
+      "se": 0.48121296310934253,
+      "pval": 0.06986742584698913,
+      "rsq_within": 0.17630832344177882,
+      "n_obs": 156,
+      "label": "Excl. PAN",
+      "converged": true
+    },
+    {
+      "coef": 0.6991803857170356,
+      "se": 0.7002582862031805,
+      "pval": 0.32006512787859176,
+      "rsq_within": 0.0553210494968005,
+      "n_obs": 155,
+      "label": "Excl. SLV",
+      "converged": true
+    }
+  ],
+  "eq3_loco": [
+    {
+      "coef": 0.13707943138978196,
+      "se": 0.10947485416121966,
+      "pval": 0.2125866078285812,
+      "rsq_within": 0.09486503562424209,
+      "n_obs": 179,
+      "label": "Full sample (baseline)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 0.10198655132809376,
+      "se": 0.10428847942186885,
+      "pval": 0.33009416609071307,
+      "rsq_within": 0.1205213280907187,
+      "n_obs": 156,
+      "label": "Excl. COL",
+      "converged": true
+    },
+    {
+      "coef": 0.13759498550755844,
+      "se": 0.11121827968852685,
+      "pval": 0.21846287027083222,
+      "rsq_within": 0.09458982325701515,
+      "n_obs": 156,
+      "label": "Excl. CRI",
+      "converged": true
+    },
+    {
+      "coef": 0.20146405484563334,
+      "se": 0.09559288501911667,
+      "pval": 0.037153973180320765,
+      "rsq_within": 0.14139407274898974,
+      "n_obs": 157,
+      "label": "Excl. DOM",
+      "converged": true
+    },
+    {
+      "coef": 0.15719640110004754,
+      "se": 0.10200872089537293,
+      "pval": 0.125925685707462,
+      "rsq_within": 0.0897863632428142,
+      "n_obs": 158,
+      "label": "Excl. GTM",
+      "converged": true
+    },
+    {
+      "coef": 0.13250395603277765,
+      "se": 0.12302949929014356,
+      "pval": 0.2836544813885853,
+      "rsq_within": 0.08873589092511647,
+      "n_obs": 156,
+      "label": "Excl. HND",
+      "converged": true
+    },
+    {
+      "coef": 0.07543167822211146,
+      "se": 0.12745724265882374,
+      "pval": 0.5550666025328308,
+      "rsq_within": 0.10039296362714745,
+      "n_obs": 159,
+      "label": "Excl. NIC",
+      "converged": true
+    },
+    {
+      "coef": 0.007702528723508375,
+      "se": 0.14943330202305175,
+      "pval": 0.958977726031351,
+      "rsq_within": 0.022605886717723456,
+      "n_obs": 156,
+      "label": "Excl. PAN",
+      "converged": true
+    },
+    {
+      "coef": 0.20816688871178007,
+      "se": 0.1279857519779549,
+      "pval": 0.10649180038048955,
+      "rsq_within": -0.6356546459085326,
+      "n_obs": 155,
+      "label": "Excl. SLV",
+      "converged": true
+    }
+  ],
+  "eq1_timewindow": [
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "Full sample",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.1277468349610411,
+      "se": 0.14434945832428772,
+      "pval": 0.3810878336881691,
+      "rsq_within": 0.0535266376425626,
+      "n_obs": 64,
+      "label": "Pre-2010 (pre-GFC)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.02518641737303635,
+      "se": 0.06596027045553399,
+      "pval": 0.7036035717573212,
+      "rsq_within": 0.06413363825774643,
+      "n_obs": 107,
+      "label": "Post-2010",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.10420739866464544,
+      "se": 0.11878735650443714,
+      "pval": 0.3820696608448533,
+      "rsq_within": 0.09996700592718444,
+      "n_obs": 156,
+      "label": "Excl. COVID (2020\u201321)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.07972858496361493,
+      "se": 0.10534566967959494,
+      "pval": 0.4526350324645185,
+      "rsq_within": 0.06850472070796909,
+      "n_obs": 75,
+      "label": "Post-peace (2014+)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq2_timewindow": [
+    {
+      "coef": 0.9000011314252557,
+      "se": 0.4647991244863234,
+      "pval": 0.05481441833899403,
+      "rsq_within": 0.2473808130644709,
+      "n_obs": 179,
+      "label": "Full sample",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.012396358853831146,
+      "se": 0.836315260334463,
+      "pval": 0.9882327052673014,
+      "rsq_within": -0.2816467912049958,
+      "n_obs": 72,
+      "label": "Pre-2010 (pre-GFC)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.9317130941768261,
+      "se": 0.9407010304722523,
+      "pval": 0.04333473419801881,
+      "rsq_within": 0.3692262431073624,
+      "n_obs": 107,
+      "label": "Post-2010",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.0178680992286284,
+      "se": 0.3159107591057095,
+      "pval": 0.0016116433741846237,
+      "rsq_within": 0.15216363923918097,
+      "n_obs": 164,
+      "label": "Excl. COVID (2020\u201321)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 3.609905243315379,
+      "se": 0.7573838758236553,
+      "pval": 1.602545825130086e-05,
+      "rsq_within": 0.5698057118063508,
+      "n_obs": 75,
+      "label": "Post-peace (2014+)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq3_timewindow": [
+    {
+      "coef": 0.13707943138978196,
+      "se": 0.10947485416121966,
+      "pval": 0.2125866078285812,
+      "rsq_within": 0.09486503562424209,
+      "n_obs": 179,
+      "label": "Full sample",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 0.05120759117649731,
+      "se": 0.12442189937043559,
+      "pval": 0.6824536481193468,
+      "rsq_within": 0.06475579113459506,
+      "n_obs": 72,
+      "label": "Pre-2010 (pre-GFC)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.2679729829679793,
+      "se": 0.17713680736913961,
+      "pval": 0.13437129002314396,
+      "rsq_within": 0.04081261635358446,
+      "n_obs": 107,
+      "label": "Post-2010",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.007944565384728937,
+      "se": 0.09453305378498955,
+      "pval": 0.9331558606187182,
+      "rsq_within": 0.04865412450836537,
+      "n_obs": 164,
+      "label": "Excl. COVID (2020\u201321)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.08416276729842055,
+      "se": 0.2595357063867935,
+      "pval": 0.7470772682773665,
+      "rsq_within": 0.1626804856007994,
+      "n_obs": 75,
+      "label": "Post-peace (2014+)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq1_lags": [
+    {
+      "coef": -0.05122263286130197,
+      "se": 0.10804183389165159,
+      "pval": 0.6361567892463214,
+      "rsq_within": 0.10862979522259819,
+      "n_obs": 179,
+      "label": "Contemporaneous (lag 0)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "Lag 1 (primary)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.1929946377627077,
+      "se": 0.16699198769479437,
+      "pval": 0.2499516936020998,
+      "rsq_within": 0.07882414822570494,
+      "n_obs": 163,
+      "label": "Lag 2",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.1836115578520734,
+      "se": 0.18133544253783462,
+      "pval": 0.3132946915217145,
+      "rsq_within": 0.10381332389146225,
+      "n_obs": 155,
+      "label": "Lag 3",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq1_inst_index": [
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "inst_avg (primary)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.2332872171153911,
+      "se": 0.226404125834368,
+      "pval": 0.30466394932019236,
+      "rsq_within": 0.07962575695320118,
+      "n_obs": 171,
+      "label": "inst_pca (PCA-based)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -1.834493765132638,
+      "se": 1.5064380667789967,
+      "pval": 0.2254359118125584,
+      "rsq_within": 0.11237139921627559,
+      "n_obs": 171,
+      "label": "rule_of_law",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.8270302339526869,
+      "se": 0.9158638179790306,
+      "pval": 0.3681312981700029,
+      "rsq_within": 0.19966423448340143,
+      "n_obs": 171,
+      "label": "control_corruption",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -3.3433800198366104,
+      "se": 3.1975551740350348,
+      "pval": 0.29761196314081695,
+      "rsq_within": 0.25066028546682895,
+      "n_obs": 171,
+      "label": "political_stability",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq1_controls": [
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "Baseline controls",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": null,
+      "se": null,
+      "pval": null,
+      "rsq_within": null,
+      "n_obs": 0,
+      "label": "Extended controls",
+      "converged": false,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.10342464152325805,
+      "se": 0.14752104687574105,
+      "pval": 0.48442263649851913,
+      "rsq_within": -0.24976975316229333,
+      "n_obs": 171,
+      "label": "Minimal controls",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.08251370343881127,
+      "se": 0.17020580134759783,
+      "pval": 0.6285844942147982,
+      "rsq_within": 0.0006892550400874331,
+      "n_obs": 171,
+      "label": "No controls (FE only)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq2_controls": [
+    {
+      "coef": 0.9000011314252557,
+      "se": 0.4647991244863234,
+      "pval": 0.05481441833899403,
+      "rsq_within": 0.2473808130644709,
+      "n_obs": 179,
+      "label": "Baseline controls",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": null,
+      "se": null,
+      "pval": null,
+      "rsq_within": null,
+      "n_obs": 0,
+      "label": "Extended controls",
+      "converged": false,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.5490674096577757,
+      "se": 0.8412590116468522,
+      "pval": 0.5149931869281348,
+      "rsq_within": -0.34516214223762254,
+      "n_obs": 179,
+      "label": "Minimal controls",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -0.11915481625705687,
+      "se": 0.8270301804428272,
+      "pval": 0.8856381515645175,
+      "rsq_within": -0.001527675447551502,
+      "n_obs": 179,
+      "label": "No controls (FE only)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq3_controls": [
+    {
+      "coef": 0.1449805573262196,
+      "se": 0.12121119159673152,
+      "pval": 0.23365142033647435,
+      "rsq_within": 0.09715559238796279,
+      "n_obs": 179,
+      "label": "Baseline controls",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": null,
+      "se": null,
+      "pval": null,
+      "rsq_within": null,
+      "n_obs": 0,
+      "label": "Extended controls",
+      "converged": false,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.26657833064006736,
+      "se": 0.13517949479095237,
+      "pval": 0.050495536791642426,
+      "rsq_within": 0.06734055163203745,
+      "n_obs": 179,
+      "label": "Minimal controls",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.23552802931857791,
+      "se": 0.13541632904404485,
+      "pval": 0.08407736665441967,
+      "rsq_within": 0.07330461636743812,
+      "n_obs": 179,
+      "label": "No controls (FE only)",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "placebo": {
+    "true_coef": -0.14040684915342183,
+    "placebo_mean": 0.0005978133549103939,
+    "placebo_sd": 0.024255297549599236,
+    "p_placebo": 0.0,
+    "n_perm": 500
+  }
+}
