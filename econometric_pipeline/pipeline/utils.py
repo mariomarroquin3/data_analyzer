@@ -166,6 +166,19 @@ def two_way_demean(
     -------
     DataFrame with demeaned columns (same index as input).
     """
+    if entity_col not in df_long.columns or time_col not in df_long.columns:
+        if isinstance(df_long.index, pd.MultiIndex):
+            index_names = list(df_long.index.names)
+            if entity_col in index_names and time_col in index_names:
+                df_long = df_long.reset_index()
+            elif entity_col in index_names:
+                df_long = df_long.reset_index(level=entity_col)
+            elif time_col in index_names:
+                df_long = df_long.reset_index(level=time_col)
+
+    assert entity_col in df_long.columns, f"Missing required entity column: {entity_col}"
+    assert time_col   in df_long.columns, f"Missing required time column: {time_col}"
+
     cols = [dep_col] + exog_cols
     out  = df_long[cols + [entity_col, time_col]].copy()
 

@@ -481,7 +481,9 @@ def cr2_se(
       p_cr2    — two-sided p-values using t(df_satt)
     """
     exog_a  = [c for c in exog if c in df.columns]
-    df_work = df[[ENTITY_COL, dep] + exog_a].dropna().copy()
+    assert ENTITY_COL in df.columns, f"Missing required entity column: {ENTITY_COL}"
+    assert TIME_COL   in df.columns, f"Missing required time column: {TIME_COL}"
+    df_work = df[[ENTITY_COL, TIME_COL, dep] + exog_a].dropna().copy()
 
     # Two-way within transformation
     dm    = two_way_demean(df_work, dep, exog_a)
