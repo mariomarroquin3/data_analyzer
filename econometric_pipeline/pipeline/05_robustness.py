@@ -74,7 +74,6 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy import stats
 from linearmodels.panel import PanelOLS
-from statsmodels.tsa.stattools import adfuller
 import statsmodels.api as sm
 
 from utils import (
@@ -99,6 +98,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from utils import (
     set_plot_style, section, subsection, ok, warn, err, bold, sig_stars,
     save_json, make_output_dirs, build_multiindex, ENTITY_COL, TIME_COL,
+    fisher_panel_unit_root,
 )
 
 set_plot_style()
@@ -631,31 +631,7 @@ print("""
   and Statistics 61(S1), 631-652.
 """)
 
-def fisher_panel_unit_root(df_in: pd.DataFrame, var: str, regression: str = "c") -> Optional[dict]:
-    countries_local = sorted(df_in[ENTITY_COL].unique())
-    pvals, per_country = [], {}
-    for c in countries_local:
-        series = (df_in.loc[df_in[ENTITY_COL] == c, [TIME_COL, var]]
-                  .dropna().sort_values(TIME_COL)[var].values)
-        if len(series) < 8:
-            continue
-        try:
-            stat, pval = adfuller(series, maxlag=1, regression=regression, autolag=None)[:2]
-        except Exception:
-            continue
-        pvals.append(pval)
-        per_country[c] = {"adf_stat": float(stat), "p_val": float(pval)}
-
-    if len(pvals) < 3:
-        return None
-    pvals_arr    = np.clip(np.array(pvals), 1e-10, 1 - 1e-10)
-    fisher_stat  = float(-2 * np.sum(np.log(pvals_arr)))
-    df_chi2      = 2 * len(pvals_arr)
-    p_fisher     = float(1 - stats.chi2.cdf(fisher_stat, df_chi2))
-    return {
-        "per_country": per_country, "n_countries": len(pvals_arr),
-        "fisher_stat": fisher_stat, "df_chi2": df_chi2, "p_fisher": p_fisher,
-    }
+# fisher_panel_unit_root moved to utils.py (shared with Module 07).
 
 UR_VARS = ["homicide_rate_log", "inst_avg", "fdi_percent_gdp",
            "gdp_growth", "gdp_per_capita_log"]

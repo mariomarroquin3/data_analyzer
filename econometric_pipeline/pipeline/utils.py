@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
+from scipy import stats
+from statsmodels.tsa.stattools import adfuller
 
 # ── Publication-quality plot style ──────────────────────────────────────
 def set_plot_style() -> None:
@@ -276,6 +278,56 @@ def get_fe_key_stats(fe_eq: dict, key_var: str) -> Dict[str, float]:
         "pval_cl": _get("pvals_cl",  "pval_key_cl"),
         "se_dk":   _get("se_dk",     "se_key_dk"),
         "pval_dk": _get("pvals_dk",  "pval_key_dk"),
+    }
+
+
+# ── Panel unit-root test (Fisher-ADF / Maddala-Wu) ────────────────────────
+def fisher_panel_unit_root(
+    df_in: pd.DataFrame, var: str, regression: str = "c",
+    entity_col: str = ENTITY_COL, time_col: str = TIME_COL,
+) -> Optional[dict]:
+    """
+    Fisher (1932) / Maddala & Wu (1999) combination panel unit-root test.
+
+    Runs an Augmented Dickey-Fuller test separately for each cross-section
+    (maxlag=1, no automatic lag selection -- with T~25 per country, higher
+    lags are not reliably identifiable), then combines the per-country
+    p-values:  P = -2 * sum(log(p_i)) ~ chi2(2N) under
+    H0: ALL cross-sections have a unit root.
+
+    CAVEAT: with T~25 observations per country, per-country ADF tests have
+    very low power. Failing to reject H0 is only weak evidence of a unit
+    root, not proof of one -- shared by every module that calls this.
+
+    Reference: Maddala & Wu (1999), A comparative study of unit root tests
+    with panel data and a new simple test, Oxford Bulletin of Economics
+    and Statistics 61(S1), 631-652.
+
+    Returns None if fewer than 3 cross-sections have enough observations.
+    """
+    countries_local = sorted(df_in[entity_col].unique())
+    pvals, per_country = [], {}
+    for c in countries_local:
+        series = (df_in.loc[df_in[entity_col] == c, [time_col, var]]
+                  .dropna().sort_values(time_col)[var].values)
+        if len(series) < 8:
+            continue
+        try:
+            stat, pval = adfuller(series, maxlag=1, regression=regression, autolag=None)[:2]
+        except Exception:
+            continue
+        pvals.append(pval)
+        per_country[c] = {"adf_stat": float(stat), "p_val": float(pval)}
+
+    if len(pvals) < 3:
+        return None
+    pvals_arr    = np.clip(np.array(pvals), 1e-10, 1 - 1e-10)
+    fisher_stat  = float(-2 * np.sum(np.log(pvals_arr)))
+    df_chi2      = 2 * len(pvals_arr)
+    p_fisher     = float(1 - stats.chi2.cdf(fisher_stat, df_chi2))
+    return {
+        "per_country": per_country, "n_countries": len(pvals_arr),
+        "fisher_stat": fisher_stat, "df_chi2": df_chi2, "p_fisher": p_fisher,
     }
 
 
