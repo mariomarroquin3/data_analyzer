@@ -165,7 +165,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from utils import (
     set_plot_style, section, subsection, ok, warn, err, bold, sig_stars,
     save_json, make_output_dirs, build_multiindex, two_way_demean,
-    ENTITY_COL, TIME_COL, WEBB_WEIGHTS,
+    ENTITY_COL, TIME_COL, WEBB_WEIGHTS, get_fe_key_stats,
 )
 
 set_plot_style()
@@ -650,9 +650,199 @@ for eq_label, spec in specs.items():
         import traceback; traceback.print_exc()
 
 # ════════════════════════════════════════════════════════════════════════
+# MEDIATION: CLUSTER BOOTSTRAP OF THE INDIRECT (CHAIN) EFFECT
+# ════════════════════════════════════════════════════════════════════════
+section("04-C — MEDIATION: BOOTSTRAP OF THE FULL-CHAIN INDIRECT EFFECT")
+
+print("""
+  Motivation
+  ──────────
+  EQ1, EQ2, EQ3 are estimated as three INDEPENDENT single-equation FE
+  models (see Module 02, "Generated regressors" note) specifically to
+  avoid the Pagan (1984) generated-regressors problem. A side effect is
+  that nothing in the pipeline so far formally tests the hypothesized
+  mediation chain itself:
+
+      Homicide --(beta1)--> Institutions --(gamma1)--> FDI --(delta1)--> Growth
+
+  Three individually-insignificant coefficients strung together in prose
+  ("the results support a transmission mechanism") is NOT a statistical
+  test of that mechanism. The standard remedy (Sobel 1982; MacKinnon,
+  Lockhart & Hoffman 2004; Preacher & Hayes 2008) is to test the PRODUCT
+  of the path coefficients, indirect = beta1 * gamma1 * delta1, against
+  H0: indirect = 0. The product's sampling distribution is not normal
+  even when each component is, so it must be obtained by resampling
+  rather than the delta method.
+
+  Procedure (cluster bootstrap over countries, not observations)
+  ────────────────────────────────────────────────────────────────
+  Because observations within a country are serially correlated, the
+  resampling unit is the COUNTRY (all of its years move together), as
+  in the SHAP cluster bootstrap of Module 06 and the Wild Cluster
+  Bootstrap above (Cameron & Miller 2015).
+    1. Resample G=8 countries WITH replacement.
+    2. Relabel resampled countries uniquely per draw (e.g. "SLV__0",
+       "SLV__1") so that a country drawn more than once contributes as
+       distinct panel entities with a valid (entity, time) index, and
+       so entity/time Two-Way FE are genuinely re-estimated on the
+       resampled panel rather than reused from the original fit.
+    3. Refit EQ1, EQ2, EQ3 (identical Two-Way FE spec as Module 02) on
+       the resampled panel; record beta1, gamma1, delta1 and their
+       product.
+  B=500 draws (lower than the B=999 wild bootstrap above because each
+  draw now costs three PanelOLS fits instead of one).
+
+  Literature
+  ──────────
+  Sobel (1982) — Asymptotic confidence intervals for indirect effects.
+  MacKinnon, Lockhart & Hoffman (2004) — Confidence limits for the
+    indirect effect: distribution of the product methods.
+  Preacher & Hayes (2008) — Asymptotic and resampling strategies for
+    assessing and comparing indirect effects, Behavior Research Methods.
+  Cameron & Miller (2015) — cluster-robust / cluster-bootstrap inference.
+""")
+
+MED_B = 500
+
+def _fit_key_coef(df_in: pd.DataFrame, dep: str, exog: list, key: str) -> float:
+    """Fit Two-Way FE and return the coefficient on `key`, or NaN on failure."""
+    exog_a = [c for c in exog if c in df_in.columns]
+    df_idx = build_multiindex(df_in)
+    work   = df_idx[[dep] + exog_a].dropna()
+    if key not in exog_a or len(work) < len(exog_a) + 10:
+        return np.nan
+    mod = PanelOLS(work[dep], work[exog_a],
+                    entity_effects=True, time_effects=True, drop_absorbed=True)
+    res = mod.fit(cov_type="clustered", cluster_entity=True)
+    if key not in res.params.index:
+        return np.nan
+    return float(res.params[key])
+
+
+def mediation_indirect_bootstrap(
+    df:       pd.DataFrame,
+    eq1_spec: dict, eq2_spec: dict, eq3_spec: dict,
+    key1:     str,  key2:     str,  key3:     str,
+    B:        int = 500,
+    seed:     int = 42,
+) -> dict:
+    """Cluster (country) bootstrap of indirect = beta1 * gamma1 * delta1."""
+    rng = np.random.default_rng(seed)
+
+    beta1_full  = _fit_key_coef(df, eq1_spec["dep"], eq1_spec["exog"], key1)
+    gamma1_full = _fit_key_coef(df, eq2_spec["dep"], eq2_spec["exog"], key2)
+    delta1_full = _fit_key_coef(df, eq3_spec["dep"], eq3_spec["exog"], key3)
+    indirect_full = beta1_full * gamma1_full * delta1_full
+
+    countries = sorted(df[ENTITY_COL].unique().tolist())
+    G_local   = len(countries)
+
+    draws, fails = [], 0
+    for b in range(B):
+        selected = rng.choice(countries, size=G_local, replace=True)
+        frames = []
+        for slot, c in enumerate(selected):
+            sub = df[df[ENTITY_COL] == c].copy()
+            sub[ENTITY_COL] = f"{c}__{slot}"
+            frames.append(sub)
+        boot_df = pd.concat(frames, ignore_index=True)
+
+        try:
+            b1 = _fit_key_coef(boot_df, eq1_spec["dep"], eq1_spec["exog"], key1)
+            g1 = _fit_key_coef(boot_df, eq2_spec["dep"], eq2_spec["exog"], key2)
+            d1 = _fit_key_coef(boot_df, eq3_spec["dep"], eq3_spec["exog"], key3)
+            if any(np.isnan(x) for x in (b1, g1, d1)):
+                fails += 1
+                continue
+            draws.append(b1 * g1 * d1)
+        except Exception:
+            fails += 1
+            continue
+
+        if (b + 1) % 100 == 0:
+            print(f"    b={b+1}/{B}  valid={len(draws)}  fails={fails}")
+
+    draws_arr = np.array(draws)
+    if len(draws_arr) < 30:
+        raise RuntimeError(f"Too few valid mediation bootstrap draws ({len(draws_arr)}/{B}).")
+
+    ci_lo, ci_hi = np.percentile(draws_arr, [2.5, 97.5])
+    p_boot = float(min(1.0, 2 * min((draws_arr <= 0).mean(), (draws_arr >= 0).mean())))
+
+    return {
+        "beta1_full": beta1_full, "gamma1_full": gamma1_full, "delta1_full": delta1_full,
+        "indirect_full": indirect_full,
+        "boot_mean": float(draws_arr.mean()), "boot_sd": float(draws_arr.std()),
+        "ci_lo": float(ci_lo), "ci_hi": float(ci_hi),
+        "p_boot": p_boot, "n_valid": len(draws_arr), "n_fails": fails,
+        "draws": draws_arr,
+    }
+
+
+key1 = [c for c in specs["eq1"]["exog"] if c in df.columns][0]
+key2 = [c for c in specs["eq2"]["exog"] if c in df.columns][0]
+key3 = [c for c in specs["eq3"]["exog"] if c in df.columns][0]
+
+try:
+    med = mediation_indirect_bootstrap(
+        df, specs["eq1"], specs["eq2"], specs["eq3"], key1, key2, key3, B=MED_B, seed=SEED
+    )
+    print(f"\n  {bold('Point estimates (original panel, no resampling):')}")
+    print(f"    beta1  ({key1} → {specs['eq1']['dep']})       = {med['beta1_full']:.4f}")
+    print(f"    gamma1 ({key2} → {specs['eq2']['dep']})              = {med['gamma1_full']:.4f}")
+    print(f"    delta1 ({key3} → {specs['eq3']['dep']})       = {med['delta1_full']:.4f}")
+    print(f"    indirect = beta1 × gamma1 × delta1 = {med['indirect_full']:.6f}")
+    print(f"\n  {bold(f'Cluster bootstrap over countries (B={MED_B}):')}")
+    print(f"    Mean(indirect*) = {med['boot_mean']:.6f}   SD(indirect*) = {med['boot_sd']:.6f}")
+    print(f"    95% percentile CI = [{med['ci_lo']:.6f}, {med['ci_hi']:.6f}]")
+    print(f"    Bootstrap p-value (H0: indirect=0) = {med['p_boot']:.4f}  {sig_stars(med['p_boot'])}")
+    print(f"    Valid draws: {med['n_valid']}/{MED_B}  |  Fails: {med['n_fails']}")
+    if med["ci_lo"] < 0 < med["ci_hi"]:
+        print(warn("  95% CI includes zero — the FULL three-stage chain is NOT "
+                    "statistically distinguishable from no effect at conventional levels."))
+        print("  This is the honest headline result for the 'mecanismo de transmisión' "
+              "claim: each link is individually weak, and the chain as a whole does not "
+              "clear a formal significance test either. Report the point estimate and CI, "
+              "not a causal claim.")
+    else:
+        print(ok("  95% CI excludes zero — the chain product is significant at 5%."))
+
+    mediation_export = {k: v for k, v in med.items() if k != "draws"}
+    save_json(mediation_export, DIRS["json"] / "04_mediation.json")
+
+    # Figure: bootstrap distribution of the indirect effect
+    fig_m, ax_m = plt.subplots(figsize=(7, 5))
+    ax_m.hist(med["draws"], bins=50, color="#7C3AED", edgecolor="white",
+              alpha=0.85, density=True)
+    ax_m.axvline(med["indirect_full"], color="red", linewidth=2,
+                 label=f"Point estimate = {med['indirect_full']:.4f}")
+    ax_m.axvline(0, color="black", linewidth=0.8)
+    ax_m.axvline(med["ci_lo"], color="grey", linestyle=":", linewidth=1.2)
+    ax_m.axvline(med["ci_hi"], color="grey", linestyle=":", linewidth=1.2,
+                 label="95% percentile CI")
+    ax_m.set_xlabel("Bootstrap indirect effect (beta1 × gamma1 × delta1)", fontsize=9)
+    ax_m.set_ylabel("Density", fontsize=9)
+    ax_m.set_title(
+        "Cluster Bootstrap: Full-Chain Indirect Effect\n"
+        "Homicide → Institutions → FDI → Growth\n"
+        f"p(boot) = {med['p_boot']:.3f}  (B={MED_B}, resampled by country)",
+        fontsize=10,
+    )
+    ax_m.legend(fontsize=8)
+    fig_m.tight_layout()
+    fig_m.savefig(DIRS["figures"] / "06b_mediation_bootstrap.png", dpi=300, bbox_inches="tight")
+    plt.close(fig_m)
+    print(ok("Figure saved → figures/06b_mediation_bootstrap.png"))
+
+except Exception as e:
+    print(err(f"  Mediation bootstrap failed: {e}"))
+    import traceback; traceback.print_exc()
+    mediation_export = {}
+
+# ════════════════════════════════════════════════════════════════════════
 # COMPARISON TABLE
 # ════════════════════════════════════════════════════════════════════════
-section("04-C — SE COMPARISON TABLE")
+section("04-D — SE COMPARISON TABLE")
 
 print(f"  {'Equation':<10} {'Dep. var.':<22} {'Key var.':<30} "
       f"{'β̂':>8} {'SE(Cl.)':>9} {'p(Cl.)':>8} "
@@ -673,10 +863,11 @@ for eq_label, spec in specs.items():
     cr2     = cr2_results.get(eq_label, {})
     feq     = fe_data.get(eq_label.upper(), {})
 
+    fe_stats = get_fe_key_stats(feq, key_var)
     beta    = boot.get("beta_full", np.nan)
     se_cl   = boot.get("se_full_cl", np.nan)
-    p_cl    = feq.get("pval_key_cl", np.nan)
-    se_dk   = feq.get("se_key_dk", np.nan)
+    p_cl    = fe_stats["pval_cl"]
+    se_dk   = fe_stats["se_dk"]
     se_c2   = cr2.get("se_cr2", {}).get(key_var, np.nan)
     df_s    = cr2.get("df_satt", {}).get(key_var, np.nan)
     p_wcb   = boot.get("p_boot", np.nan)
@@ -696,12 +887,56 @@ print("""
 
   Preferred inference: p(WCB) from wild cluster bootstrap (Webb weights).
   SE(CR2) with df_Satterthwaite as secondary check.
+
+  WRITE-UP WARNING — do not cherry-pick p(Cl.):
+  p(Cl.) is the LEAST conservative column here by construction (this is
+  exactly why Modules 04's bootstrap and CR2 exist in the first place —
+  see docstring, "Why not conventional clustered SE?"). Any claim in the
+  paper that a coefficient is "robust across specifications" must be
+  checked against p(DK), p(CR2) AND p(WCB), not just p(Cl.). A table with
+  all four is exported to tables/se_comparison.tex for direct inclusion
+  in the manuscript.
 """)
+
+# ── LaTeX table: full SE comparison per equation (paste-ready for the paper) ──
+se_rows = []
+for eq_label, spec in specs.items():
+    dep     = spec["dep"]
+    exog    = [c for c in spec["exog"] if c in df.columns]
+    key_var = exog[0]
+    boot    = boot_results.get(eq_label, {})
+    cr2     = cr2_results.get(eq_label, {})
+    feq     = fe_data.get(eq_label.upper(), {})
+    fe_stats = get_fe_key_stats(feq, key_var)
+    se_rows.append({
+        "Equation":  eq_label.upper(),
+        "Key variable": key_var.replace("_", r"\_"),
+        r"$\hat\beta$": boot.get("beta_full", np.nan),
+        "SE (Clustered)": boot.get("se_full_cl", np.nan),
+        "p (Clustered)": fe_stats["pval_cl"],
+        "SE (Driscoll-Kraay)": fe_stats["se_dk"],
+        "p (Driscoll-Kraay)": fe_stats["pval_dk"],
+        "SE (CR2)": cr2.get("se_cr2", {}).get(key_var, np.nan),
+        "p (CR2)": cr2.get("p_cr2", {}).get(key_var, np.nan),
+        "p (Wild Cluster Bootstrap)": boot.get("p_boot", np.nan),
+    })
+se_comp_df = pd.DataFrame(se_rows).set_index("Equation")
+latex_se = se_comp_df.round(4).to_latex(
+    caption=("Sensitivity of key coefficients to the standard-error estimator. "
+             "p(Clustered) is systematically anti-conservative at $G=8$ and "
+             "should never be quoted alone as evidence of robustness — see "
+             "Cameron \\& Miller (2015)."),
+    label="tab:se_comparison",
+    column_format="l" + "r" * (se_comp_df.shape[1]),
+)
+(DIRS["tables"] / "se_comparison.tex").write_text(latex_se, encoding="utf-8")
+print(ok("LaTeX SE-comparison table saved → tables/se_comparison.tex "
+         "(use this instead of quoting a single p-value in the manuscript)"))
 
 # ════════════════════════════════════════════════════════════════════════
 # FIGURE: Bootstrap distributions
 # ════════════════════════════════════════════════════════════════════════
-section("04-D — BOOTSTRAP FIGURES")
+section("04-E — BOOTSTRAP FIGURES")
 
 n_eq = len(boot_results)
 if n_eq > 0:
