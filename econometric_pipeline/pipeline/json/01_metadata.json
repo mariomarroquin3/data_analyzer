@@ -11,6 +11,7 @@
   ],
   "years": [
     2000,
+    2001,
     2002,
     2003,
     2004,
@@ -36,10 +37,10 @@
     2024
   ],
   "N": 8,
-  "T_distinct": 24,
-  "N_obs": 179,
-  "is_balanced": false,
-  "time_mean": 2011.804469273743,
+  "T_distinct": 25,
+  "N_obs": 200,
+  "is_balanced": true,
+  "time_mean": 2012.0,
   "inst_vars": [
     "rule_of_law",
     "control_corruption",
@@ -52,21 +53,21 @@
     "population_log",
     "unemployment"
   ],
-  "pca_var_exp_pc1": 0.789374945200384,
+  "pca_var_exp_pc1": 0.7859738440339452,
   "pca_loadings": {
-    "rule_of_law": 0.6299761529439164,
-    "control_corruption": 0.5864834956883017,
-    "political_stability": 0.5090846255851903
+    "rule_of_law": 0.6291155798526543,
+    "control_corruption": 0.5875420526746977,
+    "political_stability": 0.5089282105812776
   },
-  "cronbach_alpha": 0.862605678268119,
-  "kmo": 0.5343249074232134,
-  "corr_indices": 0.9993698461676255,
+  "cronbach_alpha": 0.8599066101746689,
+  "kmo": 0.5496503271194749,
+  "corr_indices": 0.9993477927003105,
   "within_pct": {
-    "homicide_rate_log": 53.68293066539606,
-    "inst_avg": 24.98036795757005,
-    "inst_pca": 24.53647047915803,
-    "fdi_percent_gdp": 74.44161805977468,
-    "gdp_growth": 96.20320402660022,
-    "gdp_per_capita_log": 52.44576924882458
+    "homicide_rate_log": 58.00841155644236,
+    "inst_avg": 26.67235372421586,
+    "inst_pca": 26.456515164641225,
+    "fdi_percent_gdp": 74.8826173381572,
+    "gdp_growth": 96.41376651969505,
+    "gdp_per_capita_log": 56.79314587570959
   }
 }
