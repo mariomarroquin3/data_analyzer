@@ -3,17 +3,17 @@
     "y": "inst_avg",
     "x": "homicide_rate_log",
     "long_run": {
-      "beta": -0.09363821018097583,
-      "se_cl": 0.1372774600160216,
-      "pval_cl": 0.49624331454443715,
-      "n_obs": 179,
-      "rsq_within": 0.016816369935183872
+      "beta": -0.24153452520980354,
+      "se_cl": 0.18855666999821133,
+      "pval_cl": 0.20171182573504653,
+      "n_obs": 232,
+      "rsq_within": 0.06633296287951251
     },
     "residual_unit_root": {
-      "n_countries": 8,
-      "fisher_stat": 15.622325829524236,
-      "df_chi2": 16,
-      "p_fisher": 0.47961584494888565
+      "n_countries": 11,
+      "fisher_stat": 22.736757455162827,
+      "df_chi2": 22,
+      "p_fisher": 0.4167192939500133
     },
     "cointegrated": false
   },
@@ -21,17 +21,17 @@
     "y": "inst_avg",
     "x": "gdp_per_capita_log",
     "long_run": {
-      "beta": 0.5044482700991506,
-      "se_cl": 0.4200045597094268,
-      "pval_cl": 0.23150511484566905,
-      "n_obs": 192,
-      "rsq_within": -0.44097396114618204
+      "beta": 0.9651277144123069,
+      "se_cl": 0.39420043993811493,
+      "pval_cl": 0.0151042242440389,
+      "n_obs": 264,
+      "rsq_within": -1.38446724095824
     },
     "residual_unit_root": {
-      "n_countries": 8,
-      "fisher_stat": 20.297206890870214,
-      "df_chi2": 16,
-      "p_fisher": 0.20713187109835463
+      "n_countries": 11,
+      "fisher_stat": 30.183801862852025,
+      "df_chi2": 22,
+      "p_fisher": 0.11406504311160881
     },
     "cointegrated": false
   },
@@ -39,18 +39,32 @@
     "y": "gdp_per_capita_log",
     "x": "homicide_rate_log",
     "long_run": {
-      "beta": 0.04787703716904065,
-      "se_cl": 0.05618991728279523,
-      "pval_cl": 0.3955053155731336,
-      "n_obs": 187,
-      "rsq_within": -0.027200342139351852
+      "beta": -0.09107396033863578,
+      "se_cl": 0.09615822977063317,
+      "pval_cl": 0.34468425749130427,
+      "n_obs": 242,
+      "rsq_within": 0.030448538450664864
     },
     "residual_unit_root": {
-      "n_countries": 8,
-      "fisher_stat": 15.230725284994197,
-      "df_chi2": 16,
-      "p_fisher": 0.5078091823802113
+      "n_countries": 11,
+      "fisher_stat": 39.94456661391069,
+      "df_chi2": 22,
+      "p_fisher": 0.010974049308946965
     },
-    "cointegrated": false
+    "cointegrated": true,
+    "ecm": {
+      "phi_cl": -0.10918662250263463,
+      "phi_se_cl": 0.03914325322251353,
+      "phi_p_cl": 0.005815393375212752,
+      "phi_se_dk": 0.01895207741711262,
+      "phi_p_dk": 3.2970348673444505e-08,
+      "gamma_cl": -0.03328292978274977,
+      "gamma_se_cl": 0.035088186030633975,
+      "gamma_p_cl": 0.34404769039589,
+      "gamma_se_dk": 0.02505014617072715,
+      "gamma_p_dk": 0.18554795771512467,
+      "n_obs": 227,
+      "rsq_within": 0.02650524278297517
+    }
   }
 }

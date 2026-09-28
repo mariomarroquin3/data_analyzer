@@ -3,10 +3,13 @@
     "COL",
     "CRI",
     "DOM",
+    "ECU",
     "GTM",
     "HND",
+    "MEX",
     "NIC",
     "PAN",
+    "PER",
     "SLV"
   ],
   "years": [
@@ -36,11 +39,11 @@
     2023,
     2024
   ],
-  "N": 8,
+  "N": 11,
   "T_distinct": 25,
-  "N_obs": 200,
-  "is_balanced": true,
-  "time_mean": 2012.0,
+  "N_obs": 274,
+  "is_balanced": false,
+  "time_mean": 2012.0401459854015,
   "inst_vars": [
     "rule_of_law",
     "control_corruption",
@@ -53,21 +56,21 @@
     "population_log",
     "unemployment"
   ],
-  "pca_var_exp_pc1": 0.7859738440339452,
+  "pca_var_exp_pc1": 0.7686525638180425,
   "pca_loadings": {
-    "rule_of_law": 0.6291155798526543,
-    "control_corruption": 0.5875420526746977,
-    "political_stability": 0.5089282105812776
+    "rule_of_law": 0.6311945735307457,
+    "control_corruption": 0.5913311776351651,
+    "political_stability": 0.5019171731490654
   },
-  "cronbach_alpha": 0.8599066101746689,
-  "kmo": 0.5496503271194749,
-  "corr_indices": 0.9993477927003105,
+  "cronbach_alpha": 0.8449252929097468,
+  "kmo": 0.5637067988226659,
+  "corr_indices": 0.9991107937384841,
   "within_pct": {
-    "homicide_rate_log": 58.00841155644236,
-    "inst_avg": 26.67235372421586,
-    "inst_pca": 26.456515164641225,
-    "fdi_percent_gdp": 74.8826173381572,
-    "gdp_growth": 96.41376651969505,
-    "gdp_per_capita_log": 56.79314587570959
+    "homicide_rate_log": 58.48018004432676,
+    "inst_avg": 32.50621244334159,
+    "inst_pca": 32.2532609164658,
+    "fdi_percent_gdp": 70.56617643949427,
+    "gdp_growth": 95.931140634487,
+    "gdp_per_capita_log": 58.07314832150223
   }
 }
