@@ -87,7 +87,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 from utils import (
     set_plot_style, section, subsection, ok, warn, err, bold, sig_stars,
-    save_json, make_output_dirs, ENTITY_COL, TIME_COL,
+    save_json, make_output_dirs, ENTITY_COL, TIME_COL, get_fe_key_stats,
 )
 
 set_plot_style()
@@ -177,6 +177,12 @@ TASKS = [
 # LOCO CROSS-VALIDATION FUNCTION
 # ════════════════════════════════════════════════════════════════════════
 
+# Raw WGI indicators behind inst_avg (see Module 01). Needed here because
+# inst_avg itself must be recomputed INSIDE each LOCO fold -- see docstring
+# of loco_cv below ("fold-safe institution index").
+INST_VARS_RAW = ["rule_of_law", "control_corruption", "political_stability"]
+
+
 def loco_cv(
     df:       pd.DataFrame,
     target:   str,
@@ -203,19 +209,49 @@ def loco_cv(
     model instead, which is the standard practice for interpretability
     (Molnar 2022 §9.5). The LOCO loop serves exclusively for predictive
     performance evaluation.
+
+    Fold-safe institution index (LEAKAGE FIX)
+    ──────────────────────────────────────────
+    inst_avg is built in Module 01 by z-scoring rule_of_law,
+    control_corruption and political_stability using the mean/SD of the
+    FULL pooled panel (all 8 countries), THEN averaging. When inst_avg is
+    used here as the LOCO target (T1) or as a feature (T2, T3), the
+    held-out country's own observations already contributed to those
+    global scaling constants -- so the "held-out country never seen"
+    claim this function makes is not strictly true for any task that
+    touches inst_avg.
+    The leak is on the scaling constants only (not on the functional
+    relationship being learned), so it is a second-order effect, but it
+    is a genuine violation of LOCO purity that is straightforward to
+    remove: whenever inst_avg is the target or among the features, this
+    function recomputes it from INST_VARS_RAW using the mean/SD of the
+    TRAINING countries only, applied identically to train and test rows.
     """
     feats_a   = [f for f in features if f in df.columns]
-    work_cols = [target, ENTITY_COL] + feats_a
+    needs_inst_refit = (target == "inst_avg") or ("inst_avg" in feats_a)
+    extra_cols = [c for c in INST_VARS_RAW if c in df.columns] if needs_inst_refit else []
+
+    work_cols = list(dict.fromkeys([target, ENTITY_COL] + feats_a + extra_cols))
     df_work   = df[work_cols].dropna()
 
     fold_results = []
     for country in COUNTRIES:
-        train = df_work[df_work[ENTITY_COL] != country]
-        test  = df_work[df_work[ENTITY_COL] == country]
+        train = df_work[df_work[ENTITY_COL] != country].copy()
+        test  = df_work[df_work[ENTITY_COL] == country].copy()
 
         if len(train) < 20 or len(test) < 3:
             fold_results.append({"country": country, "r2": np.nan, "rmse": np.nan})
             continue
+
+        if needs_inst_refit:
+            # Re-fit the z-score scaling constants on TRAINING countries only,
+            # then apply them to both train and test (held-out country never
+            # contributes to mu/sigma). Mirrors Module 01's construction
+            # (z-score each WGI indicator, then average across the three).
+            mu    = train[INST_VARS_RAW].mean()
+            sigma = train[INST_VARS_RAW].std(ddof=0).replace(0, 1.0)
+            train["inst_avg"] = ((train[INST_VARS_RAW] - mu) / sigma).mean(axis=1)
+            test["inst_avg"]  = ((test[INST_VARS_RAW]  - mu) / sigma).mean(axis=1)
 
         X_train = train[feats_a].values
         y_train = train[target].values
@@ -691,12 +727,20 @@ for task in TASKS:
     shap_rk     = ml_res.get("key_shap_rank")
 
     # FE results for this equation's key feature
+    # NOTE (fixed): json/02_fe_results.json stores EQ1/EQ2 under singular
+    # keys ("coef_key_cl", "pval_key_cl", ...) but EQ3 under dict-valued
+    # keys ("params_cl", "pvals_cl", ...) because EQ3 has multiple key
+    # regressors. A direct fe_eq.get("coef_key", ...) silently returned
+    # NaN for ALL three equations (the singular key is "coef_key_cl", not
+    # "coef_key"), so this table always printed "?" — get_fe_key_stats
+    # (utils.py) normalises both shapes.
     eq_map = {"inst_avg": "EQ1", "fdi_percent_gdp": "EQ2", "gdp_growth": "EQ3"}
     eq_key = eq_map.get(task["target"], "")
     fe_eq  = fe_data.get(eq_key, {})
+    fe_stats = get_fe_key_stats(fe_eq, key_feature)
 
-    fe_coef  = fe_eq.get("coef_key",     np.nan)
-    fe_pval  = fe_eq.get("pval_key_cl",  np.nan)
+    fe_coef  = fe_stats["coef"]
+    fe_pval  = fe_stats["pval_cl"]
     fe_sig   = sig_stars(fe_pval) if not np.isnan(float(fe_pval if fe_pval is not None else np.nan)) else "?"
     fe_coef_str = f"{fe_coef:.4f}" if fe_coef is not None and not np.isnan(float(fe_coef)) else "?"
     fe_pval_str = f"{fe_pval:.4f}" if fe_pval is not None and not np.isnan(float(fe_pval)) else "?"
