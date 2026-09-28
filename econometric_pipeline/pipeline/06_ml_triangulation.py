@@ -591,9 +591,22 @@ for task in TASKS:
         }
         continue
 
+    # Entity labels for the SAME masked rows as X_full/y_full. Figures B and C
+    # (and all_shap_values below) must reuse these exact arrays rather than
+    # recomputing from the raw, unmasked df_work: whenever the target has its
+    # own missing values (e.g. inst_avg has real WGI gaps, such as WGI's
+    # missing 2001 vintage), raw df_work has MORE rows than X_full/y_full/
+    # shap_vals, which either crashes (permutation_importance on a
+    # NaN-containing target) or silently misaligns SHAP values against the
+    # wrong observations (boolean-masking arrays of different lengths).
+    entity_masked = df_work.loc[mask, ENTITY_COL].values
+
     rf_full = RandomForestRegressor(**RF_KWARGS)
     rf_full.fit(X_full, y_full)
-    fitted_models[task_name] = {"model": rf_full, "features": feats_a, "data": df_work}
+    fitted_models[task_name] = {
+        "model": rf_full, "features": feats_a,
+        "X_full": X_full, "y_full": y_full, "entity": entity_masked,
+    }
 
     # OOB R² is kept as an internal diagnostic to assist hyperparameter
     # assessment, but is NOT used as a performance claim (it is in-sample
@@ -632,7 +645,7 @@ for task in TASKS:
         "shap_matrix": shap_vals,
         "X":           X_full,
         "features":    feats_a,
-        "entity":      df_work[ENTITY_COL].values,
+        "entity":      entity_masked,
     }
 
     # ── SHAP cluster bootstrap stability ─────────────────────────────────
@@ -834,13 +847,13 @@ for row, task in enumerate(TASKS):
     ml_res      = ml_results[task_name]
 
     rf_full = fitted_models[task_name]["model"]
-    df_work = fitted_models[task_name]["data"]
-    X_full  = df_work[feats_a].values
+    X_full  = fitted_models[task_name]["X_full"]
+    y_full  = fitted_models[task_name]["y_full"]
 
     gini_s = pd.Series(rf_full.feature_importances_,
                        index=feats_a).sort_values(ascending=False).head(8)
     perm_imp2 = permutation_importance(
-        rf_full, X_full, df_work[task["target"]].values,
+        rf_full, X_full, y_full,
         n_repeats=50, random_state=SEED
     )
     perm_s2 = pd.Series(perm_imp2.importances_mean,
@@ -927,9 +940,8 @@ for col, task in enumerate(TASKS):
     key_feature = task["key_feature"]
     feats_a     = fitted_models[task_name]["features"]
     rf_full     = fitted_models[task_name]["model"]
-    df_work     = fitted_models[task_name]["data"]
-    X_full      = df_work[feats_a].values
-    entity_arr  = df_work[ENTITY_COL].values
+    X_full      = fitted_models[task_name]["X_full"]
+    entity_arr  = fitted_models[task_name]["entity"]
 
     if key_feature not in feats_a:
         continue
