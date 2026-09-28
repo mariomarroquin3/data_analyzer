@@ -449,6 +449,50 @@
       "is_baseline": false
     }
   ],
+  "eq2_lags": [
+    {
+      "coef": 0.9000011314252557,
+      "se": 0.4647991244863234,
+      "pval": 0.05481441833899403,
+      "rsq_within": 0.2473808130644709,
+      "n_obs": 179,
+      "label": "Contemporaneous inst_avg (primary)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 0.5080543277033792,
+      "se": 0.3645156431403219,
+      "pval": 0.1656743968061536,
+      "rsq_within": 0.21554578317137874,
+      "n_obs": 171,
+      "label": "Lag 1: inst_avg_lag1",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq3_lags": [
+    {
+      "coef": 0.13707943138978196,
+      "se": 0.10947485416121966,
+      "pval": 0.2125866078285812,
+      "rsq_within": 0.09486503562424209,
+      "n_obs": 179,
+      "label": "Contemporaneous fdi+inst (primary)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.12129834700871672,
+      "se": 0.09195973488869742,
+      "pval": 0.18940617418028016,
+      "rsq_within": 0.06951069864586767,
+      "n_obs": 171,
+      "label": "Lag 1: fdi_lag1+inst_lag1",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
   "eq1_inst_index": [
     {
       "coef": -0.14040684915342183,
@@ -533,6 +577,16 @@
       "is_baseline": false
     },
     {
+      "coef": -0.13893160813257352,
+      "se": 0.14347347657847903,
+      "pval": 0.33459176739366336,
+      "rsq_within": -0.13349043557488272,
+      "n_obs": 171,
+      "label": "Excl. GDP p.c. (bad-control check)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
       "coef": -0.08251370343881127,
       "se": 0.17020580134759783,
       "pval": 0.6285844942147982,
@@ -571,6 +625,16 @@
       "rsq_within": -0.34516214223762254,
       "n_obs": 179,
       "label": "Minimal controls",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 0.7391803170419222,
+      "se": 0.4831517224983968,
+      "pval": 0.12824727881814968,
+      "rsq_within": 0.044059365263672934,
+      "n_obs": 179,
+      "label": "Excl. GDP p.c. (bad-control check)",
       "converged": true,
       "is_baseline": false
     },
@@ -617,6 +681,16 @@
       "is_baseline": false
     },
     {
+      "coef": 0.130789074436429,
+      "se": 0.11268562873264942,
+      "pval": 0.24771640101130288,
+      "rsq_within": 0.09808243788621407,
+      "n_obs": 179,
+      "label": "Excl. GDP p.c. (bad-control check)",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
       "coef": 0.23552802931857791,
       "se": 0.13541632904404485,
       "pval": 0.08407736665441967,
@@ -633,5 +707,273 @@
     "placebo_sd": 0.024255297549599236,
     "p_placebo": 0.0,
     "n_perm": 500
+  },
+  "eq1_country_trends": [
+    {
+      "coef": -0.14040684915342183,
+      "se": 0.1358462828203557,
+      "pval": 0.30318450734028457,
+      "rsq_within": 0.07376914777239574,
+      "n_obs": 171,
+      "label": "Baseline (no country trends)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": -0.10173059090120348,
+      "se": 0.047439761970118385,
+      "pval": 0.0338892501105148,
+      "rsq_within": 0.5529961215627368,
+      "n_obs": 171,
+      "label": "+ 8 country-specific trends",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq2_country_trends": [
+    {
+      "coef": 0.9000011314252557,
+      "se": 0.4647991244863234,
+      "pval": 0.05481441833899403,
+      "rsq_within": 0.2473808130644709,
+      "n_obs": 179,
+      "label": "Baseline (no country trends)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 0.6822597855676151,
+      "se": 0.6610140906160393,
+      "pval": 0.3038515621446425,
+      "rsq_within": -0.4183195464781726,
+      "n_obs": 179,
+      "label": "+ 8 country-specific trends",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "eq3_country_trends": [
+    {
+      "coef": 0.13707943138978196,
+      "se": 0.10947485416121966,
+      "pval": 0.2125866078285812,
+      "rsq_within": 0.09486503562424209,
+      "n_obs": 179,
+      "label": "Baseline (no country trends)",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 0.13126611367955138,
+      "se": 0.14739353123966228,
+      "pval": 0.37474934872464694,
+      "rsq_within": 0.16587133043969993,
+      "n_obs": 179,
+      "label": "+ 8 country-specific trends",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
+  "panel_unit_root": {
+    "homicide_rate_log": {
+      "per_country": {
+        "COL": {
+          "adf_stat": -3.919260199218923,
+          "p_val": 0.0018975872671017201
+        },
+        "CRI": {
+          "adf_stat": -0.904806963818572,
+          "p_val": 0.7863852938250575
+        },
+        "DOM": {
+          "adf_stat": -1.1015459597780832,
+          "p_val": 0.7144550006463368
+        },
+        "GTM": {
+          "adf_stat": -1.0400249600934313,
+          "p_val": 0.7383877472932368
+        },
+        "HND": {
+          "adf_stat": -1.0709064944023923,
+          "p_val": 0.7265335448793236
+        },
+        "NIC": {
+          "adf_stat": -1.022435738718164,
+          "p_val": 0.7449936874600229
+        },
+        "PAN": {
+          "adf_stat": -2.4185079717152353,
+          "p_val": 0.13658066180195877
+        },
+        "SLV": {
+          "adf_stat": -0.003195018139689869,
+          "p_val": 0.9582670613736592
+        }
+      },
+      "n_countries": 8,
+      "fisher_stat": 19.588641522331542,
+      "df_chi2": 16,
+      "p_fisher": 0.23932194600061807
+    },
+    "inst_avg": {
+      "per_country": {
+        "COL": {
+          "adf_stat": -3.173437485011096,
+          "p_val": 0.021574631835790444
+        },
+        "CRI": {
+          "adf_stat": -1.6154727110552545,
+          "p_val": 0.4751035655556259
+        },
+        "DOM": {
+          "adf_stat": -0.19938703736646926,
+          "p_val": 0.9385946415116544
+        },
+        "GTM": {
+          "adf_stat": -2.1147817836512033,
+          "p_val": 0.23861246295942556
+        },
+        "HND": {
+          "adf_stat": -1.3405602054650119,
+          "p_val": 0.6104178486259824
+        },
+        "NIC": {
+          "adf_stat": -0.38886155879482504,
+          "p_val": 0.9119419532229753
+        },
+        "PAN": {
+          "adf_stat": -3.271641422294855,
+          "p_val": 0.01619468125221798
+        },
+        "SLV": {
+          "adf_stat": -1.9866302401027827,
+          "p_val": 0.29246586518229034
+        }
+      },
+      "n_countries": 8,
+      "fisher_stat": 24.03003183843108,
+      "df_chi2": 16,
+      "p_fisher": 0.08885061747496592
+    },
+    "fdi_percent_gdp": {
+      "per_country": {
+        "COL": {
+          "adf_stat": -3.4054748600507505,
+          "p_val": 0.010773643908022964
+        },
+        "CRI": {
+          "adf_stat": -2.4351288188582414,
+          "p_val": 0.1320659852682758
+        },
+        "DOM": {
+          "adf_stat": -3.247572040503126,
+          "p_val": 0.017390959652444443
+        },
+        "GTM": {
+          "adf_stat": -7.141356136358788,
+          "p_val": 3.3177565095937677e-10
+        },
+        "HND": {
+          "adf_stat": -2.1381877272695,
+          "p_val": 0.22943884742833132
+        },
+        "NIC": {
+          "adf_stat": -1.6081771678668215,
+          "p_val": 0.4794846653870286
+        },
+        "PAN": {
+          "adf_stat": -1.9861754909877276,
+          "p_val": 0.2926673667676228
+        },
+        "SLV": {
+          "adf_stat": -2.839580123037193,
+          "p_val": 0.05283866016414786
+        }
+      },
+      "n_countries": 8,
+      "fisher_stat": 77.61973168268216,
+      "df_chi2": 16,
+      "p_fisher": 4.454960844668676e-10
+    },
+    "gdp_growth": {
+      "per_country": {
+        "COL": {
+          "adf_stat": -4.139373851031877,
+          "p_val": 0.0008331387261464395
+        },
+        "CRI": {
+          "adf_stat": -3.350406053156486,
+          "p_val": 0.012770277629181573
+        },
+        "DOM": {
+          "adf_stat": -4.644198914262677,
+          "p_val": 0.00010699069384376787
+        },
+        "GTM": {
+          "adf_stat": -4.095531649510518,
+          "p_val": 0.0009851275285397791
+        },
+        "HND": {
+          "adf_stat": -3.8220944853294396,
+          "p_val": 0.0026891787898798963
+        },
+        "NIC": {
+          "adf_stat": -4.510759582472852,
+          "p_val": 0.00018802208230595384
+        },
+        "PAN": {
+          "adf_stat": -3.486401888283084,
+          "p_val": 0.008343267677641207
+        },
+        "SLV": {
+          "adf_stat": -4.402052676510645,
+          "p_val": 0.00029435954627571954
+        }
+      },
+      "n_countries": 8,
+      "fisher_stat": 109.86186579135463,
+      "df_chi2": 16,
+      "p_fisher": 4.440892098500626e-16
+    },
+    "gdp_per_capita_log": {
+      "per_country": {
+        "COL": {
+          "adf_stat": -2.251117354762732,
+          "p_val": 0.18821829347866303
+        },
+        "CRI": {
+          "adf_stat": -0.7278725904365919,
+          "p_val": 0.8393972217908955
+        },
+        "DOM": {
+          "adf_stat": -0.5639531441747297,
+          "p_val": 0.8789209057422391
+        },
+        "GTM": {
+          "adf_stat": 0.6437729499514571,
+          "p_val": 0.9886463050097981
+        },
+        "HND": {
+          "adf_stat": -0.75130509810541,
+          "p_val": 0.8330092199367327
+        },
+        "NIC": {
+          "adf_stat": -1.4680671689130629,
+          "p_val": 0.5492447923533651
+        },
+        "PAN": {
+          "adf_stat": -1.3738163967717425,
+          "p_val": 0.5947625222684586
+        },
+        "SLV": {
+          "adf_stat": -0.44662754767125984,
+          "p_val": 0.9020177547515796
+        }
+      },
+      "n_countries": 8,
+      "fisher_stat": 6.780677736198845,
+      "df_chi2": 16,
+      "p_fisher": 0.9772603553109783
+    }
   }
 }
