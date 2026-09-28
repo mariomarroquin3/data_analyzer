@@ -293,6 +293,27 @@ corr_flag = ok(f"Correlation(inst_avg, inst_pca) = {corr_indices:.4f} — high c
 print(f"\n  {corr_flag}")
 
 # ════════════════════════════════════════════════════════════════════════
+# 4b.  LAGGED INSTITUTIONS / FDI (for lag-structure robustness, EQ2 & EQ3)
+# ════════════════════════════════════════════════════════════════════════
+section("04b — LAGGED INSTITUTIONS / FDI")
+
+print("  The primary EQ2/EQ3 specifications use contemporaneous inst_avg and")
+print("  fdi_percent_gdp. The theoretical model, however, argues institutions")
+print("  move gradually and growth responds with a further lag. To test this")
+print("  explicitly (see Module 05, Robustness — Lag structure EQ2/EQ3),")
+print("  one-year-lagged versions are generated here.")
+
+LAG1_COLS = {
+    "inst_avg":         "inst_avg_lag1",
+    "inst_pca":         "inst_pca_lag1",
+    "fdi_percent_gdp":  "fdi_percent_gdp_lag1",
+}
+for src, dst in LAG1_COLS.items():
+    df[dst] = df.groupby(ENTITY_COL)[src].shift(1)
+    n_valid = df[dst].notna().sum()
+    print(ok(f"  {dst:<24} created ({n_valid} non-null obs)"))
+
+# ════════════════════════════════════════════════════════════════════════
 # 5.  WITHIN / BETWEEN VARIANCE DECOMPOSITION
 # ════════════════════════════════════════════════════════════════════════
 section("05 — WITHIN / BETWEEN VARIANCE DECOMPOSITION")
@@ -351,7 +372,7 @@ latex_tbl = stats_df[["count","mean","std","min","50%","max"]].round(3).to_latex
     label="tab:summary_stats",
     column_format="lrrrrrr",
 )
-(DIRS["tables"] / "summary_statistics.tex").write_text(latex_tbl)
+(DIRS["tables"] / "summary_statistics.tex").write_text(latex_tbl, encoding="utf-8")
 print(ok("LaTeX summary table saved → tables/summary_statistics.tex"))
 
 # ════════════════════════════════════════════════════════════════════════

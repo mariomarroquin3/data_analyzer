@@ -64,6 +64,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from pathlib import Path
+from typing import Optional, Tuple
 import json
 import pickle
 
@@ -73,6 +74,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy import stats
 from linearmodels.panel import PanelOLS
+from statsmodels.tsa.stattools import adfuller
 import statsmodels.api as sm
 
 from utils import (
@@ -100,8 +102,9 @@ from utils import (
 )
 
 set_plot_style()
-DIRS = make_output_dirs(Path(__file__).parent)
-SEED = 42
+DIRS  = make_output_dirs(Path(__file__).parent)
+SEED  = 42
+ALPHA = 0.05
 np.random.seed(SEED)
 
 # ════════════════════════════════════════════════════════════════════════
@@ -318,6 +321,74 @@ print_robustness_table(lag_results, "EQ1: Alternative Lags", baseline_lag, "key"
 all_robustness["eq1_lags"] = lag_results
 
 # ════════════════════════════════════════════════════════════════════════
+# 3b. LAG STRUCTURE FOR EQ2 & EQ3 (theory/specification consistency check)
+# ════════════════════════════════════════════════════════════════════════
+section("ROBUSTNESS 3b — Lag Structure for EQ2 and EQ3")
+print("""
+  Motivation: the theoretical model (paper Introduction) argues that
+  security, institutions and growth adjust at DIFFERENT speeds --
+  institutions evolve gradually and growth responds with a further lag.
+  Yet the PRIMARY specifications of EQ2 (institutions -> FDI) and EQ3
+  (FDI + institutions -> growth) use CONTEMPORANEOUS regressors, which
+  is inconsistent with that narrative and leaves the door open to
+  reverse causality / simultaneity (e.g. growth expectations attracting
+  same-year FDI). This block re-estimates EQ2 and EQ3 replacing the
+  contemporaneous institution/FDI regressors with their one-year lag
+  (inst_avg_lag1, fdi_percent_gdp_lag1 -- built in Module 01) to test
+  whether the results survive a specification that matches the stated
+  theory.
+""")
+
+# ── EQ2: inst_avg (contemporaneous, primary) vs inst_avg_lag1 ───────────
+dep_eq2  = specs["eq2"]["dep"]
+ctrl_eq2 = [c for c in specs["eq2"]["exog"][1:] if c in df.columns]  # skip key_var
+
+eq2_lag_specs = {
+    "Contemporaneous inst_avg (primary)": "inst_avg",
+    "Lag 1: inst_avg_lag1":               "inst_avg_lag1",
+}
+eq2_lag_results = []
+for lag_name, lag_col in eq2_lag_specs.items():
+    if lag_col not in df.columns:
+        eq2_lag_results.append({"label": lag_name, "converged": False})
+        continue
+    exog_lag = [lag_col] + ctrl_eq2
+    r = run_twoway_fe(df, dep_eq2, exog_lag, lag_col, lag_name)
+    r["is_baseline"] = ("primary" in lag_name)
+    eq2_lag_results.append(r)
+
+baseline_eq2_lag = next((r for r in eq2_lag_results if r.get("is_baseline")), eq2_lag_results[0])
+print_robustness_table(eq2_lag_results, "EQ2: Contemporaneous vs Lagged Institutions",
+                        baseline_eq2_lag, "key")
+all_robustness["eq2_lags"] = eq2_lag_results
+
+# ── EQ3: (fdi, inst_avg) contemporaneous vs both lagged one year ────────
+dep_eq3  = specs["eq3"]["dep"]
+ctrl_eq3 = [c for c in specs["eq3"]["exog"][2:] if c in df.columns]  # skip both keys
+
+eq3_lag_variants = {
+    "Contemporaneous fdi+inst (primary)": ["fdi_percent_gdp", "inst_avg"],
+    "Lag 1: fdi_lag1+inst_lag1":          ["fdi_percent_gdp_lag1", "inst_avg_lag1"],
+}
+eq3_lag_results = []
+for lag_name, keyvars in eq3_lag_variants.items():
+    keyvars_a = [c for c in keyvars if c in df.columns]
+    if len(keyvars_a) < len(keyvars):
+        eq3_lag_results.append({"label": lag_name, "converged": False})
+        continue
+    exog_lag = keyvars_a + ctrl_eq3
+    r = run_twoway_fe(df, dep_eq3, exog_lag, keyvars_a[0], lag_name)
+    r["is_baseline"] = ("primary" in lag_name)
+    eq3_lag_results.append(r)
+
+baseline_eq3_lag = next((r for r in eq3_lag_results if r.get("is_baseline")), eq3_lag_results[0])
+print_robustness_table(eq3_lag_results, "EQ3: Contemporaneous vs Lagged FDI+Institutions",
+                        baseline_eq3_lag, "key")
+print(warn("  Note: 'key' here is fdi_percent_gdp (or its lag) -- the coefficient printed. "
+           "inst_avg's own coefficient in this lagged spec is in the JSON export, not this table."))
+all_robustness["eq3_lags"] = eq3_lag_results
+
+# ════════════════════════════════════════════════════════════════════════
 # 4. ALTERNATIVE INSTITUTION INDICES
 # ════════════════════════════════════════════════════════════════════════
 section("ROBUSTNESS 4 — Alternative Institution Indices")
@@ -365,17 +436,29 @@ if coefs_inst:
 section("ROBUSTNESS 5 — Alternative Control Sets")
 print("  Bias addressed: over-controlling or omitted variable bias.\n")
 
-CTRL_BASE    = [c for c in CONTROLS if c in df.columns]
-CTRL_EXT     = CTRL_BASE + [c for c in ["tourist_arrivals_log","trade_percent_gdp"]
-                             if c in df.columns]
-CTRL_MINIMAL = [c for c in ["gdp_per_capita_log"] if c in df.columns]
+CTRL_BASE     = [c for c in CONTROLS if c in df.columns]
+CTRL_EXT      = CTRL_BASE + [c for c in ["tourist_arrivals_log","trade_percent_gdp"]
+                              if c in df.columns]
+CTRL_MINIMAL  = [c for c in ["gdp_per_capita_log"] if c in df.columns]
+CTRL_NO_GDPPC = [c for c in CTRL_BASE if c != "gdp_per_capita_log"]
 
 ctrl_specs_map = {
     "Baseline controls":      CTRL_BASE,
     "Extended controls":      CTRL_EXT,
     "Minimal controls":       CTRL_MINIMAL,
+    "Excl. GDP p.c. (bad-control check)": CTRL_NO_GDPPC,
     "No controls (FE only)":  [],
 }
+
+print(warn("""  'Excl. GDP p.c. (bad-control check)': gdp_per_capita_log is plausibly
+  DOWNSTREAM of institutions/FDI (part of the very causal channel this
+  pipeline studies), not an exogenous confounder. Including it as a
+  control in EQ1/EQ2 risks a post-treatment ('bad control') bias that
+  partials out some of the effect of interest (Angrist & Pischke 2009,
+  ch. 3). This variant drops it while keeping the rest of the baseline
+  controls, to see whether the key coefficient is sensitive to its
+  inclusion.
+"""))
 
 for eq_label, spec in specs.items():
     dep      = spec["dep"]
@@ -458,6 +541,143 @@ else:
         }
     else:
         print(warn(f"  Only {len(placebo_coefs)} valid permutations. Results unreliable."))
+
+# ════════════════════════════════════════════════════════════════════════
+# 7. COUNTRY-SPECIFIC LINEAR TRENDS
+# ════════════════════════════════════════════════════════════════════════
+section("ROBUSTNESS 7 — Country-Specific Linear Trends")
+print("""
+  Motivation: Two-Way FE (entity + time) removes country LEVELS and
+  common year shocks, but NOT country-specific trends. Several series
+  in this panel are strongly trending over 25 years (GDP per capita,
+  population, and especially El Salvador's homicide collapse from >100
+  to <10 per 100,000). If two trending series happen to move together
+  for reasons unrelated to the hypothesized mechanism, Two-Way FE alone
+  will not catch it -- this is the classic 'spurious panel regression'
+  risk (Granger & Newbold 1974; Kao 1999; Phillips & Moon 1999).
+
+  This check re-estimates the PRIMARY specification of each equation
+  adding one linear trend per country (country_dummy x year_c). If the
+  key coefficient survives with the same sign and comparable magnitude,
+  the baseline result is not merely two coincidentally-trending series.
+  Reference: Wooldridge (2010), ch. 10.5 (unit-specific trends).
+""")
+
+def add_country_trends(df_in: pd.DataFrame) -> Tuple[pd.DataFrame, list]:
+    """Add one (country x centred-year) linear trend regressor per country."""
+    d = df_in.copy()
+    if "year_c" not in d.columns:
+        d["year_c"] = d[TIME_COL] - d[TIME_COL].mean()
+    trend_cols = []
+    for c in sorted(d[ENTITY_COL].unique()):
+        col = f"trend_{c}"
+        d[col] = (d[ENTITY_COL] == c).astype(float) * d["year_c"]
+        trend_cols.append(col)
+    return d, trend_cols
+
+df_trends, TREND_COLS = add_country_trends(df)
+
+for eq_label, spec in specs.items():
+    dep     = spec["dep"]
+    exog    = [c for c in spec["exog"] if c in df.columns]
+    key_var = exog[0]
+
+    baseline_r = run_twoway_fe(df, dep, exog, key_var, "Baseline (no country trends)")
+    baseline_r["is_baseline"] = True
+    trend_r    = run_twoway_fe(df_trends, dep, exog + TREND_COLS, key_var,
+                                f"+ {len(TREND_COLS)} country-specific trends")
+    trend_r["is_baseline"] = False
+
+    results_trend = [baseline_r, trend_r]
+    print_robustness_table(results_trend, f"{eq_label.upper()}: {dep}", baseline_r, key_var)
+
+    if baseline_r["converged"] and trend_r["converged"] and baseline_r["coef"] != 0:
+        delta_pct = abs(trend_r["coef"] - baseline_r["coef"]) / abs(baseline_r["coef"]) * 100
+        same_sign = np.sign(trend_r["coef"]) == np.sign(baseline_r["coef"])
+        if same_sign and delta_pct < 50:
+            print(ok(f"  Survives country-specific trends (Δ={delta_pct:.0f}%, same sign)."))
+        else:
+            print(warn(f"  SENSITIVE to country-specific trends "
+                        f"(Δ={delta_pct:.0f}%, same_sign={same_sign}) — "
+                        "part of the baseline effect may reflect shared trends, not the "
+                        "hypothesized mechanism."))
+
+    all_robustness[f"{eq_label}_country_trends"] = results_trend
+
+# ════════════════════════════════════════════════════════════════════════
+# 8. PANEL UNIT ROOT TEST (Fisher-ADF / Maddala-Wu)
+# ════════════════════════════════════════════════════════════════════════
+section("ROBUSTNESS 8 — Panel Unit Root Test (Fisher-ADF, Maddala & Wu 1999)")
+print("""
+  No unit-root test was previously implemented anywhere in this pipeline
+  despite 25-year trending macro series. This runs an Augmented
+  Dickey-Fuller test SEPARATELY for each country's time series (T~25 per
+  country, so maxlag=1, no automatic lag selection -- higher lags are
+  not identifiable with so few observations) and combines the p-values
+  with the Fisher (1932) / Maddala-Wu (1999) combination test:
+
+      P = -2 * sum(log(p_i))  ~  chi2(2N) under H0: ALL panels have a unit root.
+
+  CAVEAT (consistent with this pipeline's other small-sample warnings):
+  with T~25 observations per country, per-country ADF tests have very
+  low power. Failing to reject H0 here is only weak evidence of a unit
+  root, not proof of one. This test should be read as a flag for
+  further caution, not a definitive diagnosis -- see Robustness 7 above
+  (country-specific trends) as a partial, practical remedy regardless of
+  the formal test outcome.
+
+  Reference: Maddala & Wu (1999), A comparative study of unit root tests
+  with panel data and a new simple test, Oxford Bulletin of Economics
+  and Statistics 61(S1), 631-652.
+""")
+
+def fisher_panel_unit_root(df_in: pd.DataFrame, var: str, regression: str = "c") -> Optional[dict]:
+    countries_local = sorted(df_in[ENTITY_COL].unique())
+    pvals, per_country = [], {}
+    for c in countries_local:
+        series = (df_in.loc[df_in[ENTITY_COL] == c, [TIME_COL, var]]
+                  .dropna().sort_values(TIME_COL)[var].values)
+        if len(series) < 8:
+            continue
+        try:
+            stat, pval = adfuller(series, maxlag=1, regression=regression, autolag=None)[:2]
+        except Exception:
+            continue
+        pvals.append(pval)
+        per_country[c] = {"adf_stat": float(stat), "p_val": float(pval)}
+
+    if len(pvals) < 3:
+        return None
+    pvals_arr    = np.clip(np.array(pvals), 1e-10, 1 - 1e-10)
+    fisher_stat  = float(-2 * np.sum(np.log(pvals_arr)))
+    df_chi2      = 2 * len(pvals_arr)
+    p_fisher     = float(1 - stats.chi2.cdf(fisher_stat, df_chi2))
+    return {
+        "per_country": per_country, "n_countries": len(pvals_arr),
+        "fisher_stat": fisher_stat, "df_chi2": df_chi2, "p_fisher": p_fisher,
+    }
+
+UR_VARS = ["homicide_rate_log", "inst_avg", "fdi_percent_gdp",
+           "gdp_growth", "gdp_per_capita_log"]
+
+unit_root_results = {}
+print(f"  {'Variable':<24} {'N countries':>12} {'Fisher χ²':>11} {'df':>5} {'p (Fisher)':>11}  Flag")
+print("  " + "─" * 75)
+for var in UR_VARS:
+    if var not in df.columns:
+        continue
+    res = fisher_panel_unit_root(df, var)
+    if res is None:
+        print(f"  {var:<24} {'insufficient data':>12}")
+        continue
+    flag = (warn("Cannot reject unit root (panel-wide) → spurious-regression risk")
+            if res["p_fisher"] > ALPHA
+            else ok("Reject H0: at least one country's series is stationary"))
+    print(f"  {var:<24} {res['n_countries']:>12} {res['fisher_stat']:>11.2f} "
+          f"{res['df_chi2']:>5} {res['p_fisher']:>11.4f}  {flag}")
+    unit_root_results[var] = res
+
+all_robustness["panel_unit_root"] = unit_root_results
 
 # ════════════════════════════════════════════════════════════════════════
 # FIGURE: Coefficient stability plots
