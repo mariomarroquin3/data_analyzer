@@ -31,14 +31,25 @@ Una revisión metodológica del pipeline —realizada de cara a una eventual pub
 6. **La validación cruzada Leave-One-Country-Out ya no filtra el país excluido hacia el índice institucional.** `inst_avg` se reconstruye dentro de cada pliegue usando solo las constantes de escala de los países de entrenamiento.
 7. **Se corrigió un bug silencioso en la tabla de convergencia FE-ML** — siempre imprimía "?" por una búsqueda incorrecta de clave JSON para los coeficientes de EQ3.
 
+## Corrección de Origen de Datos (Septiembre 2026)
+
+Una auditoría posterior de la cadena de extracción (`data_extraction/`, `archive/legacy_scripts/`) —motivada por la sospecha de que mezclar escalas distintas causaba problemas— encontró que las escalas en sí no eran el problema (mezclar percentiles 0-100, % del PIB y logs en la misma regresión no sesga FE/OLS ni el ML basado en árboles), pero sí encontró 4 bugs reales de datos:
+
+1. **`homicide_rate` se winsorizaba silenciosamente al percentil 1-99** antes del log. Con 179 observaciones, los 4 puntos recortados eran, los 4, El Salvador: su pico de violencia 2015/2016 (107.6→83.6, 85.1→83.6) y sus mínimos post-reforma 2023/2024 (2.24→5.43, 1.90→5.43) — exactamente el cambio abrupto que motiva esta investigación, aplanado antes de llegar a EQ1. Eliminado.
+2. **`trade_percent_gdp` estaba 100% vacío** en todas las observaciones, por un bug que sumaba `imports_percent_gdp`, columna que nunca se extrajo. Esto explica por qué "Extended controls" siempre fallaba en el Módulo 05. Corregido agregando el indicador faltante del Banco Mundial.
+3. **`gdp_per_capita` mezclaba dólares nominales y reales para Guatemala específicamente** — un script de relleno de huecos usaba el indicador equivocado para ese país. Corregido para usar el mismo indicador que los otros 7 países.
+4. **El único script de extracción de WGI en vivo pedía la escala incorrecta** (el "estimate" en vez del "score" 0-100 que documenta todo el pipeline) — código muerto, ya que la fuente real era un archivo descargado manualmente y nunca versionado. Corregido, cerrando el hueco de reproducibilidad.
+
+El panel ahora está balanceado a nivel país-año (200 filas = 8×25, antes 179). Al re-correr el pipeline completo con los datos corregidos, las conclusiones de EQ1, EQ3 y el test de mediación no cambian, pero **EQ2 (instituciones→IED) se vuelve mucho más robusto**: p=0.055/0.116/0.202/0.062 (clusterizado/Driscoll-Kraay/CR2/bootstrap) → **p=0.007/0.085/0.126/0.012**.
+
 ## Resultados Esperados
 
 Dado el diseño del proyecto y las limitaciones de los datos (solo 8 países independientes), los resultados se interpretan como asociaciones sugestivas en lugar de efectos causales definitivos. Cada eslabón de la cadena presenta el signo esperado por la teoría:
 - Una asociación negativa entre las tasas rezagadas de homicidio y la calidad institucional (no significativa bajo ningún estimador de varianza).
-- Una asociación positiva entre la calidad institucional y la IED (significativa solo bajo errores clusterizados convencionales; ver Revisión Metodológica, punto 1).
+- Una asociación positiva entre la calidad institucional y la IED (con los datos corregidos, significativa al 5% bajo tres de los cuatro estimadores: clusterizado p=0.007, bootstrap p=0.012, Driscoll-Kraay p=0.085; CR2 p=0.126 — ver Corrección de Origen de Datos arriba).
 - Una asociación positiva entre la IED y el crecimiento económico (no significativa; se invierte de signo bajo especificación con rezagos).
 
-Sin embargo, un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **no rechaza la hipótesis nula de que la cadena completa sea cero** (IC 95% = [−0.079, 0.065], p=0.62). Dada la pequeña cantidad de grupos (N=8), las preocupaciones potenciales de endogeneidad, y esta prueba formal de mediación, estos resultados deben presentarse como patrones consistentes con el marco teórico, no como pruebas de causalidad ni como un mecanismo estadísticamente establecido.
+Sin embargo, un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **no rechaza la hipótesis nula de que la cadena completa sea cero** (IC 95% = [−0.069, 0.051], p=0.65). Dada la pequeña cantidad de grupos (N=8), las preocupaciones potenciales de endogeneidad, y esta prueba formal de mediación, estos resultados deben presentarse como patrones consistentes con el marco teórico —con EQ2 ahora en base empírica sólida—, no como pruebas de causalidad ni como un mecanismo estadísticamente establecido en su conjunto.
 
 ## Limitaciones
 
