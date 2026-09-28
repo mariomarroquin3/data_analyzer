@@ -68,6 +68,7 @@ MODULES = [
     ("04", "04_bootstrap_inference.py", "Wild Cluster Bootstrap Inference"),
     ("05", "05_robustness.py",          "Robustness Checks"),
     ("06", "06_ml_triangulation.py",    "ML Triangulation"),
+    ("07", "07_cointegration.py",       "Panel Cointegration & ECM"),
 ]
 
 
@@ -791,9 +792,129 @@ def build_robustness_section(report: ResearchReport, rob: Dict, base_dir: Path) 
             caption="Coeficientes e intervalos de confianza bajo especificaciones alternativas.",
         )
 
+    # Panel unit-root test (Fisher-ADF / Maddala-Wu)
+    unit_root = rob.get("panel_unit_root", {})
+    if unit_root:
+        report.add_section_h2("Test de Raíz Unitaria de Panel (Fisher-ADF, Maddala y Wu 1999)")
+        report.add_body_text(
+            "Con T~25 años por país, este test tiene poco poder estadístico; no rechazar "
+            "H0 es evidencia débil de raíz unitaria, no una prueba definitiva. Se usa aquí "
+            "como base para la sección de cointegración que sigue."
+        )
+        ur_rows = [["Variable", "N países", "χ²", "gl", "p (Fisher)", "¿I(1)?"]]
+        for var, res in unit_root.items():
+            is_i1 = res.get("p_fisher", 0) > 0.05
+            ur_rows.append([
+                var,
+                str(res.get("n_countries", "")),
+                _fmt(res.get("fisher_stat"), 2),
+                str(res.get("df_chi2", "")),
+                _fmt(res.get("p_fisher"), 4),
+                "Sí (no rechaza)" if is_i1 else "No (rechaza)",
+            ])
+        report.add_table(ur_rows, col_widths=[2.0, 1.0, 1.0, 0.7, 1.2, 1.6])
+
+
+def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: Path) -> None:
+    report.add_section_h1("13. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
+    report.add_body_text(
+        "El test de raíz unitaria de panel (Sección 12) encontró que homicide_rate_log, "
+        "inst_avg y gdp_per_capita_log no rechazan raíz unitaria (son I(1)), mientras que "
+        "fdi_percent_gdp y gdp_growth sí la rechazan (son I(0)). Dos series I(1) pueden, "
+        "sin embargo, compartir una relación de equilibrio de largo plazo genuina "
+        "(cointegración), en cuyo caso una regresión estática en niveles no sería "
+        "necesariamente espuria. Este módulo prueba esto para los tres pares de variables "
+        "I(1) del panel -- deliberadamente NO se prueba EQ2 ni EQ3, ya que emparejar una "
+        "serie I(1) con una I(0) no es una pregunta de cointegración coherente."
+    )
+    report.add_body_text(
+        "Método: enfoque de dos pasos de Engle-Granger extendido a panel (Kao, 1999; "
+        "McCoskey y Kao, 1998) -- (1) se estima la relación de largo plazo vía efectos "
+        "fijos bidireccionales; (2) se testea la raíz unitaria de los residuos con el "
+        "mismo test Fisher-ADF de la Sección 12. Residuos estacionarios = evidencia de "
+        "cointegración; solo entonces se estima un ECM."
+    )
+
+    if not coint:
+        report.add_body_text("(Sin resultados de cointegración disponibles.)")
+        return
+
+    rows = [["Par", "beta (largo plazo)", "p (Fisher, residuos)", "¿Cointegrado?"]]
+    for name, info in coint.items():
+        lr = info.get("long_run", {})
+        ur = info.get("residual_unit_root") or {}
+        rows.append([
+            name,
+            f"{_fmt(lr.get('beta'), 4)} (p={_fmt(lr.get('pval_cl'), 3)})",
+            _fmt(ur.get("p_fisher"), 4) if ur else "N/D",
+            "Sí" if info.get("cointegrated") else "No",
+        ])
+    report.add_table(rows, col_widths=[2.3, 2.0, 1.7, 1.3])
+
+    any_coint = any(info.get("cointegrated") for info in coint.values())
+    if any_coint:
+        ecm_rows = [["Par", "phi (velocidad ajuste)", "p(phi, cl)", "gamma (corto plazo)", "p(gamma, cl)"]]
+        for name, info in coint.items():
+            ecm = info.get("ecm")
+            if not ecm:
+                continue
+            ecm_rows.append([
+                name,
+                _fmt(ecm.get("phi_cl"), 4),
+                _fmt(ecm.get("phi_p_cl"), 4),
+                _fmt(ecm.get("gamma_cl"), 4),
+                _fmt(ecm.get("gamma_p_cl"), 4),
+            ])
+        if len(ecm_rows) > 1:
+            report.add_section_h2("Modelo de Corrección de Errores (pares cointegrados)")
+            report.add_table(ecm_rows, col_widths=[2.2, 1.9, 1.3, 1.9, 1.3])
+        report.add_interpretation_box(
+            "Cointegración encontrada",
+            "Al menos un par de variables I(1) comparte una relación de equilibrio de "
+            "largo plazo genuina. phi < 0 y significativo indica que la variable "
+            "dependiente corrige parte de cualquier desviación de esa relación cada año "
+            "(velocidad de ajuste); gamma captura el efecto de corto plazo, distinto del "
+            "efecto de largo plazo (beta) de la tabla anterior.",
+            style="info",
+        )
+    else:
+        report.add_interpretation_box(
+            "Ningún par muestra evidencia de cointegración",
+            "Esto es, en sí mismo, un hallazgo relevante: las relaciones en niveles entre "
+            "estas series I(1) -estimadas mediante efectos fijos estáticos en el resto de "
+            "este pipeline- no pueden distinguirse de una regresión de panel espuria con "
+            "los datos disponibles. En particular para T1 (Homicidios ↔ Instituciones, la "
+            "base de EQ1), esto ofrece una explicación formal adicional -más allá del bajo "
+            "poder estadístico por G=8- de por qué ese eslabón es el más inestable de los "
+            "tres en todas las pruebas de este pipeline.",
+            style="warning",
+        )
+
+    fig_path = base_dir / "figures" / "11_cointegration_residuals.png"
+    if fig_path.exists():
+        report.add_image(
+            fig_path,
+            label="Figura 11 — Residuos de la regresión de largo plazo por país",
+            caption=(
+                "Residuos de la relación de largo plazo para cada par I(1). Residuos que "
+                "revierten a cero son evidencia de cointegración; residuos que se alejan "
+                "persistentemente (como Colombia o Nicaragua en varios paneles) son "
+                "evidencia de una relación espuria."
+            ),
+        )
+
+    report.add_body_text(
+        "Advertencias: G=8, T~25 es una muestra pequeña incluso para el test de "
+        "Engle-Granger de series individuales; la extensión a panel no corrige un tamaño "
+        "muestral fundamentalmente pequeño. Este es un estimador de dos pasos "
+        "simplificado, no un sistema de cointegración/ECM totalmente eficiente (sin "
+        "corrección por dependencia transversal en la regresión de largo plazo, sin "
+        "estadísticos Pedroni/Westerlund, sin bootstrap de clúster silvestre en el ECM)."
+    )
+
 
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("13. Triangulación Machine Learning")
+    report.add_section_h1("14. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -873,7 +994,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("14. Conclusiones")
+    report.add_section_h1("15. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1043,6 +1164,7 @@ def main():
     med   = _load_json(json_dir / "04_mediation.json")
     rob   = _load_json(json_dir / "05_robustness.json")
     ml    = _load_json(json_dir / "06_ml_results.json")
+    coint = _load_json(json_dir / "07_cointegration.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1073,6 +1195,9 @@ def main():
     report.add_page_break()
 
     build_robustness_section(report, rob, base_dir)
+    report.add_page_break()
+
+    build_cointegration_section(report, coint, base_dir)
     report.add_page_break()
 
     build_ml_section(report, ml, base_dir)
