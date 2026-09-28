@@ -188,10 +188,14 @@ def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> Non
         "Lectura de resultados",
         "El coeficiente de EQ1 es negativo, indicando que mayor violencia se asocia con "
         "instituciones más débiles, aunque el p-valor sugiere que no se rechaza H₀ con los "
-        "umbrales convencionales bajo este esquema de inferencia. EQ2 muestra que mejores "
-        "instituciones atraen más FDI (p ≈ 0.055, marginalmente significativo). "
-        "El mecanismo completo (violencia → inst. → FDI → crecimiento) requiere interpretación "
-        "conjunta de los tres modelos y los resultados bootstrap.",
+        "umbrales convencionales bajo este esquema de inferencia. EQ2 muestra el signo "
+        "esperado (instituciones → FDI), pero su significancia es SENSIBLE al estimador de "
+        "varianza: p≈0.055 bajo errores clusterizados, pero p≈0.12 (Driscoll-Kraay), p≈0.20 "
+        "(CR2 Bell-McCaffrey) y p≈0.06 (bootstrap de clúster silvestre) — ver Sección 11 y "
+        "tables/se_comparison.tex. No debe citarse como 'robusto' con un solo p-valor. "
+        "El mecanismo completo (violencia → inst. → FDI → crecimiento) no está probado como "
+        "cadena conjunta: el bootstrap del efecto indirecto (Sección 11) no rechaza H₀ de que "
+        "el producto de los tres coeficientes sea cero.",
         style="info",
     )
 
@@ -426,9 +430,14 @@ def build_model_sections(report: ResearchReport, fe: Dict, base_dir: Path) -> No
                 "controlando por las mismas variables macroeconómicas."
             ),
             "interpretation": (
-                "Un coeficiente positivo sobre inst_avg confirma el canal institucional: "
-                "mejores instituciones reducen los riesgos de apropiación y contratos incompletos, "
-                "atrayendo más IED. El p-valor marginal (~0.055) sugiere evidencia moderada."
+                "El coeficiente positivo sobre inst_avg es consistente con el canal institucional "
+                "(mejores instituciones reducen los riesgos de apropiación y contratos incompletos, "
+                "atrayendo más IED), pero su significancia estadística es INESTABLE frente al "
+                "estimador de varianza usado: p≈0.055 (clusterizado, el menos conservador), "
+                "p≈0.12 (Driscoll-Kraay), p≈0.20 (CR2 Bell-McCaffrey) y p≈0.06 (bootstrap de "
+                "clúster silvestre, Sección 11). Bajo dos de los tres métodos preferidos para "
+                "G=8 clústeres, el resultado NO es significativo al 10%. Repórtese como evidencia "
+                "sugestiva, no como un efecto establecido; ver tables/se_comparison.tex."
             ),
         },
         "EQ3": {
@@ -616,7 +625,7 @@ def build_diagnostics_section(report: ResearchReport, diag: Dict, base_dir: Path
         )
 
 
-def build_bootstrap_section(report: ResearchReport, boot: Dict, base_dir: Path) -> None:
+def build_bootstrap_section(report: ResearchReport, boot: Dict, med: Dict, base_dir: Path) -> None:
     report.add_section_h1("11. Inferencia Bootstrap (Wild Cluster)")
     report.add_body_text(
         "Con solo G=8 clústeres, los errores estándar clusterizados convencionales "
@@ -681,6 +690,66 @@ def build_bootstrap_section(report: ResearchReport, boot: Dict, base_dir: Path) 
                 "La línea vertical indica el t observado."
             ),
         )
+
+    # ── Mediation: bootstrap test of the full-chain indirect effect ────────
+    if med:
+        report.add_section_h2("11.1 Efecto Indirecto de la Cadena Completa (Mediación)")
+        report.add_body_text(
+            "EQ1, EQ2 y EQ3 se estiman como tres modelos independientes para evitar el "
+            "problema de 'generated regressors' (Pagan, 1984). Esto significa que, hasta "
+            "aquí, NINGÚN resultado del pipeline prueba formalmente el mecanismo de "
+            "transmisión completo (Homicidios → Instituciones → IED → Crecimiento) como "
+            "una cadena conjunta -- solo se han evaluado sus tres eslabones por separado. "
+            "El remedio estándar (Sobel, 1982; Preacher & Hayes, 2008) es testear el "
+            "PRODUCTO de los tres coeficientes de la cadena, indirecto = β₁·γ₁·δ₁, contra "
+            "H₀: indirecto = 0, usando bootstrap por clúster de país (no por observación, "
+            "dada la dependencia serial dentro de cada país)."
+        )
+        med_rows = [
+            ["Cantidad", "Valor"],
+            ["β₁ (Homicidios → Instituciones)", _fmt(med.get("beta1_full"), 4)],
+            ["γ₁ (Instituciones → IED)", _fmt(med.get("gamma1_full"), 4)],
+            ["δ₁ (IED → Crecimiento)", _fmt(med.get("delta1_full"), 4)],
+            ["Efecto indirecto = β₁·γ₁·δ₁", _fmt(med.get("indirect_full"), 6)],
+            ["Media bootstrap (B réplicas por país)", _fmt(med.get("boot_mean"), 6)],
+            ["IC 95% (percentil)", f"[{_fmt(med.get('ci_lo'), 6)}, {_fmt(med.get('ci_hi'), 6)}]"],
+            ["p-valor bootstrap (H₀: indirecto = 0)", _fmt(med.get("p_boot"), 4)],
+        ]
+        report.add_table(med_rows, col_widths=[3.5, 2.0])
+
+        ci_lo = med.get("ci_lo")
+        ci_hi = med.get("ci_hi")
+        includes_zero = (ci_lo is not None and ci_hi is not None and ci_lo < 0 < ci_hi)
+        report.add_interpretation_box(
+            "Lectura honesta del mecanismo de transmisión",
+            (
+                "El intervalo de confianza al 95% del efecto indirecto INCLUYE CERO: la "
+                "cadena completa Violencia → Instituciones → IED → Crecimiento NO es "
+                "estadísticamente distinguible de ausencia de efecto con este tamaño "
+                "muestral. Esto no refuta la teoría institucional, pero significa que el "
+                "'mecanismo de transmisión' debe reportarse como una hipótesis consistente "
+                "con los signos observados, no como un resultado probado -- cada eslabón es "
+                "individualmente débil y el producto de los tres no supera un test formal."
+                if includes_zero else
+                "El intervalo de confianza al 95% del efecto indirecto EXCLUYE CERO: el "
+                "producto de los tres coeficientes de la cadena es significativo, lo que "
+                "respalda formalmente el mecanismo de transmisión propuesto (más allá de la "
+                "significancia individual de cada eslabón)."
+            ),
+            style=("warning" if includes_zero else "info"),
+        )
+
+        fig_med = base_dir / "figures" / "06b_mediation_bootstrap.png"
+        if fig_med.exists():
+            report.add_image(
+                fig_med,
+                label="Figura 6b — Bootstrap del efecto indirecto",
+                caption=(
+                    "Distribución bootstrap (remuestreo por país) del efecto indirecto "
+                    "β₁·γ₁·δ₁. La línea roja marca la estimación puntual; las líneas grises, "
+                    "el intervalo de confianza al 95%."
+                ),
+            )
 
 
 def build_robustness_section(report: ResearchReport, rob: Dict, base_dir: Path) -> None:
@@ -972,6 +1041,7 @@ def main():
     fe    = _load_json(json_dir / "02_fe_results.json")
     diag  = _load_json(json_dir / "03_diagnostics.json")
     boot  = _load_json(json_dir / "04_bootstrap.json")
+    med   = _load_json(json_dir / "04_mediation.json")
     rob   = _load_json(json_dir / "05_robustness.json")
     ml    = _load_json(json_dir / "06_ml_results.json")
 
@@ -1000,7 +1070,7 @@ def main():
     build_diagnostics_section(report, diag, base_dir)
     report.add_page_break()
 
-    build_bootstrap_section(report, boot, base_dir)
+    build_bootstrap_section(report, boot, med, base_dir)
     report.add_page_break()
 
     build_robustness_section(report, rob, base_dir)
