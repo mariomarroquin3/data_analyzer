@@ -17,9 +17,17 @@ print(f"Missing GDP per capita antes: {df_panel['gdp_per_capita'].isna().sum()}"
 # 2. DESCARGAR GDP PER CAPITA GUATEMALA
 # ======================================
 
+# NOTE (fixed): this used to be NY.GDP.PCAP.KD (constant 2015 US$, i.e.
+# REAL GDP per capita) while every other country's gdp_per_capita in this
+# panel is NY.GDP.PCAP.CD (CURRENT US$, i.e. NOMINAL). Filling Guatemala's
+# gaps with the constant-price series silently mixed two different
+# definitions of the same variable within one country's time series --
+# exactly the control used in every equation of the econometric pipeline.
+# Use the SAME indicator as the primary extractor so any gap-fill is at
+# least internally consistent.
 url = (
     "https://api.worldbank.org/v2/country/GT/"
-    "indicator/NY.GDP.PCAP.KD"
+    "indicator/NY.GDP.PCAP.CD"
     "?format=json&per_page=100"
 )
 

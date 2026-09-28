@@ -23,9 +23,22 @@ AÑOS = set(range(2000, 2025))
 # =========================
 
 INDICADORES = {
-    "RL.EST": "rule_of_law",
-    "PV.EST": "political_stability",
-    "CC.EST": "control_corruption",
+    # NOTE (fixed): these used to be "RL.EST", "PV.EST", "CC.EST" -- the WGI
+    # "governance estimate" scale (~ -2.5 to 2.5, confirmed via
+    # GET /v2/indicator?source=3, World Bank source id 3 = "Worldwide
+    # Governance Indicators"). Every downstream module in this pipeline
+    # documents and expects the WGI 0-100 governance SCORE (Kaufmann et al.
+    # 2010's percentile-rank-style measure), and the values actually used in
+    # the committed panel (22-86) are on that 0-100 scale, not the -2.5..2.5
+    # estimate. The ".EST" codes were dead/wrong: this script's institutional
+    # columns were never actually adopted downstream (merge_panel_datasets.py
+    # used a separately, manually-sourced WGI file instead, built from codes
+    # "GOV_WGI_RL.SC" etc. -- same variable, same source id, now made live
+    # and reproducible here instead of depending on an uncommitted manual
+    # CSV export).
+    "GOV_WGI_RL.SC": "rule_of_law",
+    "GOV_WGI_PV.SC": "political_stability",
+    "GOV_WGI_CC.SC": "control_corruption",
     "VC.IHR.PSRC.P5": "homicide_rate"
 }
 

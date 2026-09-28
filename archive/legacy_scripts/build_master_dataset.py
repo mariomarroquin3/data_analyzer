@@ -24,10 +24,15 @@ df["population_log"]=safe(df["population"])
 df["gdp_per_capita_log"]=safe(df["gdp_per_capita"])
 df["tourist_arrivals_log"]=np.log1p(df["tourist_arrivals"])
 
-lo=df["homicide_rate"].quantile(.01)
-hi=df["homicide_rate"].quantile(.99)
-df["homicide_rate_winsor"]=df["homicide_rate"].clip(lo,hi)
-df["homicide_rate_log"]=np.log1p(df["homicide_rate_winsor"])
+# NOTE (fixed): this used to winsorize homicide_rate at the 1st/99th
+# percentile before taking log1p. With only 179 obs, the 4 clipped points
+# were ALL El Salvador -- its 2015/2016 violence peak (107.6 -> 83.6,
+# 85.1 -> 83.6) AND its 2023/2024 post-security-reform lows (2.24 -> 5.43,
+# 1.90 -> 5.43). That is exactly the abrupt security shift this whole
+# research project studies, silently flattened before it ever reaches
+# EQ1, undocumented anywhere in the paper or the active pipeline. Use the
+# raw rate directly; log1p already handles the right-skew and any zeros.
+df["homicide_rate_log"]=np.log1p(df["homicide_rate"])
 
 if "imports_percent_gdp" in df.columns:
     df["trade_percent_gdp"]=df["exports_percent_gdp"]+df["imports_percent_gdp"]

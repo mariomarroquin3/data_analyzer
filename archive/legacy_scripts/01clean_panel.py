@@ -38,17 +38,16 @@ df["population_log"] = np.log(df["population"])
 df["tourist_arrivals_log"] = np.log1p(df["tourist_arrivals"])
 
 # =========================================================
-# 4. OUTLIERS (HOMICIDIOS)
+# 4. TRANSFORMACION LOG (HOMICIDIOS)
 # =========================================================
 
-# winsorization 1% - 99%
-lower = df["homicide_rate"].quantile(0.01)
-upper = df["homicide_rate"].quantile(0.99)
-
-df["homicide_rate_winsor"] = df["homicide_rate"].clip(lower, upper)
-
-# versión log (útil para modelos)
-df["homicide_rate_log"] = np.log1p(df["homicide_rate_winsor"])
+# NOTE (fixed): esta version antes winsorizaba homicide_rate al percentil
+# 1-99 antes del log1p. Con solo 179 obs, los 4 puntos recortados eran
+# TODOS El Salvador (su pico de violencia 2015/2016 y sus minimos
+# 2023/2024 post-reforma) -- exactamente el cambio abrupto que motiva
+# esta investigacion, aplanado sin documentarlo en ningun lado. Se usa
+# la tasa cruda directamente; log1p ya maneja la asimetria y los ceros.
+df["homicide_rate_log"] = np.log1p(df["homicide_rate"])
 
 # =========================================================
 # 5. CREACIÓN DE TREND TEMPORAL

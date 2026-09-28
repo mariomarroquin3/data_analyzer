@@ -26,6 +26,7 @@ INDICADORES = {
     'unemployment': 'SL.UEM.TOTL.ZS',
     'inflation': 'FP.CPI.TOTL.ZG',
     'exports_percent_gdp': 'NE.EXP.GNFS.ZS',
+    'imports_percent_gdp': 'NE.IMP.GNFS.ZS',
     'tourist_arrivals': 'ST.INT.ARVL',
     'population': 'SP.POP.TOTL'
 }
