@@ -450,8 +450,10 @@ results_export = {
         "n_obs": fe3["n_obs"],
         "rsq_within": fe3["rsq_within"],
         "params_cl":  fe3["result_cl"].params.to_dict(),
+        "se_cl":      fe3["result_cl"].std_errors.to_dict(),
         "pvals_cl":   fe3["result_cl"].pvalues.to_dict(),
         "params_dk":  fe3["result_dk"].params.to_dict(),
+        "se_dk":      fe3["result_dk"].std_errors.to_dict(),
         "pvals_dk":   fe3["result_dk"].pvalues.to_dict(),
     },
 }

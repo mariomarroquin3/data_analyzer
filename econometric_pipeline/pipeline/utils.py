@@ -246,6 +246,39 @@ def print_coef_table(
     print("  Significance: * p<0.10  ** p<0.05  *** p<0.01")
 
 
+# ── Normalise the two 02_fe_results.json export shapes ───────────────────
+def get_fe_key_stats(fe_eq: dict, key_var: str) -> Dict[str, float]:
+    """
+    json/02_fe_results.json uses TWO different shapes:
+      - EQ1/EQ2 (single key regressor): singular keys
+            "coef_key_cl", "se_key_cl", "pval_key_cl",
+            "coef_key_dk", "se_key_dk", "pval_key_dk"
+      - EQ3 (multiple key regressors): dict-valued, keyed by variable name
+            "params_cl", "se_cl", "pvals_cl",
+            "params_dk", "se_dk", "pvals_dk"
+
+    Looking up "pval_key_cl" (etc.) directly on an EQ3 dict silently
+    returns the .get(...) default (NaN) instead of raising -- this
+    produced 'nan' in the printed SE-comparison table and always
+    resolved to '?' in the FE-vs-ML convergence table for EQ3.
+
+    This helper normalises both shapes so callers never need to branch
+    on which equation they are looking at.
+    """
+    def _get(dict_key: str, singular_key: str) -> float:
+        if singular_key in fe_eq:
+            return fe_eq[singular_key]
+        return fe_eq.get(dict_key, {}).get(key_var, np.nan)
+
+    return {
+        "coef":    _get("params_cl", "coef_key_cl"),
+        "se_cl":   _get("se_cl",     "se_key_cl"),
+        "pval_cl": _get("pvals_cl",  "pval_key_cl"),
+        "se_dk":   _get("se_dk",     "se_key_dk"),
+        "pval_dk": _get("pvals_dk",  "pval_key_dk"),
+    }
+
+
 # ── Webb (2023) weights ──────────────────────────────────────────────────
 WEBB_WEIGHTS = np.array([
     -np.sqrt(3 / 2), -1.0, -np.sqrt(1 / 2),
