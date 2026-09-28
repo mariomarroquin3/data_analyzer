@@ -1,0 +1,56 @@
+{
+  "T1: Homicide <-> Institutions": {
+    "y": "inst_avg",
+    "x": "homicide_rate_log",
+    "long_run": {
+      "beta": -0.09363821018097583,
+      "se_cl": 0.1372774600160216,
+      "pval_cl": 0.49624331454443715,
+      "n_obs": 179,
+      "rsq_within": 0.016816369935183872
+    },
+    "residual_unit_root": {
+      "n_countries": 8,
+      "fisher_stat": 15.622325829524236,
+      "df_chi2": 16,
+      "p_fisher": 0.47961584494888565
+    },
+    "cointegrated": false
+  },
+  "T2: Institutions <-> Income": {
+    "y": "inst_avg",
+    "x": "gdp_per_capita_log",
+    "long_run": {
+      "beta": 0.5044482700991506,
+      "se_cl": 0.4200045597094268,
+      "pval_cl": 0.23150511484566905,
+      "n_obs": 192,
+      "rsq_within": -0.44097396114618204
+    },
+    "residual_unit_root": {
+      "n_countries": 8,
+      "fisher_stat": 20.297206890870214,
+      "df_chi2": 16,
+      "p_fisher": 0.20713187109835463
+    },
+    "cointegrated": false
+  },
+  "T3: Homicide <-> Income": {
+    "y": "gdp_per_capita_log",
+    "x": "homicide_rate_log",
+    "long_run": {
+      "beta": 0.04787703716904065,
+      "se_cl": 0.05618991728279523,
+      "pval_cl": 0.3955053155731336,
+      "n_obs": 187,
+      "rsq_within": -0.027200342139351852
+    },
+    "residual_unit_root": {
+      "n_countries": 8,
+      "fisher_stat": 15.230725284994197,
+      "df_chi2": 16,
+      "p_fisher": 0.5078091823802113
+    },
+    "cointegrated": false
+  }
+}
