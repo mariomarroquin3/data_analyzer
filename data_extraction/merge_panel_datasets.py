@@ -13,6 +13,9 @@ ISO2_TO_ISO3 = {
     'PA': 'PAN',  # Panamá
     'DO': 'DOM',  # República Dominicana
     'CO': 'COL',  # Colombia
+    'MX': 'MEX',  # México
+    'EC': 'ECU',  # Ecuador
+    'PE': 'PER',  # Perú
 }
 
 # ============================================================================
@@ -27,6 +30,9 @@ ISO3_TO_SPANISH_NAME = {
     'CRI': 'Costa Rica',
     'PAN': 'Panamá',
     'DOM': 'República Dominicana',
+    'MEX': 'México',
+    'ECU': 'Ecuador',
+    'PER': 'Perú',
 }
 
 # ============================================================================

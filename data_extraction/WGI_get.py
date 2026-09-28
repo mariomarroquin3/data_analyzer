@@ -13,7 +13,10 @@ PAISES = {
     'CR': 'Costa Rica',
     'PA': 'Panamá',
     'DO': 'República Dominicana',
-    'CO': 'Colombia'
+    'CO': 'Colombia',
+    'MX': 'México',
+    'EC': 'Ecuador',
+    'PE': 'Perú',
 }
 
 AÑOS = set(range(2000, 2025))

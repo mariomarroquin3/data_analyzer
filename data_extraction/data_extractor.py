@@ -6,7 +6,7 @@ import time
 # CONFIGURACIÓN
 # =========================
 
-PAISES = ['SV', 'GT', 'HN', 'NI', 'CR', 'PA', 'DO', 'CO']
+PAISES = ['SV', 'GT', 'HN', 'NI', 'CR', 'PA', 'DO', 'CO', 'MX', 'EC', 'PE']
 
 PAISES_NOMBRES = {
     'SV': 'El Salvador',
@@ -16,7 +16,10 @@ PAISES_NOMBRES = {
     'CR': 'Costa Rica',
     'PA': 'Panamá',
     'DO': 'República Dominicana',
-    'CO': 'Colombia'
+    'CO': 'Colombia',
+    'MX': 'México',
+    'EC': 'Ecuador',
+    'PE': 'Perú',
 }
 
 INDICADORES = {
