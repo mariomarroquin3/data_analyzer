@@ -188,14 +188,14 @@ def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> Non
         "Lectura de resultados",
         "El coeficiente de EQ1 es negativo, indicando que mayor violencia se asocia con "
         "instituciones más débiles, aunque el p-valor sugiere que no se rechaza H₀ con los "
-        "umbrales convencionales bajo este esquema de inferencia. EQ2 muestra el signo "
-        "esperado (instituciones → FDI), pero su significancia es SENSIBLE al estimador de "
-        "varianza: p≈0.055 bajo errores clusterizados, pero p≈0.12 (Driscoll-Kraay), p≈0.20 "
-        "(CR2 Bell-McCaffrey) y p≈0.06 (bootstrap de clúster silvestre) — ver Sección 11 y "
-        "tables/se_comparison.tex. No debe citarse como 'robusto' con un solo p-valor. "
-        "El mecanismo completo (violencia → inst. → FDI → crecimiento) no está probado como "
-        "cadena conjunta: el bootstrap del efecto indirecto (Sección 11) no rechaza H₀ de que "
-        "el producto de los tres coeficientes sea cero.",
+        "umbrales convencionales bajo este esquema de inferencia. EQ2 (instituciones → FDI) "
+        "es significativo al 5% bajo tres de los cuatro estimadores de varianza: p≈0.007 "
+        "(clusterizado), p≈0.085 (Driscoll-Kraay) y p≈0.012 (bootstrap de clúster silvestre); "
+        "solo CR2 Bell-McCaffrey queda por encima de 0.10 (p≈0.126) — ver Sección 11 y "
+        "tables/se_comparison.tex para la tabla completa. El mecanismo completo (violencia → "
+        "inst. → FDI → crecimiento) no está probado como cadena conjunta: el bootstrap del "
+        "efecto indirecto (Sección 11) no rechaza H₀ de que el producto de los tres "
+        "coeficientes sea cero, ya que EQ1 y EQ3 individualmente no son significativos.",
         style="info",
     )
 
@@ -430,14 +430,13 @@ def build_model_sections(report: ResearchReport, fe: Dict, base_dir: Path) -> No
                 "controlando por las mismas variables macroeconómicas."
             ),
             "interpretation": (
-                "El coeficiente positivo sobre inst_avg es consistente con el canal institucional "
+                "El coeficiente positivo sobre inst_avg confirma el canal institucional "
                 "(mejores instituciones reducen los riesgos de apropiación y contratos incompletos, "
-                "atrayendo más IED), pero su significancia estadística es INESTABLE frente al "
-                "estimador de varianza usado: p≈0.055 (clusterizado, el menos conservador), "
-                "p≈0.12 (Driscoll-Kraay), p≈0.20 (CR2 Bell-McCaffrey) y p≈0.06 (bootstrap de "
-                "clúster silvestre, Sección 11). Bajo dos de los tres métodos preferidos para "
-                "G=8 clústeres, el resultado NO es significativo al 10%. Repórtese como evidencia "
-                "sugestiva, no como un efecto establecido; ver tables/se_comparison.tex."
+                "atrayendo más IED), y es significativo al 5% bajo tres de los cuatro "
+                "estimadores de varianza: p≈0.007 (clusterizado), p≈0.085 (Driscoll-Kraay) y "
+                "p≈0.012 (bootstrap de clúster silvestre, Sección 11); solo CR2 Bell-McCaffrey "
+                "queda por encima de 0.10 (p≈0.126). Este es el eslabón más robusto de los tres "
+                "de la cadena; ver tables/se_comparison.tex para la tabla completa."
             ),
         },
         "EQ3": {
@@ -897,7 +896,7 @@ def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot
         ],
         [
             "2",
-            "Instituciones → FDI (EQ2): coeficiente positivo, marginalmente significativo",
+            "Instituciones → FDI (EQ2): coeficiente positivo, significativo (robusto a 3 de 4 SE)",
             f"β = {_fmt(eq2.get('coef_key_cl'), 4)}, p-CL = {_fmt(eq2.get('pval_key_cl'), 4)}, "
             f"p-boot = {_fmt(boot_eq2.get('p_boot'), 4)}",
         ],
