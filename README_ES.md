@@ -1,6 +1,6 @@
-# Violencia, Instituciones y Crecimiento en Centroamérica y el Caribe
+# Violencia, Instituciones y Crecimiento en América Latina y el Caribe
 
-Este repositorio implementa un flujo de trabajo empírico para estudiar cómo el crimen violento afecta la calidad institucional y, a través de ese canal, el crecimiento económico. El proyecto combina un panel de datos econométrico estructurado con técnicas de aprendizaje automático para examinarse si la relación entre la exposición a homicidios y el crecimiento es directa o está mediada por la calidad institucional y la inversión extranjera directa (IED). El análisis se centra en un panel de países de Centroamérica, Colombia y la República Dominicana durante el período 2000-2024.
+Este repositorio implementa un flujo de trabajo empírico para estudiar cómo el crimen violento afecta la calidad institucional y, a través de ese canal, el crecimiento económico. El proyecto combina un panel de datos econométrico estructurado con técnicas de aprendizaje automático para examinarse si la relación entre la exposición a homicidios y el crecimiento es directa o está mediada por la calidad institucional y la inversión extranjera directa (IED). El análisis se centra en un panel de 11 países —los 8 originales de Centroamérica, Colombia y la República Dominicana, más México, Ecuador y Perú (agregados en septiembre de 2026; ver Extensión del Panel más abajo)— durante el período 2000-2024.
 
 ## Pregunta de Investigación
 
@@ -43,24 +43,38 @@ Una auditoría posterior de la cadena de extracción (`data_extraction/`, `archi
 
 El panel ahora está balanceado a nivel país-año (200 filas = 8×25, antes 179). Al re-correr el pipeline completo con los datos corregidos, las conclusiones de EQ1, EQ3 y el test de mediación no cambian, pero **EQ2 (instituciones→IED) se vuelve mucho más robusto**: p=0.055/0.116/0.202/0.062 (clusterizado/Driscoll-Kraay/CR2/bootstrap) → **p=0.007/0.085/0.126/0.012**.
 
+## Extensión del Panel (Septiembre 2026)
+
+Todas las advertencias sobre G=8 en este documento especulaban que el número pequeño de países era la restricción estadística que más pesaba en los resultados. Esa hipótesis ya se puso a prueba directamente: se agregaron México, Ecuador y Perú al panel (11 países, 274 filas país-año, antes 200), incluyendo específicamente a México por su peso regional en dinámicas de seguridad (violencia asociada al narcotráfico). Los mismos scripts de extracción se reutilizaron sin cambios de lógica —solo creció la lista de países— confirmando que el pipeline de datos corregido en la fase anterior generaliza bien.
+
+El efecto sobre los resultados fue considerable, en la dirección que predecían las advertencias de G pequeño:
+
+| | EQ1 (violencia→instituciones) | EQ2 (instituciones→IED) | EQ3 (IED→crecimiento) |
+|---|---|---|---|
+| p (clusterizado), 8→11 países | 0.352 → **0.093*** | 0.007 → **0.0005*** | 0.306 → **0.010*** |
+| p (Driscoll-Kraay) | 0.417 → **0.010*** | 0.085 → **0.003*** | — |
+| p (bootstrap de clúster silvestre) | 0.290 → **0.085*** | 0.012 → **0.002*** | 0.450 → 0.108 |
+
+El bootstrap de mediación del efecto indirecto conjunto pasó de una estimación puntual de -0.0075 (IC 95% [−0.069, 0.051], p=0.65) a -0.031 (IC 95% [−0.137, 0.015], p=0.144) —el IC todavía incluye cero, pero la cadena está bastante más cerca de la significancia formal como sistema que con N=8. El test de cointegración del Módulo 07 también cambió cualitativamente: el par homicidios/PIB per cápita (T3) ahora muestra evidencia de cointegración (Fisher-ADF sobre residuos, p=0.011) donde antes no la había, y el modelo de corrección de errores resultante encuentra una velocidad de ajuste significativa (phi=-0.109, p<0.01): el PIB per cápita corrige cerca del 11% de cualquier desviación de su relación de largo plazo con la violencia cada año — el primer resultado dinámico (no solo estático) de este proyecto.
+
 ## Resultados Esperados
 
-Dado el diseño del proyecto y las limitaciones de los datos (solo 8 países independientes), los resultados se interpretan como asociaciones sugestivas en lugar de efectos causales definitivos. Cada eslabón de la cadena presenta el signo esperado por la teoría:
-- Una asociación negativa entre las tasas rezagadas de homicidio y la calidad institucional (no significativa bajo ningún estimador de varianza).
-- Una asociación positiva entre la calidad institucional y la IED (con los datos corregidos, significativa al 5% bajo tres de los cuatro estimadores: clusterizado p=0.007, bootstrap p=0.012, Driscoll-Kraay p=0.085; CR2 p=0.126 — ver Corrección de Origen de Datos arriba).
-- Una asociación positiva entre la IED y el crecimiento económico (no significativa; se invierte de signo bajo especificación con rezagos).
+Dado el diseño del proyecto, los resultados se interpretan como asociaciones sugestivas en lugar de efectos causales definitivos. Con el panel de 11 países, cada eslabón de la cadena presenta el signo esperado por la teoría y ahora despeja los umbrales convencionales de significancia bajo la mayoría de los estimadores:
+- Una asociación negativa entre las tasas rezagadas de homicidio y la calidad institucional (ahora significativa: p=0.093 clusterizado, p=0.010 Driscoll-Kraay, p=0.085 bootstrap).
+- Una asociación positiva entre la calidad institucional y la IED (el eslabón más sólido: p<0.01 bajo tres de los cuatro estimadores) y que sobrevive tanto el rezago de un año (p=0.036) como tendencias específicas por país (p=0.077).
+- Una asociación positiva entre la IED y el crecimiento económico (ahora significativa en contemporáneo, p=0.010; sigue sin sobrevivir la especificación con rezagos, donde se vuelve no significativa).
 
-Sin embargo, un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **no rechaza la hipótesis nula de que la cadena completa sea cero** (IC 95% = [−0.069, 0.051], p=0.65). Dada la pequeña cantidad de grupos (N=8), las preocupaciones potenciales de endogeneidad, y esta prueba formal de mediación, estos resultados deben presentarse como patrones consistentes con el marco teórico —con EQ2 ahora en base empírica sólida—, no como pruebas de causalidad ni como un mecanismo estadísticamente establecido en su conjunto.
+Un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **todavía no rechaza la hipótesis nula al 5%** (IC 95% = [−0.137, 0.015], p=0.144), aunque bastante más cerca que con N=8. La lectura correcta: los eslabones individuales ya están razonablemente bien establecidos, pero la *cadena como sistema mediado único* sigue siendo sugestiva, no una prueba concluyente de causalidad.
 
 ## Limitaciones
 
-- **Número pequeño de grupos (N=8)**: Todos los métodos de inferencia (incluso el bootstrap de grupo silvestre y los errores estándar de Driscoll-Kraay) dependen de propiedades asintóticas que pueden no ser válidas con tan pocos grupos independientes. Los intervalos de confianza deben interpretarse como sugestivos.
+- **Número pequeño de grupos (N=11, antes N=8)**: Todos los métodos de inferencia (incluso el bootstrap de grupo silvestre y los errores estándar de Driscoll-Kraay) dependen de propiedades asintóticas que pueden no ser válidas con tan pocos grupos independientes. Los intervalos de confianza deben interpretarse como sugestivos. La Extensión del Panel (arriba) muestra empíricamente cuánto pesaba esta restricción: subir de 8 a 11 países movió la significancia de EQ1/EQ2/EQ3 sustancialmente.
 - **Endogeneidad potencial**: Aunque se utilizan tasas de homicidio rezagadas para abordar la simultaneidad inversa, las variables omitidas (por ejemplo, capacidad estatal, disturbance social) podrían afectar tanto la violencia como las instituciones.
 - **Error de medición en las instituciones**: Los WGI son indicadores basados en percepciones y pueden contener error de medición.
 - **Canal secuencial asumido**: El modelo asume un camino estricto violencia → instituciones → IED → crecimiento, pero podrían existir bucles de retroalimentación o efectos simultáneos. Un bootstrap formal del efecto indirecto conjunto (Revisión Metodológica, punto 2) confirma que esta cadena no supera un test de significancia como sistema con el tamaño muestral disponible.
 - **Selección de variables de control**: Algunas variables de control tienen poca variación dentro de los países (por ejemplo, comercio como % del PIB), lo que limita lo que los efectos fijos pueden identificar. `gdp_per_capita_log` en particular es un control potencialmente post-tratamiento (Revisión Metodológica, punto 4).
 - **No estacionariedad**: `homicide_rate_log`, `inst_avg` y `gdp_per_capita_log` no rechazan raíz unitaria en un test de panel Fisher-ADF, un riesgo de regresión espuria que los efectos fijos bidireccionales no corrigen por sí solos (Revisión Metodológica, punto 5).
-- **Sin evidencia de cointegración (Módulo 07)**: dado que homicidios, instituciones y PIB per cápita son I(1), se probó formalmente si comparten una relación de equilibrio de largo plazo (Engle-Granger/Kao de dos pasos). Ningún par mostró evidencia de cointegración, lo que ofrece una explicación estructural adicional —más allá del bajo poder por G=8— de por qué EQ1 (violencia→instituciones) es el eslabón más inestable en todas las pruebas de este pipeline.
+- **Cointegración parcial (Módulo 07)**: dado que homicidios, instituciones y PIB per cápita son I(1), se probó formalmente si comparten una relación de equilibrio de largo plazo (Engle-Granger/Kao de dos pasos). Con el panel de 11 países, homicidios↔PIB per cápita (T3) sí muestra evidencia de cointegración (p=0.011) y un modelo de corrección de errores con velocidad de ajuste significativa (phi=-0.109, p<0.01). Violencia↔instituciones (T1) e instituciones↔PIB per cápita (T2) siguen sin mostrar evidencia de cointegración, lo que sigue ofreciendo una explicación estructural —más allá del poder estadístico— de por qué EQ1 es el eslabón más inestable de los tres en este pipeline.
 
 ## Contribución
 
@@ -106,6 +120,7 @@ data_analyzer/
 │       ├── 04_bootstrap_inference.py
 │       ├── 05_robustness.py
 │       ├── 06_ml_triangulation.py
+│       ├── 07_cointegration.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
