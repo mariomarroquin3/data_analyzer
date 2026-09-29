@@ -211,6 +211,36 @@ This is reported as a genuine, important caveat rather than smoothed over: **EQ1
 
 **Remittances robustness check** (added as a control, not the primary specification, since it is itself a plausible mediator/collider between violence-driven emigration and growth): EQ1 is unaffected (p=0.179, still not significant). EQ2 strengthens substantially when remittances are included (coef 0.611→0.967, p=0.030→0.0013) — plausibly because remittances absorb variance that otherwise confounds the institutions-FDI relationship, though this single variant should not be over-read either. EQ3 is unchanged (p=0.025, was p=0.018).
 
+## The "Bukele Paradox" (September 2026)
+
+Testing each WGI dimension individually (above) surfaced one genuine anomaly worth a dedicated look: `voice_accountability` is the only one of the six dimensions where lagged violence has the *wrong* sign — less violence coinciding with *lower* voice & accountability, rather than higher. El Salvador's own data explains why:
+
+| Year | Homicide rate (per 100k) | Voice & accountability (0–100) |
+|---|---|---|
+| 2020 | 21.5 | 58.4 |
+| 2021 | 17.3 | 53.5 |
+| 2022 | 7.9 | 48.8 |
+| 2023 | 2.2 | 48.1 |
+| 2024 | 1.9 | 45.0 |
+
+From 2021 to 2024 — the period of El Salvador's state-of-exception security crackdown — homicides collapsed *and* voice & accountability fell sharply. The security gain and the civil-liberties cost moved together, not in opposite directions, which is exactly the reverse of what the other five WGI dimensions (and economic theory) predict.
+
+**Is this El Salvador specifically, or a broader regional pattern?** A Leave-One-Country-Out check on `voice_accountability ~ homicide_rate_log_lag1` (same Two-Way FE spec as the rest of EQ1) answers this directly — now a permanent part of [Module 05](econometric_pipeline/pipeline/05_robustness.py) (Robustness 4b), not just a one-off script:
+
+| Sample | coef | p |
+|---|---|---|
+| Full sample (11 countries) | +1.72 | 0.339 |
+| Excl. El Salvador | **-1.48** | 0.449 |
+| Excl. any other single country | +1.14 to +2.74 (always positive) | — |
+
+El Salvador is the **only** country whose exclusion flips the sign. Every other country's exclusion leaves the coefficient positive; excluding El Salvador reverses it to the theoretically expected direction (though neither estimate is significant — this is a small-sample descriptive pattern, not a precisely estimated effect either way). The anomalous coefficient in the full sample is not a regional relationship between violence and voice & accountability — it is specifically the El Salvador case.
+
+![The Bukele Paradox](econometric_pipeline/pipeline/figures/14_bukele_paradox.png)
+
+*Left: the LOCO coefficients above, plotted. Right: El Salvador's homicide rate and voice & accountability score, 2000–2024, with the 2021–2024 state-of-exception period shaded.*
+
+This does not invalidate EQ1's finding across the other five WGI dimensions — it sharpens it. The reason `inst_avg`'s composite coefficient washed out under the 6-dimension index (see above) is not that violence has no relationship with institutional quality; it is that one dimension, in one country, during one specific security transformation, moved in the opposite direction from the rest — because that transformation's defining feature *was* trading civil liberties for security. This is a substantive finding about El Salvador's case specifically, directly relevant to this project's motivating question, not a statistical artifact to explain away.
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).

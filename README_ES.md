@@ -134,6 +134,36 @@ Esto se reporta como una advertencia genuina e importante, no se suaviza: **EQ1 
 
 **Chequeo de robustez con remesas** (agregadas como control, no como especificación primaria, ya que son en sí mismas un candidato a mediador/collider entre la emigración inducida por violencia y el crecimiento): EQ1 no se ve afectada (p=0.179, sigue sin ser significativa). EQ2 se fortalece sustancialmente al incluir remesas (coef 0.611→0.967, p=0.030→0.0013) —posiblemente porque las remesas absorben varianza que de otro modo confunde la relación instituciones-IED, aunque esta variante individual tampoco debe sobre-interpretarse. EQ3 no cambia (p=0.025, era p=0.018).
 
+## La "Paradoja Bukele" (Septiembre 2026)
+
+Probar cada dimensión WGI individualmente (arriba) reveló una anomalía genuina que merece atención dedicada: `voice_accountability` es la única de las seis dimensiones donde la violencia rezagada tiene el signo *contrario* al esperado —menos violencia coincidiendo con *menor* voz y rendición de cuentas, en vez de mayor. Los propios datos de El Salvador explican por qué:
+
+| Año | Tasa de homicidios (por 100 mil) | Voz y rendición de cuentas (0–100) |
+|---|---|---|
+| 2020 | 21.5 | 58.4 |
+| 2021 | 17.3 | 53.5 |
+| 2022 | 7.9 | 48.8 |
+| 2023 | 2.2 | 48.1 |
+| 2024 | 1.9 | 45.0 |
+
+De 2021 a 2024 —el período del régimen de excepción de El Salvador— los homicidios colapsaron *y* voz y rendición de cuentas cayó fuerte. La ganancia de seguridad y el costo en libertades civiles avanzaron juntos, no en direcciones opuestas, exactamente lo contrario de lo que predicen las otras cinco dimensiones WGI (y la teoría económica).
+
+**¿Es esto específico de El Salvador, o un patrón regional más amplio?** Un chequeo Leave-One-Country-Out sobre `voice_accountability ~ homicide_rate_log_lag1` (misma especificación de efectos fijos bidireccionales que el resto de EQ1) responde esto directamente —ahora parte permanente del [Módulo 05](econometric_pipeline/pipeline/05_robustness.py) (Robustez 4b), no solo un script suelto:
+
+| Muestra | coef | p |
+|---|---|---|
+| Muestra completa (11 países) | +1.72 | 0.339 |
+| Excl. El Salvador | **-1.48** | 0.449 |
+| Excl. cualquier otro país individual | +1.14 a +2.74 (siempre positivo) | — |
+
+El Salvador es el **único** país cuya exclusión invierte el signo. La exclusión de cualquier otro país deja el coeficiente positivo; excluir a El Salvador lo revierte hacia la dirección teóricamente esperada (aunque ninguna de las dos estimaciones es significativa —es un patrón descriptivo de muestra pequeña, no un efecto estimado con precisión en ningún sentido). El coeficiente anómalo de la muestra completa no es una relación regional entre violencia y voz institucional —es específicamente el caso de El Salvador.
+
+![La Paradoja Bukele](econometric_pipeline/pipeline/figures/14_bukele_paradox.png)
+
+*Izquierda: los coeficientes LOCO de arriba, graficados. Derecha: la tasa de homicidios y el puntaje de voz y rendición de cuentas de El Salvador, 2000–2024, con el período del régimen de excepción (2021–2024) sombreado.*
+
+Esto no invalida el hallazgo de EQ1 sobre las otras cinco dimensiones WGI —lo afina—. La razón por la que el coeficiente compuesto de `inst_avg` se diluyó bajo el índice de 6 dimensiones (ver arriba) no es que la violencia no tenga relación con la calidad institucional; es que una dimensión, en un país, durante una transformación de seguridad específica, se movió en dirección opuesta al resto —porque el rasgo definitorio de esa transformación *fue* precisamente intercambiar libertades civiles por seguridad. Este es un hallazgo sustantivo sobre el caso de El Salvador específicamente, directamente relevante a la pregunta que motiva este proyecto, no un artefacto estadístico que haya que explicar y descartar.
+
 ## Limitaciones
 
 - **Número pequeño de grupos (N=11, antes N=8)**: Todos los métodos de inferencia (incluso el bootstrap de grupo silvestre y los errores estándar de Driscoll-Kraay) dependen de propiedades asintóticas que pueden no ser válidas con tan pocos grupos independientes. Los intervalos de confianza deben interpretarse como sugestivos. La Extensión del Panel (arriba) muestra empíricamente cuánto pesaba esta restricción: subir de 8 a 11 países movió la significancia de EQ1/EQ2/EQ3 sustancialmente.
