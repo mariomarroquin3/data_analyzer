@@ -12,7 +12,7 @@ mechanism through which violence affects economic growth:
 ```
 Violence (homicide rate)
        ↓  [Equation 1]
-Institutional Quality (WGI: Rule of Law, Control of Corruption, Political Stability)
+Institutional Quality (WGI: 6 governance dimensions, incl. Rule of Law, Control of Corruption, Political Stability)
        ↓  [Equation 2]
 Foreign Direct Investment (FDI % GDP)
        ↓  [Equation 3]
@@ -72,6 +72,9 @@ The CSV must contain the following columns:
 - `rule_of_law`
 - `control_corruption`
 - `political_stability`
+- `voice_accountability`
+- `government_effectiveness`
+- `regulatory_quality`
 
 ### Outcome and mediators
 - `fdi_percent_gdp` — FDI as % of GDP
@@ -85,6 +88,7 @@ The CSV must contain the following columns:
 - `population_log`
 - `tourist_arrivals_log`
 - `trade_percent_gdp`
+- `remittances_percent_gdp` — tested as a robustness control variant only (Module 05); not in the primary control set (plausible mediator/collider, see Module 05 docstring)
 
 ### Optional (for additional robustness)
 - `time_trend` — integer time trend (Module 01 creates `year_c` from `year`)
@@ -108,7 +112,9 @@ common time shocks (global financial crisis, COVID-19).
   dependence detected by Pesaran CD test).
 
 ### Institution index
-- **Primary**: standardised average of three z-scored WGI dimensions.
+- **Primary**: standardised average of all six z-scored WGI dimensions
+  (rule of law, control of corruption, political stability, voice &
+  accountability, government effectiveness, regulatory quality).
   Equal weighting, transparent, easily replicated.
 - **Robustness**: PCA-based index (PC1 of same z-scored variables).
 

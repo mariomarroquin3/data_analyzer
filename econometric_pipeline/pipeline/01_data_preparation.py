@@ -7,10 +7,14 @@ Steps
 -----
 1.  Load and validate the panel (balance, missingness, types).
 2.  Construct the PRIMARY institution index:
-      standardised average of rule_of_law, control_corruption,
-      political_stability (z-scored before averaging).
+      standardised average of all six Worldwide Governance Indicators
+      dimensions (rule_of_law, control_corruption, political_stability,
+      voice_accountability, government_effectiveness, regulatory_quality;
+      z-scored before averaging). Added September 2026 -- the index
+      previously used only 3 of the 6 Kaufmann et al. (2010) dimensions,
+      an arbitrary subset rather than the standard construction.
 3.  Construct the ROBUSTNESS institution index:
-      PCA on the same three z-scored variables.
+      PCA on the same six z-scored variables.
       Validated with KMO and Bartlett's sphericity test.
 4.  Centre the time trend to mitigate multicollinearity.
 5.  Within/between variance decomposition.
@@ -57,8 +61,12 @@ SEED = 42
 # ════════════════════════════════════════════════════════════════════════
 DATA_PATH = Path(__file__).parent / "panel_ready_for_modeling.csv"
 
-# Variables that constitute the institution index
-INST_VARS = ["rule_of_law", "control_corruption", "political_stability"]
+# Variables that constitute the institution index (all six WGI dimensions;
+# see module docstring point 2 for the September 2026 change from 3 to 6)
+INST_VARS = [
+    "rule_of_law", "control_corruption", "political_stability",
+    "voice_accountability", "government_effectiveness", "regulatory_quality",
+]
 
 # Controls used downstream (validated here)
 CONTROLS = [
@@ -170,7 +178,7 @@ print("  inflates the condition number of the design matrix (collinearity).")
 section("03 — INSTITUTION INDEX: PRIMARY (STANDARDISED AVERAGE)")
 
 print("  Reference: Kaufmann et al. (2010) — WGI percentile ranks 0–100.")
-print("  All three dimensions are first z-scored (global mean=0, SD=1),")
+print("  All six dimensions are first z-scored (global mean=0, SD=1),")
 print("  then averaged. This ensures equal weighting regardless of raw scale.")
 
 # Z-score each variable using global (pooled) mean and SD
@@ -188,7 +196,7 @@ df["inst_avg"] = z_block.mean(axis=1)
 print(ok(f"inst_avg: mean={df['inst_avg'].mean():.4f}, "
          f"SD={df['inst_avg'].std():.4f}, "
          f"range=[{df['inst_avg'].min():.3f}, {df['inst_avg'].max():.3f}]"))
-print("  Higher inst_avg → better governance (all three WGI dimensions).")
+print("  Higher inst_avg → better governance (all six WGI dimensions).")
 
 # ── Internal consistency: Cronbach's alpha ───────────────────────────────
 z_mat  = z_block.dropna().values
@@ -205,7 +213,7 @@ print(f"  Cronbach's α (internal consistency of index): {alpha_flag}")
 # ════════════════════════════════════════════════════════════════════════
 section("04 — INSTITUTION INDEX: ROBUSTNESS (PCA)")
 
-print("  PCA operates on the same three z-scored variables.")
+print("  PCA operates on the same six z-scored variables.")
 print("  PC1 is retained. Sign is aligned so higher = better governance.")
 
 z_matrix = z_block.dropna().values
@@ -278,8 +286,8 @@ valid_mask = df[INST_VARS].notna().all(axis=1)
 df.loc[valid_mask, "inst_pca"] = pc1_scores
 
 var_exp = pca.explained_variance_ratio_
-print(ok(f"PC1 explains {var_exp[0]:.1%} of variance in the three WGI dimensions."))
-print(f"  PC2: {var_exp[1]:.1%}, PC3: {var_exp[2]:.1%}")
+print(ok(f"PC1 explains {var_exp[0]:.1%} of variance in the six WGI dimensions."))
+print("  " + ", ".join(f"PC{i+1}: {v:.1%}" for i, v in enumerate(var_exp[1:], start=1)))
 
 print("\n  PCA loadings (PC1):")
 for i, var in enumerate(INST_VARS):
@@ -355,10 +363,11 @@ section("06 — SUMMARY STATISTICS")
 stat_vars = [
     "homicide_rate", "homicide_rate_log",
     "rule_of_law", "control_corruption", "political_stability",
+    "voice_accountability", "government_effectiveness", "regulatory_quality",
     "inst_avg", "inst_pca",
     "fdi_percent_gdp", "gdp_growth", "gdp_per_capita_log",
     "inflation", "unemployment", "exports_percent_gdp",
-    "population_log", "tourist_arrivals_log",
+    "population_log", "tourist_arrivals_log", "remittances_percent_gdp",
 ]
 stat_vars = [v for v in stat_vars if v in df.columns]
 
@@ -443,7 +452,8 @@ print(ok("Figure saved → figures/02_institution_indices.png"))
 # ── Figure 3: Correlation heatmap ────────────────────────────────────────
 import matplotlib.colors as mcolors
 heat_vars = ["homicide_rate_log", "inst_avg", "fdi_percent_gdp",
-             "gdp_growth", "gdp_per_capita_log", "inflation", "unemployment"]
+             "gdp_growth", "gdp_per_capita_log", "inflation", "unemployment",
+             "remittances_percent_gdp"]
 heat_vars = [v for v in heat_vars if v in df.columns]
 corr_mat  = df[heat_vars].corr()
 

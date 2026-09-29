@@ -29,17 +29,19 @@ Robustness exercises
       Bias addressed: uncertainty about transmission delay.
 
 4.  Alternative institution indices
-      (a) Standardised average (primary)
+      (a) Standardised average (primary, all 6 WGI dimensions)
       (b) PCA-based index
-      (c) Rule of Law only
-      (d) Control of Corruption only
-      (e) Political Stability only
+      (c)-(h) Each of the 6 WGI dimensions individually (rule of law,
+          control of corruption, political stability, voice &
+          accountability, government effectiveness, regulatory quality)
       Bias addressed: index construction choices.
 
 5.  Alternative control sets
       (a) Baseline controls
       (b) Extended controls (tourist arrivals, trade)
       (c) Minimal controls (GDP per capita only)
+      (d) Excl. GDP p.c. (bad-control check)
+      (e) Incl. remittances (bad-control check; added September 2026)
       Bias addressed: over/under-controlling.
 
 6.  Alternative clustering
@@ -401,7 +403,11 @@ inst_alternatives = {
     "rule_of_law":             "rule_of_law",
     "control_corruption":      "control_corruption",
     "political_stability":     "political_stability",
+    "voice_accountability":       "voice_accountability",
+    "government_effectiveness":   "government_effectiveness",
+    "regulatory_quality":         "regulatory_quality",
 }
+inst_alternatives = {k: v for k, v in inst_alternatives.items() if v in df.columns}
 
 key_eq1  = "homicide_rate_log_lag1"
 ctrl_eq1 = [c for c in specs["eq1"]["exog"] if c != key_eq1 and c in df.columns]
@@ -441,12 +447,14 @@ CTRL_EXT      = CTRL_BASE + [c for c in ["tourist_arrivals_log","trade_percent_g
                               if c in df.columns]
 CTRL_MINIMAL  = [c for c in ["gdp_per_capita_log"] if c in df.columns]
 CTRL_NO_GDPPC = [c for c in CTRL_BASE if c != "gdp_per_capita_log"]
+CTRL_REMIT    = CTRL_BASE + [c for c in ["remittances_percent_gdp"] if c in df.columns]
 
 ctrl_specs_map = {
     "Baseline controls":      CTRL_BASE,
     "Extended controls":      CTRL_EXT,
     "Minimal controls":       CTRL_MINIMAL,
     "Excl. GDP p.c. (bad-control check)": CTRL_NO_GDPPC,
+    "Incl. remittances (bad-control check)": CTRL_REMIT,
     "No controls (FE only)":  [],
 }
 
@@ -458,6 +466,16 @@ print(warn("""  'Excl. GDP p.c. (bad-control check)': gdp_per_capita_log is plau
   ch. 3). This variant drops it while keeping the rest of the baseline
   controls, to see whether the key coefficient is sensitive to its
   inclusion.
+"""))
+print(warn("""  'Incl. remittances (bad-control check)': remittances_percent_gdp (added
+  September 2026) is plausibly a BAD CONTROL of a different kind -- it is
+  a candidate mediator/collider between violence (emigration push) and
+  growth (remittance-funded consumption), not a clean exogenous control.
+  This variant ADDS it to the baseline controls (rather than treating it
+  as part of the primary specification) to see whether the key
+  coefficient is sensitive to its inclusion, kept separate from
+  Module 01's core institution-index change for the same reason
+  gdp_per_capita_log is tested as a variant rather than assumed safe.
 """))
 
 for eq_label, spec in specs.items():

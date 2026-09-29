@@ -180,7 +180,10 @@ TASKS = [
 # Raw WGI indicators behind inst_avg (see Module 01). Needed here because
 # inst_avg itself must be recomputed INSIDE each LOCO fold -- see docstring
 # of loco_cv below ("fold-safe institution index").
-INST_VARS_RAW = ["rule_of_law", "control_corruption", "political_stability"]
+INST_VARS_RAW = [
+    "rule_of_law", "control_corruption", "political_stability",
+    "voice_accountability", "government_effectiveness", "regulatory_quality",
+]
 
 
 def loco_cv(
@@ -212,9 +215,9 @@ def loco_cv(
 
     Fold-safe institution index (LEAKAGE FIX)
     ──────────────────────────────────────────
-    inst_avg is built in Module 01 by z-scoring rule_of_law,
-    control_corruption and political_stability using the mean/SD of the
-    FULL pooled panel (all 8 countries), THEN averaging. When inst_avg is
+    inst_avg is built in Module 01 by z-scoring all six WGI dimensions
+    (INST_VARS_RAW) using the mean/SD of the FULL pooled panel, THEN
+    averaging. When inst_avg is
     used here as the LOCO target (T1) or as a feature (T2, T3), the
     held-out country's own observations already contributed to those
     global scaling constants -- so the "held-out country never seen"
@@ -247,7 +250,7 @@ def loco_cv(
             # Re-fit the z-score scaling constants on TRAINING countries only,
             # then apply them to both train and test (held-out country never
             # contributes to mu/sigma). Mirrors Module 01's construction
-            # (z-score each WGI indicator, then average across the three).
+            # (z-score each of the six WGI indicators, then average).
             mu    = train[INST_VARS_RAW].mean()
             sigma = train[INST_VARS_RAW].std(ddof=0).replace(0, 1.0)
             train["inst_avg"] = ((train[INST_VARS_RAW] - mu) / sigma).mean(axis=1)

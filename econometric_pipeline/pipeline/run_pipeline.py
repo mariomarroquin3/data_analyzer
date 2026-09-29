@@ -250,9 +250,12 @@ def build_variables_section(report: ResearchReport, meta: Dict) -> None:
         ["Variable", "Descripción", "Transformación", "Rol"],
         ["homicide_rate_log", "Tasa de homicidios por 100K hab.", "log(x+1), lag 1 año", "Independiente clave (EQ1)"],
         ["inst_avg / inst_pca", "Índice institucional compuesto", "Promedio / PC1 estandarizado", "Mediador (EQ1→EQ2)"],
-        ["rule_of_law", "Estado de derecho (WGI)", "Sin transformar (−2.5 a 2.5)", "Componente inst."],
-        ["control_corruption", "Control de corrupción (WGI)", "Sin transformar (−2.5 a 2.5)", "Componente inst."],
-        ["political_stability", "Estabilidad política (WGI)", "Sin transformar (−2.5 a 2.5)", "Componente inst."],
+        ["rule_of_law", "Estado de derecho (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
+        ["control_corruption", "Control de corrupción (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
+        ["political_stability", "Estabilidad política (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
+        ["voice_accountability", "Voz y rendición de cuentas (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
+        ["government_effectiveness", "Efectividad gubernamental (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
+        ["regulatory_quality", "Calidad regulatoria (WGI)", "Sin transformar (percentil 0-100)", "Componente inst."],
         ["fdi_percent_gdp", "IED como % del PIB", "Sin transformar", "Dependiente EQ2 / Indep. EQ3"],
         ["gdp_growth", "Crecimiento real del PIB (%)", "Sin transformar", "Dependiente EQ3"],
         ["gdp_per_capita_log", "PIB per cápita (USD cte.)", "log(x)", "Control"],
@@ -260,6 +263,7 @@ def build_variables_section(report: ResearchReport, meta: Dict) -> None:
         ["exports_percent_gdp", "Exportaciones como % del PIB", "Sin transformar", "Control"],
         ["population_log", "Población total", "log(x)", "Control"],
         ["unemployment", "Tasa de desempleo (%)", "Sin transformar", "Control"],
+        ["remittances_percent_gdp", "Remesas como % del PIB", "Sin transformar", "Control alternativo (robustez, Sección 12)"],
     ]
     report.add_table(var_data, col_widths=[2.0, 2.5, 1.8, 1.5])
 
@@ -269,9 +273,10 @@ def build_variables_section(report: ResearchReport, meta: Dict) -> None:
     kmo      = meta.get("kmo")
     loadings = meta.get("pca_loadings", {})
 
+    n_dims = len(loadings) if loadings else 6
     report.add_section_h2("Índice Institucional — PCA")
     report.add_body_text(
-        f"Se extrajo el primer componente principal (PC1) de las tres dimensiones WGI "
+        f"Se extrajo el primer componente principal (PC1) de las {n_dims} dimensiones WGI "
         f"como medida sintética de calidad institucional. PC1 explica el "
         f"{_fmt(pca_var, 1) if pca_var else 'N/D'}% de la varianza. "
         f"El alfa de Cronbach es {_fmt(cronbach, 3) if cronbach else 'N/D'} "
@@ -282,12 +287,20 @@ def build_variables_section(report: ResearchReport, meta: Dict) -> None:
         for var, val in loadings.items():
             load_data.append([var, _fmt(val, 4)])
         report.add_table(load_data, col_widths=[3.5, 2.0])
+    all_positive = all(v > 0 for v in loadings.values()) if loadings else None
+    loadings_note = (
+        "Todos los loadings son positivos, confirmando que PC1 captura 'calidad "
+        "institucional general' y no una dimensión específica."
+        if all_positive else
+        "Los loadings tienen signos mixtos -- PC1 no representa de forma limpia una "
+        "'calidad institucional general' uniforme; revisar la tabla de cargas antes de "
+        "interpretar inst_pca como un índice unidireccional."
+    )
     report.add_interpretation_box(
         "Validez del índice institucional",
-        f"Un alfa de Cronbach > 0.80 indica alta consistencia interna de las tres dimensiones. "
+        f"Un alfa de Cronbach > 0.80 indica alta consistencia interna de las {n_dims} dimensiones. "
         f"El primer componente explica {_fmt(pca_var, 1) if pca_var else '?'}% de la varianza, "
-        f"justificando la reducción dimensional. Todos los loadings son positivos, confirmando "
-        f"que PC1 captura 'calidad institucional general' y no una dimensión específica.",
+        f"justificando la reducción dimensional. {loadings_note}",
         style="info",
     )
 
@@ -368,8 +381,9 @@ def build_pca_section(report: ResearchReport, meta: Dict, base_dir: Path) -> Non
     loadings = meta.get("pca_loadings", {})
     corr_idx = meta.get("corr_indices", None)
 
+    n_dims_pca = len(loadings) if loadings else 6
     report.add_body_text(
-        "El PCA reduce las tres dimensiones WGI a un índice sintético único (inst_pca / inst_avg). "
+        f"El PCA reduce las {n_dims_pca} dimensiones WGI a un índice sintético único (inst_pca / inst_avg). "
         "La construcción del índice sigue el procedimiento estándar: estandarización Z, "
         "extracción de PC1, corrección de signo para interpretación positiva."
     )
