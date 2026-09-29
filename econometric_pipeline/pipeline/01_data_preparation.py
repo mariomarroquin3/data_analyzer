@@ -190,8 +190,17 @@ z_block = pd.DataFrame(
 )
 df = pd.concat([df, z_block], axis=1)
 
-# Simple average of z-scores
-df["inst_avg"] = z_block.mean(axis=1)
+# Simple average of z-scores.
+# NOTE: pandas' .mean(axis=1) defaults to skipna=True, which would
+# silently average over fewer than the six dimensions for any row
+# missing only SOME of them -- inconsistent with inst_pca below, which
+# requires all six to be present (valid_mask). Currently a no-op in
+# this dataset (the 2001 WGI gap is perfectly aligned across all six
+# dimensions -- verified), but enforced explicitly so a future
+# extraction with misaligned per-dimension gaps fails loud (NaN)
+# instead of silently redefining the index for those rows.
+inst_complete = df[INST_VARS].notna().all(axis=1)
+df["inst_avg"] = z_block.mean(axis=1).where(inst_complete)
 
 print(ok(f"inst_avg: mean={df['inst_avg'].mean():.4f}, "
          f"SD={df['inst_avg'].std():.4f}, "
@@ -281,9 +290,9 @@ if pca.components_[0][INST_VARS.index("rule_of_law")] < 0:
     pca.components_[0] *= -1
     pc1_scores *= -1
 
-# Only assign to rows where all inst vars are non-null
-valid_mask = df[INST_VARS].notna().all(axis=1)
-df.loc[valid_mask, "inst_pca"] = pc1_scores
+# Only assign to rows where all inst vars are non-null (same inst_complete
+# mask used for inst_avg above, so both indices agree on which rows count).
+df.loc[inst_complete, "inst_pca"] = pc1_scores
 
 var_exp = pca.explained_variance_ratio_
 print(ok(f"PC1 explains {var_exp[0]:.1%} of variance in the six WGI dimensions."))
