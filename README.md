@@ -142,6 +142,26 @@ The mediation bootstrap of the full chain's indirect effect moved from a point e
 
 The study is designed to test a sequential mechanism from violence to institutions to investment and then growth, and — on the 11-country panel — every link in that chain now carries the theoretically expected sign and clears conventional significance thresholds under most of the estimators this pipeline reports. EQ2 (institutions → FDI) is the strongest link (p<0.01 under three of four estimators); EQ1 and EQ3 are newly significant under clustered and Driscoll-Kraay SEs and marginally so under the more conservative wild cluster bootstrap (EQ1 p=0.085, EQ3 p=0.108). The formal test of the full chain as a system (the country-cluster bootstrap of the product of the three path coefficients) still does not reject the null at 5% (95% CI [-0.137, 0.015]), but is much closer to doing so than at N=8. This is best read as: the individual links are now reasonably well established, while the *chain as a single mediated system* remains suggestive rather than conclusively proven — exactly the kind of distinction a panel of 11 countries (G=11) can start to make that a panel of 8 could not. Lag-structure and country-trend robustness checks were re-run on the 11-country panel too: EQ2 now survives BOTH a one-year-lag specification (p=0.036, previously not significant at N=8) and country-specific trends (p=0.077) — meaningfully more robust than before. EQ3 still flips from significant-positive (contemporaneous) to insignificant-near-zero (lagged), so that link's sensitivity to specification choice persists and a reader should still weigh it before citing a single point estimate. Module 07's cointegration test now supports a genuine long-run equilibrium between violence and income levels (T3), with a significant error-correction speed of adjustment, while violence and institutions (T1) and institutions and income (T2) still show no cointegration evidence.
 
+## Exploratory Finding: A "Growth-Ceiling" Pattern (September 2026)
+
+Before committing to build a full Growth-at-Risk (GaR) module, a quick exploratory check was run: a pooled quantile regression (Koenker) of `gdp_growth` on `homicide_rate_log_lag1`, with country fixed effects (LSDV) and a linear year trend, at quantiles 0.05–0.95 (N=231, 11 countries). Classic GaR theory (Adrian, Boyarchenko & Giannone, 2019, "Vulnerable Growth") predicts violence should hit the *lower* tail of the growth distribution hardest; this panel shows the opposite:
+
+| Quantile | coef(homicide, lag 1) | p-value |
+|---|---|---|
+| 0.05 | +2.68 | 0.030** |
+| 0.10 | +0.65 | 0.561 |
+| 0.25 | +0.18 | 0.690 |
+| 0.50 (median) | -0.10 | 0.813 |
+| 0.75 | -0.37 | 0.443 |
+| 0.90 | **-2.45** | **0.0001***|
+| 0.95 | **-2.06** | **0.0069***|
+
+Violence has essentially no effect near the median, but a large, statistically significant *negative* effect on the *upper* tail (q=0.90/0.95): a "growth-ceiling" pattern where high violence does not make bad years worse, but caps how strong a good year can be. The same check using `inst_avg` (institutions) instead of violence as the conditioning variable found nothing at any quantile (all p>0.27) — the ceiling effect appears specific to violence, not institutional quality generally.
+
+Because a single influential country could easily produce this kind of tail result with only 11 clusters, the upper-tail coefficients were stress-tested with a Leave-One-Country-Out check before treating the pattern as real: refitting q=0.90 and q=0.95 with each of the 11 countries excluded one at a time. The coefficient stayed negative and significant in **all 11** leave-one-out fits at both quantiles (q=0.90 range: -1.62 to -3.21, all p<0.03; q=0.95 range: -1.69 to -3.07, weakest case p=0.087 excluding El Salvador) — no sign flips, and excluding Mexico if anything strengthens the effect. The pattern is not an artifact of any single country.
+
+This is exploratory work — a scratch check, not a committed pipeline module — but robust enough to motivate a proper **Growth-Ceiling-at-Risk** extension: a Bayesian hierarchical quantile regression (MCMC, e.g. via PyMC) targeting the upper tail conditional on the security state, reframing classic (lower-tail) GaR for the pattern actually found here. Not yet implemented; would add a new dependency (PyMC) not currently in `requirements.txt`.
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).

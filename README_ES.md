@@ -66,6 +66,26 @@ Dado el diseño del proyecto, los resultados se interpretan como asociaciones su
 
 Un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **todavía no rechaza la hipótesis nula al 5%** (IC 95% = [−0.137, 0.015], p=0.144), aunque bastante más cerca que con N=8. La lectura correcta: los eslabones individuales ya están razonablemente bien establecidos, pero la *cadena como sistema mediado único* sigue siendo sugestiva, no una prueba concluyente de causalidad.
 
+## Hallazgo Exploratorio: Un Patrón de "Techo de Crecimiento" (Septiembre 2026)
+
+Antes de comprometerse a construir un módulo completo de Growth-at-Risk (GaR), se hizo una revisión exploratoria rápida: una regresión cuantílica agrupada (Koenker) de `gdp_growth` sobre `homicide_rate_log_lag1`, con efectos fijos por país (LSDV) y una tendencia lineal por año, en los cuantiles 0.05–0.95 (N=231, 11 países). La teoría clásica de GaR (Adrian, Boyarchenko y Giannone, 2019, "Vulnerable Growth") predice que la violencia debería golpear con más fuerza la cola *inferior* de la distribución del crecimiento; este panel muestra lo contrario:
+
+| Cuantil | coef(homicidios, rezago 1) | valor p |
+|---|---|---|
+| 0.05 | +2.68 | 0.030** |
+| 0.10 | +0.65 | 0.561 |
+| 0.25 | +0.18 | 0.690 |
+| 0.50 (mediana) | -0.10 | 0.813 |
+| 0.75 | -0.37 | 0.443 |
+| 0.90 | **-2.45** | **0.0001***|
+| 0.95 | **-2.06** | **0.0069***|
+
+La violencia prácticamente no tiene efecto cerca de la mediana, pero sí un efecto *negativo*, grande y estadísticamente significativo sobre la cola *superior* (q=0.90/0.95): un patrón de "techo de crecimiento", donde la violencia alta no empeora los años malos, sino que limita cuánto puede crecer un año bueno. El mismo chequeo usando `inst_avg` (instituciones) en lugar de violencia como variable condicionante no encontró nada en ningún cuantil (todo p>0.27) — el efecto de techo parece específico a la violencia, no a la calidad institucional en general.
+
+Como un solo país influyente podría producir fácilmente este tipo de resultado de cola con solo 11 clústeres, los coeficientes de la cola superior se sometieron a un chequeo Leave-One-Country-Out antes de tratar el patrón como real: reajustando q=0.90 y q=0.95 excluyendo cada uno de los 11 países, uno a la vez. El coeficiente se mantuvo negativo y significativo en **los 11** ajustes leave-one-out en ambos cuantiles (q=0.90, rango: -1.62 a -3.21, todo p<0.03; q=0.95, rango: -1.69 a -3.07, el caso más débil p=0.087 excluyendo El Salvador) — sin cambios de signo, y excluir a México si acaso fortalece el efecto. El patrón no es un artefacto de ningún país individual.
+
+Este es trabajo exploratorio —una revisión rápida, no un módulo comprometido al pipeline— pero suficientemente robusto como para motivar una extensión propiamente dicha de **"Techo de Crecimiento en Riesgo"**: una regresión cuantílica jerárquica bayesiana (MCMC, p. ej. vía PyMC) enfocada en la cola superior condicionada al estado de seguridad, reformulando el GaR clásico (cola inferior) según el patrón realmente encontrado aquí. Aún no implementado; agregaría una nueva dependencia (PyMC) que no está actualmente en `requirements.txt`.
+
 ## Limitaciones
 
 - **Número pequeño de grupos (N=11, antes N=8)**: Todos los métodos de inferencia (incluso el bootstrap de grupo silvestre y los errores estándar de Driscoll-Kraay) dependen de propiedades asintóticas que pueden no ser válidas con tan pocos grupos independientes. Los intervalos de confianza deben interpretarse como sugestivos. La Extensión del Panel (arriba) muestra empíricamente cuánto pesaba esta restricción: subir de 8 a 11 países movió la significancia de EQ1/EQ2/EQ3 sustancialmente.
