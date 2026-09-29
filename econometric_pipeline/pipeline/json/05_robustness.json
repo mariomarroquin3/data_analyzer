@@ -656,6 +656,128 @@
       "is_baseline": false
     }
   ],
+  "eq1_voice_accountability_loco": [
+    {
+      "coef": 1.7206664827050848,
+      "se": 1.7963981269151077,
+      "pval": 0.3393467345581369,
+      "rsq_within": 0.20982798720459284,
+      "n_obs": 231,
+      "label": "Full sample",
+      "converged": true,
+      "is_baseline": true
+    },
+    {
+      "coef": 2.7441633164025743,
+      "se": 1.1184961470193975,
+      "pval": 0.015158687907757873,
+      "rsq_within": 0.3955712828418816,
+      "n_obs": 208,
+      "label": "Excl. COL",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.4891418706973871,
+      "se": 1.9355697290300027,
+      "pval": 0.4427497324503551,
+      "rsq_within": 0.18363610674524045,
+      "n_obs": 208,
+      "label": "Excl. CRI",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 2.075268040119832,
+      "se": 1.679904008854576,
+      "pval": 0.2183951254188845,
+      "rsq_within": 0.19351134138911452,
+      "n_obs": 209,
+      "label": "Excl. DOM",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.4390098092577126,
+      "se": 2.128337666536106,
+      "pval": 0.4998627006472858,
+      "rsq_within": 0.2671825196695903,
+      "n_obs": 212,
+      "label": "Excl. ECU",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.7138073041839235,
+      "se": 1.8991858260402006,
+      "pval": 0.36811141076292264,
+      "rsq_within": 0.20536347628109408,
+      "n_obs": 210,
+      "label": "Excl. GTM",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.5026696978613279,
+      "se": 1.8767423383718242,
+      "pval": 0.4244345972690873,
+      "rsq_within": 0.1995192104880903,
+      "n_obs": 208,
+      "label": "Excl. HND",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 2.3646657971898546,
+      "se": 1.6584805943761394,
+      "pval": 0.15575899643847468,
+      "rsq_within": -0.004067366699071595,
+      "n_obs": 208,
+      "label": "Excl. MEX",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.1420696260850436,
+      "se": 1.897364887085576,
+      "pval": 0.5480127069961549,
+      "rsq_within": -0.06378530009136019,
+      "n_obs": 211,
+      "label": "Excl. NIC",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 2.5857386251335206,
+      "se": 1.5123433664800734,
+      "pval": 0.08913550262574943,
+      "rsq_within": 0.25505792288489404,
+      "n_obs": 208,
+      "label": "Excl. PAN",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": 1.6833741795090986,
+      "se": 1.834597474591059,
+      "pval": 0.36005762718625656,
+      "rsq_within": 0.20769435653732027,
+      "n_obs": 220,
+      "label": "Excl. PER",
+      "converged": true,
+      "is_baseline": false
+    },
+    {
+      "coef": -1.4819065894418353,
+      "se": 1.9547730876072347,
+      "pval": 0.44944287568507435,
+      "rsq_within": -2.211469200474815,
+      "n_obs": 208,
+      "label": "Excl. SLV",
+      "converged": true,
+      "is_baseline": false
+    }
+  ],
   "eq1_controls": [
     {
       "coef": -0.08364639191881626,
