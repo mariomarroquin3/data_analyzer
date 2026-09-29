@@ -60,12 +60,12 @@ El bootstrap de mediación del efecto indirecto conjunto pasó de una estimació
 
 ## Resultados Esperados
 
-Dado el diseño del proyecto, los resultados se interpretan como asociaciones sugestivas en lugar de efectos causales definitivos. Con el panel de 11 países, cada eslabón de la cadena presenta el signo esperado por la teoría y ahora despeja los umbrales convencionales de significancia bajo la mayoría de los estimadores:
-- Una asociación negativa entre las tasas rezagadas de homicidio y la calidad institucional (ahora significativa: p=0.093 clusterizado, p=0.010 Driscoll-Kraay, p=0.085 bootstrap).
-- Una asociación positiva entre la calidad institucional y la IED (el eslabón más sólido: p<0.01 bajo tres de los cuatro estimadores) y que sobrevive tanto el rezago de un año (p=0.036) como tendencias específicas por país (p=0.077).
-- Una asociación positiva entre la IED y el crecimiento económico (ahora significativa en contemporáneo, p=0.010; sigue sin sobrevivir la especificación con rezagos, donde se vuelve no significativa).
+Dado el diseño del proyecto, los resultados se interpretan como asociaciones sugestivas en lugar de efectos causales definitivos. Los resultados dependen de forma material de dos decisiones de especificación que este documento reporta con su cifra antes/después, no solo la especificación final: el tamaño del panel (8 → 11 países, ver Extensión del Panel) y la construcción del índice institucional (3 → 6 dimensiones WGI, ver Extensión del Índice Institucional). **Bajo la especificación actual** (11 países, índice de 6 dimensiones):
+- La asociación entre violencia rezagada y calidad institucional **ya no es significativa bajo ningún estimador** (p=0.462 clusterizado, p=0.310 Driscoll-Kraay, p=0.562 bootstrap) — era marginalmente significativa con el índice de 3 dimensiones, pero no sobrevive una construcción más completa y estándar de la misma medida.
+- La asociación entre calidad institucional e IED sigue siendo significativa en su especificación primaria (el eslabón más defendible: p=0.030 clusterizado, p=0.006 Driscoll-Kraay, p=0.038 bootstrap), pero **ya no sobrevive** el rezago de un año (p=0.318) ni las tendencias específicas por país (p=0.260) que sí superaba con el índice de 3 dimensiones.
+- La asociación entre IED y crecimiento económico sigue siendo significativa en contemporáneo (p=0.010; no depende de inst_avg) y sigue sin sobrevivir la especificación con rezagos.
 
-Un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **todavía no rechaza la hipótesis nula al 5%** (IC 95% = [−0.137, 0.015], p=0.144), aunque bastante más cerca que con N=8. La lectura correcta: los eslabones individuales ya están razonablemente bien establecidos, pero la *cadena como sistema mediado único* sigue siendo sugestiva, no una prueba concluyente de causalidad.
+Un bootstrap formal por clúster de país del efecto indirecto conjunto (el producto de los tres coeficientes) **no rechaza la hipótesis nula al 5%** (IC 95% = [−0.113, 0.020], p=0.548) y está, si acaso, más lejos de hacerlo que con el índice de 3 dimensiones. La lectura honesta: el eslabón instituciones→IED es razonablemente sólido; el eslabón violencia→instituciones debe tratarse ahora como una hipótesis de trabajo, no como un resultado establecido; y la *cadena como sistema mediado único* sigue sin probarse.
 
 ## Hallazgo Exploratorio: Un Patrón de "Techo de Crecimiento" (Septiembre 2026)
 
@@ -101,7 +101,7 @@ El patrón exploratorio anterior se re-estimó como [Módulo 08](econometric_pip
 | 0.90 | -2.23 (p=0.0005***) | **-1.76** | **[-2.93, -0.59]** | **0.997** |
 | 0.95 | -2.06 (p=0.0043***) | **-2.08** | **[-3.02, -1.11]** | **1.000** |
 
-La posterior bayesiana confirma el patrón frecuentista en todos los cuantiles —el encogimiento por partial pooling mueve las estimaciones puntuales de forma moderada (p. ej. q=0.90: -2.23 → -1.76) sin cambiar la conclusión cualitativa— y los diagnósticos de MCMC fueron limpios en todos los cuantiles (R-hat ≤ 1.004, tamaño de muestra efectivo > 1,100, cero transiciones divergentes en 4 cadenas × 1,000 muestras post-calentamiento cada una). Un chequeo secundario repitiendo el mismo modelo con `inst_avg` en lugar de violencia en q=0.90/0.95 no encontró efecto de techo (P(β<0|datos) = 0.161 y 0.195, HDIs amplios y centrados cerca de cero) — el efecto es específico a la violencia, no una característica genérica de cualquier regresor en este panel.
+La posterior bayesiana confirma el patrón frecuentista en todos los cuantiles —el encogimiento por partial pooling mueve las estimaciones puntuales de forma moderada (p. ej. q=0.90: -2.23 → -1.76) sin cambiar la conclusión cualitativa— y los diagnósticos de MCMC fueron limpios en todos los cuantiles (R-hat ≤ 1.004, tamaño de muestra efectivo > 1,100, cero transiciones divergentes en 4 cadenas × 1,000 muestras post-calentamiento cada una). Un chequeo secundario repitiendo el mismo modelo con `inst_avg` en lugar de violencia en q=0.90/0.95 no encontró efecto de techo (P(β<0|datos) = 0.367 y 0.597 —prácticamente un volado—, HDIs amplios y centrados cerca de cero) — el efecto es específico a la violencia, no una característica genérica de cualquier regresor en este panel. (Cifras con el índice institucional de 6 dimensiones; ver Extensión del Índice Institucional más abajo.)
 
 **Escenario Growth-Ceiling-at-Risk.** Manteniendo país y año en su nivel promedio, la posterior responde directamente la pregunta aplicada: ¿cuánto baja el techo de crecimiento alcanzable cuando la violencia rezagada pasa de su percentil 10 empírico al percentil 90?
 
@@ -111,6 +111,28 @@ La posterior bayesiana confirma el patrón frecuentista en todos los cuantiles �
 | 0.95 | 10.29 pts | 6.43 pts | 3.86 pts | [2.06, 5.61] | >0.999 (positiva en cada muestra posterior) |
 
 Advertencias: esto sigue siendo exploratorio —motivado por un hallazgo de revisión rápida, no una hipótesis pre-registrada—. G=11 sigue siendo pequeño incluso para un modelo jerárquico; el partial pooling regulariza pero no puede generar información que los datos no contienen, y los priors son débilmente informativos, no planos. La verosimilitud Asimétrica de Laplace estima un cuantil a la vez y no garantiza por sí misma cuantiles monótonos en tau —de hecho, el hallazgo central es precisamente que el efecto NO es monótono: nulo en la mediana, negativo solo en la cola superior.
+
+## Extensión del Índice Institucional (Septiembre 2026)
+
+El índice institucional (`inst_avg` / `inst_pca`) antes usaba solo 3 de las 6 dimensiones de los Worldwide Governance Indicators (WGI) de Kaufmann et al. (2010) (estado de derecho, control de corrupción, estabilidad política) —un subconjunto arbitrario, no la construcción estándar. Ahora usa las seis, agregando voz y rendición de cuentas, efectividad gubernamental y calidad regulatoria. También se agregaron remesas (% del PIB), un canal económico de primer orden en la región (solo El Salvador ronda 20-25% del PIB), probadas como control de robustez.
+
+**El índice de 6 dimensiones es internamente coherente**: alfa de Cronbach = 0.922 (más alto que con 3 dimensiones), KMO = 0.863, PC1 explica 72.9% de la varianza de las seis dimensiones, y todos los loadings del PCA son positivos (0.31–0.46) —un solo factor de "calidad de gobernanza general" subyace claramente en las seis series, e inst_avg/inst_pca siguen siendo casi idénticos (r = 0.9992).
+
+**Pero la expansión cambia materialmente los resultados de EQ1 y EQ2, y el hallazgo honesto es que son menos robustos de lo que sugería el índice de 3 dimensiones:**
+
+| | EQ1 (violencia→instituciones) | EQ2 (instituciones→IED) | EQ3 (IED→crecimiento) |
+|---|---|---|---|
+| p (clusterizado), 3→6 dim. | 0.093 → 0.462 | 0.030 → 0.030 | 0.010 → 0.010 |
+| p (Driscoll-Kraay) | 0.010 → 0.310 | 0.006 → 0.006 | — |
+| p (bootstrap de clúster silvestre) | 0.085 → 0.562 | 0.002 → 0.038 | 0.108 → 0.108 |
+| ¿Sobrevive rezago de 1 año? | — | Sí (p=0.036) → **No (p=0.318)** | — |
+| ¿Sobrevive tendencias por país? | — | Sí (p=0.077) → **No (p=0.260)** | — |
+
+EQ1 (violencia → instituciones) ya no es significativo bajo ningún estimador. Probar cada dimensión WGI individualmente explica por qué: `rule_of_law` por sí sola sigue siendo significativa (coef=-1.96, p=0.037) y la mayoría de las dimensiones apuntan en la dirección esperada (negativa), pero `voice_accountability` se mueve en la dirección *contraria* (coef=+1.72, p=0.339) —diluyendo el promedio compuesto. EQ2 (instituciones → IED) sigue siendo significativa en su especificación primaria (contemporánea), pero **ya no sobrevive** los chequeos de rezago de un año ni de tendencias por país que superaba con 3 dimensiones —su aparente robustez era en parte un artefacto del índice más estrecho. EQ3 está esencialmente sin cambios (su propia significancia proviene de `fdi_percent_gdp`, no de `inst_avg`). El bootstrap de mediación de la cadena completa se debilita aún más (efecto indirecto -0.011, IC 95% [-0.113, 0.020], p=0.548, vs. -0.031/p=0.144 con 3 dimensiones).
+
+Esto se reporta como una advertencia genuina e importante, no se suaviza: **EQ1 siempre fue el eslabón más débil e inestable de este pipeline (ver cada sección de robustez anterior), y una construcción más completa y estándar del índice institucional muestra que no sobrevive en absoluto** —el eslabón violencia→instituciones debe leerse ahora como una hipótesis de trabajo que motiva el resto de la cadena, no como un resultado establecido. EQ2 sigue siendo el eslabón más defendible del pipeline, pero con una base de evidencia más estrecha que la documentada previamente.
+
+**Chequeo de robustez con remesas** (agregadas como control, no como especificación primaria, ya que son en sí mismas un candidato a mediador/collider entre la emigración inducida por violencia y el crecimiento): EQ1 no se ve afectada (p=0.179, sigue sin ser significativa). EQ2 se fortalece sustancialmente al incluir remesas (coef 0.611→0.967, p=0.030→0.0013) —posiblemente porque las remesas absorben varianza que de otro modo confunde la relación instituciones-IED, aunque esta variante individual tampoco debe sobre-interpretarse. EQ3 no cambia (p=0.025, era p=0.018).
 
 ## Limitaciones
 
