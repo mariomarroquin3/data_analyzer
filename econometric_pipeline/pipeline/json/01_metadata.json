@@ -47,7 +47,10 @@
   "inst_vars": [
     "rule_of_law",
     "control_corruption",
-    "political_stability"
+    "political_stability",
+    "voice_accountability",
+    "government_effectiveness",
+    "regulatory_quality"
   ],
   "controls": [
     "gdp_per_capita_log",
@@ -56,19 +59,22 @@
     "population_log",
     "unemployment"
   ],
-  "pca_var_exp_pc1": 0.7686525638180425,
+  "pca_var_exp_pc1": 0.729038623265389,
   "pca_loadings": {
-    "rule_of_law": 0.6311945735307457,
-    "control_corruption": 0.5913311776351651,
-    "political_stability": 0.5019171731490654
+    "rule_of_law": 0.4575454187375039,
+    "control_corruption": 0.42613518822521956,
+    "political_stability": 0.3127640837130129,
+    "voice_accountability": 0.449850860478978,
+    "government_effectiveness": 0.38046249456385084,
+    "regulatory_quality": 0.40511987441288694
   },
-  "cronbach_alpha": 0.8449252929097468,
-  "kmo": 0.5637067988226659,
-  "corr_indices": 0.9991107937384841,
+  "cronbach_alpha": 0.922104806591747,
+  "kmo": 0.8633496212859196,
+  "corr_indices": 0.999233378277083,
   "within_pct": {
     "homicide_rate_log": 58.48018004432676,
-    "inst_avg": 32.50621244334159,
-    "inst_pca": 32.2532609164658,
+    "inst_avg": 33.4112054776926,
+    "inst_pca": 33.10270364459656,
     "fdi_percent_gdp": 70.56617643949427,
     "gdp_growth": 95.931140634487,
     "gdp_per_capita_log": 58.07314832150223
