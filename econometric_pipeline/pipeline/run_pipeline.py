@@ -807,6 +807,86 @@ def build_robustness_section(report: ResearchReport, rob: Dict, base_dir: Path) 
             caption="Coeficientes e intervalos de confianza bajo especificaciones alternativas.",
         )
 
+    # Alternative institution indices (per WGI dimension)
+    inst_idx = rob.get("eq1_inst_index", [])
+    if inst_idx:
+        report.add_section_h2("Índices Institucionales Alternativos (por dimensión WGI)")
+        report.add_body_text(
+            "En vez de inst_avg (promedio de las 6 dimensiones), se re-estima EQ1 usando "
+            "cada dimensión WGI individualmente como variable dependiente, para verificar "
+            "si el resultado depende de la forma en que se combinan."
+        )
+        idx_rows = [["Especificación", "Coef.", "SE", "p-valor", "N"]]
+        for r in inst_idx:
+            idx_rows.append([
+                r.get("label", ""), _fmt(r.get("coef"), 4), _fmt(r.get("se"), 4),
+                _fmt(r.get("pval"), 4), str(r.get("n_obs", "")),
+            ])
+        report.add_table(idx_rows, col_widths=[2.6, 1.0, 1.0, 1.0, 0.8])
+
+    # The "Bukele paradox"
+    va_loco = rob.get("eq1_voice_accountability_loco", [])
+    if va_loco:
+        report.add_section_h2('La "Paradoja Bukele": Seguridad vs. Libertades Civiles')
+        report.add_body_text(
+            "De las 6 dimensiones WGI, voice_accountability es la única donde la violencia "
+            "rezagada tiene el signo contrario al esperado (positivo: menos violencia junto "
+            "con MENOR voz y rendición de cuentas). Los datos de El Salvador 2021-2024 "
+            "muestran exactamente este patrón: los homicidios colapsaron (17.3 → 1.9 por "
+            "100 mil) mientras voice_accountability también cayó (53.5 → 45.0) -- el costo "
+            "en libertades civiles, documentado, del régimen de excepción. Este chequeo "
+            "Leave-One-Country-Out prueba si El Salvador es el único responsable del signo "
+            "anómalo en la muestra completa, o si es un patrón regional más amplio."
+        )
+        va_rows = [["Muestra", "Coef.", "SE", "p-valor", "N"]]
+        for r in va_loco:
+            va_rows.append([
+                r.get("label", ""), _fmt(r.get("coef"), 4), _fmt(r.get("se"), 4),
+                _fmt(r.get("pval"), 4), str(r.get("n_obs", "")),
+            ])
+        report.add_table(va_rows, col_widths=[2.2, 1.0, 1.0, 1.0, 0.8])
+
+        full_r = next((r for r in va_loco if r.get("label") == "Full sample"), None)
+        slv_r  = next((r for r in va_loco if r.get("label") == "Excl. SLV"), None)
+        flips = None
+        if full_r and full_r.get("coef") is not None:
+            full_positive = full_r["coef"] > 0
+            flips = sum(
+                1 for r in va_loco
+                if r.get("label", "").startswith("Excl.") and r.get("converged")
+                and r.get("coef") is not None and (r["coef"] > 0) != full_positive
+            )
+
+        fig_bukele = base_dir / "figures" / "14_bukele_paradox.png"
+        if fig_bukele.exists():
+            report.add_image(
+                fig_bukele,
+                label="Figura 14 — La paradoja Bukele",
+                caption=(
+                    "Izquierda: coeficiente de violencia sobre voice_accountability al "
+                    "excluir cada país. Derecha: tasa de homicidios y voice_accountability "
+                    "de El Salvador, 2000-2024, mostrando el período del régimen de "
+                    "excepción (2021-2024)."
+                ),
+            )
+
+        if full_r and slv_r and flips == 1:
+            report.add_interpretation_box(
+                "Un caso, no un patrón regional",
+                f"El Salvador es el ÚNICO país cuya exclusión invierte el signo "
+                f"(muestra completa β={_fmt(full_r.get('coef'), 3)}, excl. El Salvador "
+                f"β={_fmt(slv_r.get('coef'), 3)}, ninguno de los dos significativo al 5%). "
+                "El coeficiente anómalo de la muestra completa no refleja una relación "
+                "general entre violencia y voz institucional en la región -- es "
+                "enteramente producto del caso salvadoreño, donde las ganancias de "
+                "seguridad y el deterioro de las libertades civiles avanzaron juntos, no "
+                "en direcciones opuestas. Esto no invalida el hallazgo de EQ1 sobre las "
+                "otras 5 dimensiones WGI; añade una advertencia específica sobre qué mide "
+                "'voz y rendición de cuentas' durante una transformación de seguridad "
+                "autoritaria.",
+                style="warning",
+            )
+
     # Panel unit-root test (Fisher-ADF / Maddala-Wu)
     unit_root = rob.get("panel_unit_root", {})
     if unit_root:

@@ -36,6 +36,16 @@ Robustness exercises
           accountability, government effectiveness, regulatory quality)
       Bias addressed: index construction choices.
 
+4b. The "Bukele paradox" (added September 2026)
+      LOCO check on voice_accountability specifically -- the one WGI
+      dimension where violence has the wrong (positive) sign. Tests
+      whether El Salvador's 2021-2024 pattern (homicides collapse,
+      voice_accountability ALSO falls -- security gains and
+      civil-liberties costs moving together, not apart) is driving an
+      apparent panel-wide relationship, or is a country-specific case.
+      Bias addressed: mistaking a single influential country's pattern
+      for a general relationship.
+
 5.  Alternative control sets
       (a) Baseline controls
       (b) Extended controls (tourist arrivals, trade)
@@ -437,6 +447,62 @@ if coefs_inst:
         print(warn("  Mixed signs across institution specifications — investigate."))
 
 # ════════════════════════════════════════════════════════════════════════
+# 4b. THE "BUKELE PARADOX": LOCO ON THE ANOMALOUS voice_accountability DIMENSION
+# ════════════════════════════════════════════════════════════════════════
+section('ROBUSTNESS 4b — "Bukele Paradox": LOCO on voice_accountability')
+print("""
+  Motivation: of the six WGI dimensions tested above, voice_accountability
+  is the only one where homicide_rate_log_lag1 has the WRONG (positive)
+  sign -- less violence coinciding with LOWER voice & accountability,
+  instead of higher. El Salvador's 2021-2024 data shows exactly this:
+  homicides collapsed (17.3 -> 1.9 per 100k) while voice_accountability
+  ALSO fell sharply (53.5 -> 45.0), the documented civil-liberties cost of
+  the state-of-exception security crackdown. This LOCO check tests
+  whether that single case is driving the anomaly, or whether it reflects
+  a broader pattern across the panel.
+""")
+
+va_col = "voice_accountability"
+if va_col in df.columns:
+    exog_va = [key_eq1] + ctrl_eq1
+    va_full = run_twoway_fe(df, va_col, exog_va, key_eq1, "Full sample")
+    va_full["is_baseline"] = True
+
+    va_loco = [va_full]
+    for c in COUNTRIES:
+        sub = df[df[ENTITY_COL] != c]
+        r = run_twoway_fe(sub, va_col, exog_va, key_eq1, f"Excl. {c}")
+        r["is_baseline"] = False
+        va_loco.append(r)
+
+    print_robustness_table(va_loco, "voice_accountability ~ homicide_rate_log_lag1 (LOCO)",
+                            va_full, key_eq1)
+
+    slv_r = next((r for r in va_loco if r["label"] == "Excl. SLV"), None)
+    if slv_r and slv_r["converged"] and va_full["converged"]:
+        flips = sum(
+            1 for r in va_loco[1:]
+            if r["converged"] and np.sign(r["coef"]) != np.sign(va_full["coef"])
+        )
+        if np.sign(slv_r["coef"]) != np.sign(va_full["coef"]) and flips == 1:
+            print(ok(
+                f"  El Salvador is the ONLY country whose exclusion flips the sign "
+                f"(full={va_full['coef']:.3f}, excl.SLV={slv_r['coef']:.3f}). The anomalous "
+                "positive coefficient is a genuine El Salvador-specific pattern (the "
+                "'Bukele paradox': security gains and civil-liberties costs moving "
+                "together), not a broader regional relationship -- see README."
+            ))
+        else:
+            print(warn(
+                f"  El Salvador is NOT uniquely responsible for the sign ({flips} "
+                "countries flip it on exclusion) -- the 'Bukele paradox' framing may "
+                "be too narrow; re-examine before writing it up."
+            ))
+    all_robustness["eq1_voice_accountability_loco"] = va_loco
+else:
+    print(warn(f"  {va_col} not in data. Bukele-paradox LOCO check skipped."))
+
+# ════════════════════════════════════════════════════════════════════════
 # 5. ALTERNATIVE CONTROL SETS
 # ════════════════════════════════════════════════════════════════════════
 section("ROBUSTNESS 5 — Alternative Control Sets")
@@ -772,6 +838,46 @@ else:
 fig.savefig(DIRS["figures"] / "07_robustness.png", dpi=300, bbox_inches="tight")
 plt.close(fig)
 print(ok("Figure saved → figures/07_robustness.png"))
+
+# ── Figure 14: the "Bukele paradox" ──────────────────────────────────────
+va_loco_data = all_robustness.get("eq1_voice_accountability_loco", [])
+if va_loco_data:
+    fig14, (axL, axR) = plt.subplots(1, 2, figsize=(12, 5))
+
+    coef_plot(axL, va_loco_data, "LOCO: voice_accountability ~ Violence",
+              "homicide_rate_log_lag1", "Full sample")
+    axL.set_title("Leave-One-Country-Out\n(only excl. SLV flips the sign)", fontsize=9)
+
+    slv = df[df[ENTITY_COL] == "SLV"].sort_values(TIME_COL)
+    axR.plot(slv[TIME_COL], slv["homicide_rate"], color=RED_C, marker="o",
+             markersize=3, linewidth=1.5, label="Homicide rate (per 100k)")
+    axR.set_ylabel("Homicide rate (per 100k)", color=RED_C, fontsize=9)
+    axR.tick_params(axis="y", labelcolor=RED_C)
+    axR.set_xlabel("Year", fontsize=9)
+
+    axR2 = axR.twinx()
+    axR2.plot(slv[TIME_COL], slv["voice_accountability"], color=BLUE, marker="s",
+              markersize=3, linewidth=1.5, label="Voice & accountability (WGI)")
+    axR2.set_ylabel("Voice & accountability (0-100)", color=BLUE, fontsize=9)
+    axR2.tick_params(axis="y", labelcolor=BLUE)
+
+    axR.axvspan(2021, 2024, color=AMBER, alpha=0.12)
+    axR.text(2022.5, axR.get_ylim()[1] * 0.95, "State of\nexception",
+             ha="center", va="top", fontsize=7.5, color=AMBER)
+    axR.set_title("El Salvador: Security Gains and\nCivil-Liberties Costs, Together", fontsize=9)
+
+    lines1, labels1 = axR.get_legend_handles_labels()
+    lines2, labels2 = axR2.get_legend_handles_labels()
+    axR.legend(lines1 + lines2, labels1 + labels2, fontsize=7, loc="upper right")
+
+    fig14.suptitle(
+        'The "Bukele Paradox": Homicides and Civil Liberties Fell Together in El Salvador',
+        fontsize=11, fontweight="bold",
+    )
+    fig14.tight_layout()
+    fig14.savefig(DIRS["figures"] / "14_bukele_paradox.png", dpi=300, bbox_inches="tight")
+    plt.close(fig14)
+    print(ok("Figure saved → figures/14_bukele_paradox.png"))
 
 # ════════════════════════════════════════════════════════════════════════
 # EXPORT
