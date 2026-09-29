@@ -90,7 +90,10 @@ wgi_hom['country_code'] = wgi_hom['country_code'].apply(convert_iso2_to_iso3)
 wgi_hom['year'] = wgi_hom['year'].apply(normalize_year)
 wgi_hom = wgi_hom.dropna(subset=['country_code', 'year'])
 
-wgi = wgi_hom[['country_code', 'year', 'control_corruption', 'political_stability', 'rule_of_law']]
+wgi = wgi_hom[[
+    'country_code', 'year', 'control_corruption', 'political_stability', 'rule_of_law',
+    'voice_accountability', 'government_effectiveness', 'regulatory_quality',
+]]
 print(f"   WGI shape después de limpieza: {wgi.shape}")
 print(f"   Códigos únicos: {sorted(wgi['country_code'].unique())}")
 
@@ -109,7 +112,7 @@ economic['year'] = economic['year'].apply(normalize_year)
 economic = economic[[
     'country_code', 'year', 'exports_percent_gdp', 'imports_percent_gdp',
     'fdi_percent_gdp', 'gdp_growth', 'gdp_per_capita', 'inflation',
-    'population', 'tourist_arrivals', 'unemployment'
+    'population', 'tourist_arrivals', 'unemployment', 'remittances_percent_gdp',
 ]]
 economic = economic.dropna(subset=['country_code', 'year'])
 print(f"   Shape después de limpieza: {economic.shape}")
@@ -219,6 +222,9 @@ final_columns = [
     'control_corruption',
     'political_stability',
     'rule_of_law',
+    'voice_accountability',
+    'government_effectiveness',
+    'regulatory_quality',
     'homicide_rate',
     'exports_percent_gdp',
     'imports_percent_gdp',
@@ -228,7 +234,8 @@ final_columns = [
     'inflation',
     'population',
     'tourist_arrivals',
-    'unemployment'
+    'unemployment',
+    'remittances_percent_gdp',
 ]
 
 final_dataset = merged[final_columns].sort_values(['country_code', 'year']).reset_index(drop=True)

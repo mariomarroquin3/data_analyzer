@@ -98,6 +98,9 @@ model_cols = [
     "control_corruption",
     "political_stability",
     "rule_of_law",
+    "voice_accountability",
+    "government_effectiveness",
+    "regulatory_quality",
 
     # crimen
     "homicide_rate_log",
@@ -110,7 +113,8 @@ model_cols = [
     "inflation",
     "population_log",
     "tourist_arrivals_log",
-    "unemployment"
+    "unemployment",
+    "remittances_percent_gdp",
 ]
 
 df_model = df[model_cols].copy()

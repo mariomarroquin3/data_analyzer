@@ -42,6 +42,16 @@ INDICADORES = {
     "GOV_WGI_RL.SC": "rule_of_law",
     "GOV_WGI_PV.SC": "political_stability",
     "GOV_WGI_CC.SC": "control_corruption",
+    # NOTE (September 2026): added the remaining 3 of the 6 Kaufmann et al.
+    # (2010) Worldwide Governance Indicators, confirmed live via
+    # GET /v2/country/{c}/indicator/{code} before adoption (same 0-100
+    # score scale, source id 3, as the three dimensions above). The
+    # institution index (utils/01_data_preparation.py) now uses all six,
+    # the standard construction in the literature, instead of an
+    # arbitrary subset of three.
+    "GOV_WGI_VA.SC": "voice_accountability",
+    "GOV_WGI_GE.SC": "government_effectiveness",
+    "GOV_WGI_RQ.SC": "regulatory_quality",
     "VC.IHR.PSRC.P5": "homicide_rate"
 }
 

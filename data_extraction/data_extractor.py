@@ -31,7 +31,12 @@ INDICADORES = {
     'exports_percent_gdp': 'NE.EXP.GNFS.ZS',
     'imports_percent_gdp': 'NE.IMP.GNFS.ZS',
     'tourist_arrivals': 'ST.INT.ARVL',
-    'population': 'SP.POP.TOTL'
+    'population': 'SP.POP.TOTL',
+    # Added September 2026: remittances are a first-order channel in this
+    # region (El Salvador alone runs ~20-25% of GDP), plausibly linked to
+    # both violence (emigration push) and growth (household consumption) --
+    # confirmed live via direct API call before adoption.
+    'remittances_percent_gdp': 'BX.TRF.PWKR.DT.GD.ZS',
 }
 
 AÑOS = set(range(2000, 2025))

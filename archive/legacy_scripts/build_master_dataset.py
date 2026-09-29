@@ -47,6 +47,6 @@ for lag in [1,2,3]:
 
 df.to_csv(MASTER_FILE,index=False)
 
-cols=["country_code","country_name","year","time_trend","rule_of_law","control_corruption","political_stability","homicide_rate","homicide_rate_log","homicide_rate_lag1","homicide_rate_lag2","homicide_rate_lag3","homicide_rate_log_lag1","homicide_rate_log_lag2","homicide_rate_log_lag3","population","population_log","gdp_per_capita","gdp_per_capita_log","gdp_growth","inflation","unemployment","exports_percent_gdp","trade_percent_gdp","fdi_percent_gdp","tourist_arrivals","tourist_arrivals_log"]
+cols=["country_code","country_name","year","time_trend","rule_of_law","control_corruption","political_stability","voice_accountability","government_effectiveness","regulatory_quality","homicide_rate","homicide_rate_log","homicide_rate_lag1","homicide_rate_lag2","homicide_rate_lag3","homicide_rate_log_lag1","homicide_rate_log_lag2","homicide_rate_log_lag3","population","population_log","gdp_per_capita","gdp_per_capita_log","gdp_growth","inflation","unemployment","exports_percent_gdp","trade_percent_gdp","fdi_percent_gdp","tourist_arrivals","tourist_arrivals_log","remittances_percent_gdp"]
 df[[c for c in cols if c in df.columns]].to_csv(MODEL_FILE,index=False)
 print("Done")
