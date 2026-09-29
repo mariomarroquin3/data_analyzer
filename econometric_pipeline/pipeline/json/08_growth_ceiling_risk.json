@@ -1,0 +1,224 @@
+{
+  "key_x": "homicide_rate_log_lag1",
+  "n_obs": 241,
+  "n_countries": 11,
+  "countries": [
+    "COL",
+    "CRI",
+    "DOM",
+    "ECU",
+    "GTM",
+    "HND",
+    "MEX",
+    "NIC",
+    "PAN",
+    "PER",
+    "SLV"
+  ],
+  "quantiles": {
+    "0.05": {
+      "bayes": {
+        "q": 0.05,
+        "beta_mean": 1.3049941340171063,
+        "beta_sd": 0.685333289547679,
+        "beta_hdi_lo": -0.025533000080223175,
+        "beta_hdi_hi": 2.5275998646425477,
+        "beta_rhat": 1.0013546232328554,
+        "beta_ess_bulk": 1124.015521201329,
+        "p_beta_negative": 0.02725,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": 2.2098780939903406,
+        "se": 1.0705590696263843,
+        "pval": 0.0401277149104929
+      }
+    },
+    "0.10": {
+      "bayes": {
+        "q": 0.1,
+        "beta_mean": 0.4923085773219303,
+        "beta_sd": 0.5248661628374304,
+        "beta_hdi_lo": -0.529400407203163,
+        "beta_hdi_hi": 1.437841918961015,
+        "beta_rhat": 1.0009572575925965,
+        "beta_ess_bulk": 1529.4684495272418,
+        "p_beta_negative": 0.17125,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": 0.2522321946543603,
+        "se": 1.0981582271005428,
+        "pval": 0.8185412553727579
+      }
+    },
+    "0.25": {
+      "bayes": {
+        "q": 0.25,
+        "beta_mean": 0.19270263392320625,
+        "beta_sd": 0.3512929597750127,
+        "beta_hdi_lo": -0.46455414159063213,
+        "beta_hdi_hi": 0.8430338957355022,
+        "beta_rhat": 1.0039763326124913,
+        "beta_ess_bulk": 1186.0674045144367,
+        "p_beta_negative": 0.2945,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": 0.7558906969726238,
+        "se": 0.3745887072350369,
+        "pval": 0.04477100257285892
+      }
+    },
+    "0.50": {
+      "bayes": {
+        "q": 0.5,
+        "beta_mean": -0.23124781474516418,
+        "beta_sd": 0.297831487886709,
+        "beta_hdi_lo": -0.7692337832289469,
+        "beta_hdi_hi": 0.372529111068098,
+        "beta_rhat": 1.004262692608901,
+        "beta_ess_bulk": 1310.8320970523873,
+        "p_beta_negative": 0.79,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": -0.08245150349968661,
+        "se": 0.3757801612169176,
+        "pval": 0.8265237130654569
+      }
+    },
+    "0.75": {
+      "bayes": {
+        "q": 0.75,
+        "beta_mean": -0.44627651379912503,
+        "beta_sd": 0.39546390714758684,
+        "beta_hdi_lo": -1.2125669148604903,
+        "beta_hdi_hi": 0.2622045498121901,
+        "beta_rhat": 1.0039206642868412,
+        "beta_ess_bulk": 1115.8667485255514,
+        "p_beta_negative": 0.88025,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": -0.19497771124407165,
+        "se": 0.4293643874067825,
+        "pval": 0.65018323152954
+      }
+    },
+    "0.90": {
+      "bayes": {
+        "q": 0.9,
+        "beta_mean": -1.7620599857766492,
+        "beta_sd": 0.6407582017880796,
+        "beta_hdi_lo": -2.9337977340938886,
+        "beta_hdi_hi": -0.5858650783231435,
+        "beta_rhat": 1.0034954054795284,
+        "beta_ess_bulk": 1135.3172484374438,
+        "p_beta_negative": 0.99675,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": -2.2318662979668056,
+        "se": 0.6276879976919417,
+        "pval": 0.0004583216056715075
+      }
+    },
+    "0.95": {
+      "bayes": {
+        "q": 0.95,
+        "beta_mean": -2.0792252741748243,
+        "beta_sd": 0.5201926892782639,
+        "beta_hdi_lo": -3.0178596238179884,
+        "beta_hdi_hi": -1.107308235793355,
+        "beta_rhat": 1.0031307852217841,
+        "beta_ess_bulk": 1213.1124213847436,
+        "p_beta_negative": 1.0,
+        "n_divergences": 0,
+        "n_obs": 241,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": -2.064545026783852,
+        "se": 0.7160395871913837,
+        "pval": 0.004312018963344339
+      }
+    }
+  },
+  "secondary_institutions": {
+    "0.90": {
+      "bayes": {
+        "q": 0.9,
+        "beta_mean": 0.5981557129063326,
+        "beta_sd": 0.6107844488956076,
+        "beta_hdi_lo": -0.5027354151771807,
+        "beta_hdi_hi": 1.7922884010724962,
+        "beta_rhat": 1.0006959642327624,
+        "beta_ess_bulk": 1601.022558213749,
+        "p_beta_negative": 0.16075,
+        "n_divergences": 0,
+        "n_obs": 264,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": -0.16757490708562942,
+        "se": 1.1114976264868333,
+        "pval": 0.8802822105009411
+      }
+    },
+    "0.95": {
+      "bayes": {
+        "q": 0.95,
+        "beta_mean": 0.5453095387044361,
+        "beta_sd": 0.6391232817490018,
+        "beta_hdi_lo": -0.6018806370820413,
+        "beta_hdi_hi": 1.7771241055781042,
+        "beta_rhat": 1.0014966274534203,
+        "beta_ess_bulk": 1401.8216999807469,
+        "p_beta_negative": 0.195,
+        "n_divergences": 0,
+        "n_obs": 264,
+        "n_countries": 11
+      },
+      "freq": {
+        "coef": 1.5643366576227684,
+        "se": 1.1340724084087697,
+        "pval": 0.16899995277440122
+      }
+    }
+  },
+  "growth_ceiling_scenario": {
+    "0.90": {
+      "x_low_violence": 2.184793537342662,
+      "x_high_violence": 4.042110500544356,
+      "ceiling_low_violence_mean": 8.793614206959525,
+      "ceiling_high_violence_mean": 5.520910305197617,
+      "ceiling_drop_mean": 3.2727039017619073,
+      "ceiling_drop_hdi_lo": 1.0881371481170632,
+      "ceiling_drop_hdi_hi": 5.448992298135272,
+      "p_drop_positive": 0.99675
+    },
+    "0.95": {
+      "x_low_violence": 2.184793537342662,
+      "x_high_violence": 4.042110500544356,
+      "ceiling_low_violence_mean": 10.292622677550353,
+      "ceiling_high_violence_mean": 6.430842305507759,
+      "ceiling_drop_mean": 3.861780372042595,
+      "ceiling_drop_hdi_lo": 2.0566223698319392,
+      "ceiling_drop_hdi_hi": 5.6051218718786355,
+      "p_drop_positive": 1.0
+    }
+  }
+}
