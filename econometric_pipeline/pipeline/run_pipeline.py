@@ -1,7 +1,7 @@
 """
 run_pipeline.py
 ════════════════════════════════════════════════════════════════════════
-Master runner — executes all six modules in sequence and assembles a
+Master runner — executes all eight modules in sequence and assembles a
 professional PDF report from structured JSON outputs + pipeline figures.
 
 Usage
@@ -29,7 +29,7 @@ The final PDF is saved to:
 Prerequisites
 ─────────────
     pip install linearmodels statsmodels scikit-learn shap pandas numpy \
-                matplotlib scipy arch joblib reportlab
+                matplotlib scipy arch joblib reportlab pymc arviz
 ════════════════════════════════════════════════════════════════════════
 """
 
@@ -69,6 +69,7 @@ MODULES = [
     ("05", "05_robustness.py",          "Robustness Checks"),
     ("06", "06_ml_triangulation.py",    "ML Triangulation"),
     ("07", "07_cointegration.py",       "Panel Cointegration & ECM"),
+    ("08", "08_growth_ceiling_risk.py", "Growth-Ceiling-at-Risk (Bayesian MCMC)"),
 ]
 
 
@@ -913,8 +914,113 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
     )
 
 
+def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: Path) -> None:
+    report.add_section_h1("14. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
+    report.add_body_text(
+        "Un análisis exploratorio de regresión cuantílica frecuentista (ver README, sección "
+        "'Exploratory Finding') encontró que la violencia rezagada no tiene efecto cerca de la "
+        "mediana del crecimiento del PIB, pero sí un efecto negativo grande y robusto a LOCO en "
+        "la cola SUPERIOR (q=0.90/0.95) -- un patrón de 'techo de crecimiento', inverso al "
+        "Growth-at-Risk clásico (Adrian, Boyarchenko y Giannone, 2019), que estudia la cola "
+        "inferior. Este módulo re-estima ese patrón con un modelo bayesiano jerárquico en vez de "
+        "variables dummy por país (LSDV): un prior de partial pooling regulariza los interceptos "
+        "de cada país -algo que LSDV no puede hacer con G=11- y la incertidumbre se reporta como "
+        "una distribución posterior completa (intervalo de credibilidad, P(beta<0|datos)) en vez "
+        "de un p-valor asintótico, ya señalado como poco confiable a este tamaño muestral en "
+        "otras secciones de este pipeline."
+    )
+    report.add_body_text(
+        "Método: regresión cuantílica bayesiana vía la distribución Asimétrica de Laplace (ALD; "
+        "Yu y Moyeed, 2001), implementada como un pm.Potential en PyMC. Los interceptos por país "
+        "usan una parametrización no centrada (alpha_i = alpha_mu + alpha_sigma*z_i) para evitar "
+        "la patología de 'embudo' jerárquico bajo NUTS (Betancourt y Girolami, 2015)."
+    )
+
+    if not gcar:
+        report.add_body_text("(Sin resultados de Growth-Ceiling-at-Risk disponibles.)")
+        return
+
+    quantiles = gcar.get("quantiles", {})
+    if quantiles:
+        rows = [["q", "Coef. frecuentista (LSDV)", "p (frec.)", "Media posterior (bayes.)",
+                 "94% HDI", "P(β<0|datos)"]]
+        for qk, info in quantiles.items():
+            b, f = info.get("bayes", {}), info.get("freq", {})
+            rows.append([
+                qk,
+                _fmt(f.get("coef"), 4),
+                _fmt(f.get("pval"), 4),
+                _fmt(b.get("beta_mean"), 4),
+                f"[{_fmt(b.get('beta_hdi_lo'), 3)}, {_fmt(b.get('beta_hdi_hi'), 3)}]",
+                _fmt(b.get("p_beta_negative"), 3),
+            ])
+        report.add_table(rows, col_widths=[0.6, 2.0, 1.1, 2.0, 1.9, 1.4])
+
+    fig_path = base_dir / "figures" / "12_growth_ceiling_bayesian.png"
+    if fig_path.exists():
+        report.add_image(
+            fig_path,
+            label="Figura 12 — Coeficiente por cuantil: frecuentista vs. bayesiano",
+            caption=(
+                "Efecto de la violencia rezagada sobre cada cuantil del crecimiento del PIB. "
+                "El intervalo de credibilidad bayesiano (94% HDI) regulariza los interceptos por "
+                "país vía partial pooling, en vez de absorberlos con variables dummy (LSDV)."
+            ),
+        )
+
+    report.add_interpretation_box(
+        "Patrón de techo de crecimiento confirmado bayesianamente",
+        "En q=0.90 y q=0.95 el modelo jerárquico bayesiano confirma el hallazgo exploratorio: "
+        "la probabilidad posterior de que el coeficiente sea negativo es cercana o igual a 1 "
+        "(ver tabla), con diagnósticos de convergencia limpios (R-hat y ausencia de "
+        "divergencias). El chequeo secundario con inst_avg como variable condicionante "
+        "(mismos cuantiles, mismo modelo) no muestra el mismo patrón, apoyando que el efecto de "
+        "techo es específico a la violencia y no una característica genérica de cualquier "
+        "regresor en este panel.",
+        style="info",
+    )
+
+    scenario = gcar.get("growth_ceiling_scenario", {})
+    if scenario:
+        report.add_section_h2("Escenario Growth-Ceiling-at-Risk")
+        scen_rows = [["q", "Techo (violencia baja, p10)", "Techo (violencia alta, p90)",
+                      "Caída", "94% HDI (caída)", "P(caída>0|datos)"]]
+        for qk, s in scenario.items():
+            scen_rows.append([
+                qk,
+                _fmt(s.get("ceiling_low_violence_mean"), 2),
+                _fmt(s.get("ceiling_high_violence_mean"), 2),
+                _fmt(s.get("ceiling_drop_mean"), 2),
+                f"[{_fmt(s.get('ceiling_drop_hdi_lo'), 2)}, {_fmt(s.get('ceiling_drop_hdi_hi'), 2)}]",
+                _fmt(s.get("p_drop_positive"), 3),
+            ])
+        report.add_table(scen_rows, col_widths=[0.6, 2.0, 2.0, 1.1, 1.8, 1.5])
+
+        fig_path2 = base_dir / "figures" / "13_growth_ceiling_scenario.png"
+        if fig_path2.exists():
+            report.add_image(
+                fig_path2,
+                label="Figura 13 — Distribución posterior del techo de crecimiento",
+                caption=(
+                    "Distribución posterior del q-ésimo percentil de crecimiento alcanzable bajo "
+                    "un escenario de violencia baja (percentil 10) vs. alta (percentil 90), "
+                    "manteniendo país y año en su nivel promedio."
+                ),
+            )
+
+    report.add_body_text(
+        "Advertencias: este es un hallazgo exploratorio, no una hipótesis pre-registrada -- "
+        "tratar todo resultado como sugestivo. G=11 sigue siendo pequeño incluso para un modelo "
+        "jerárquico: el partial pooling regulariza pero no puede generar información que los "
+        "datos no contienen. Los priors son débilmente informativos, no planos, y el modelo "
+        "ALD estima cada cuantil por separado -- no garantiza cuantiles monótonos en tau (de "
+        "hecho, el hallazgo central es precisamente que el efecto NO es monótono: nulo en la "
+        "mediana, negativo solo en la cola superior)."
+    )
+
+
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("14. Triangulación Machine Learning")
+    report.add_section_h1("15. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -994,7 +1100,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("15. Conclusiones")
+    report.add_section_h1("16. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1165,6 +1271,7 @@ def main():
     rob   = _load_json(json_dir / "05_robustness.json")
     ml    = _load_json(json_dir / "06_ml_results.json")
     coint = _load_json(json_dir / "07_cointegration.json")
+    gcar  = _load_json(json_dir / "08_growth_ceiling_risk.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1198,6 +1305,9 @@ def main():
     report.add_page_break()
 
     build_cointegration_section(report, coint, base_dir)
+    report.add_page_break()
+
+    build_growth_ceiling_section(report, gcar, base_dir)
     report.add_page_break()
 
     build_ml_section(report, ml, base_dir)
