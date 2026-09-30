@@ -30,6 +30,7 @@
 \usepackage{fancyhdr}
 \usepackage{enumitem}
 \usepackage{amsmath}
+\usepackage{booktabs}
 \setlength{\abovedisplayskip}{5pt}
 \setlength{\belowdisplayskip}{6pt}
 \setlength{\abovedisplayshortskip}{4pt}
@@ -209,7 +210,7 @@ Analizar la relación entre la seguridad, la calidad institucional y el crecimie
 
 Para analizar esta hipótesis se construyó una base de datos de panel utilizando información proveniente de organismos internacionales de reconocido prestigio. Los indicadores económicos fueron obtenidos del \textit{World Development Indicators} (WDI) del Banco Mundial, los indicadores institucionales de los \textit{Worldwide Governance Indicators} (WGI) y las estadísticas de homicidios de la \textit{United Nations Office on Drugs and Crime} (UNODC).
 
-La base de datos integra información anual para ocho países de Centroamérica y República Dominicana durante el período 2000--2024, generando un panel de aproximadamente 180 observaciones país-año. El proceso de construcción comprendió un flujo completo de extracción, transformación y carga (ETL), incluyendo la armonización de unidades de medida entre fuentes, tratamiento de valores faltantes, validación de consistencia temporal, generación de variables derivadas y verificación de la estructura del panel antes del análisis econométrico, el dataset, código, documentación y gráficos adicionales se encuentran en:
+La base de datos integra información anual para once países de América Latina y el Caribe (los ocho originales de Centroamérica, Colombia y República Dominicana, más México, Ecuador y Perú, incorporados en una extensión posterior del panel dada la relevancia regional de México en materia de seguridad) durante el período 2000--2024, generando un panel de 274 observaciones país-año. El proceso de construcción comprendió un flujo completo de extracción, transformación y carga (ETL), incluyendo la armonización de unidades de medida entre fuentes, tratamiento de valores faltantes, validación de consistencia temporal, generación de variables derivadas y verificación de la estructura del panel antes del análisis econométrico, el dataset, código, documentación y gráficos adicionales se encuentran en:
 \begin{center}
 \url{https://github.com/mariomarroquin3/data_analyzer}
 \end{center}
@@ -226,12 +227,16 @@ Las principales variables incluidas fueron:
 \item PIB per cápita (transformado mediante logaritmo natural).
 \item Población (transformada mediante logaritmo natural).
 \item Llegadas internacionales de turistas (transformadas mediante logaritmo natural).
+\item Remesas como porcentaje del PIB (probada como control de robustez; ver Sección~\ref{sec:indice_institucional}).
 \item Estado de Derecho (Rule of Law).
 \item Control de la Corrupción (Control of Corruption).
 \item Estabilidad Política (Political Stability).
+\item Voz y Rendición de Cuentas (Voice and Accountability).
+\item Efectividad Gubernamental (Government Effectiveness).
+\item Calidad Regulatoria (Regulatory Quality).
 \end{itemize}
 
-Dado que los tres indicadores institucionales presentan una elevada correlación y describen dimensiones complementarias de un mismo fenómeno, se construyó un Índice Institucional mediante Análisis de Componentes Principales (Principal Component Analysis, PCA). Previamente, cada indicador fue estandarizado mediante puntuaciones $z$, garantizando que todos contribuyeran en igualdad de condiciones al índice sintético. El primer componente principal explicó aproximadamente el $78.9\%$ de la variabilidad conjunta y el índice alcanzó un Alfa de Cronbach de $\alpha=0.863$, indicando una elevada consistencia interna entre las dimensiones institucionales consideradas.
+Dado que los seis indicadores institucionales del WGI presentan una elevada correlación y describen dimensiones complementarias de un mismo fenómeno, se construyó un Índice Institucional mediante Análisis de Componentes Principales (Principal Component Analysis, PCA) sobre las seis dimensiones --la construcción estándar en la literatura (Kaufmann et al., 2010), y una ampliación respecto a la versión previa de este estudio, que utilizaba únicamente tres de las seis dimensiones--. Previamente, cada indicador fue estandarizado mediante puntuaciones $z$, garantizando que todos contribuyeran en igualdad de condiciones al índice sintético. El primer componente principal explicó aproximadamente el $72.9\%$ de la variabilidad conjunta, el índice alcanzó un Alfa de Cronbach de $\alpha=0.922$ y una medida de adecuación muestral KMO de $0.863$, indicando una elevada consistencia interna entre las seis dimensiones institucionales consideradas. La Sección~\ref{sec:indice_institucional} discute en detalle por qué esta ampliación de 3 a 6 dimensiones, aunque produce un índice más coherente internamente, cambia de forma material los resultados de las Ecuaciones 1 y 2.
 
 Con el fin de explorar la estructura de correlación entre las variables utilizadas en el análisis, se realizó un análisis exploratorio previo.
 
@@ -244,7 +249,7 @@ Con el fin de explorar la estructura de correlación entre las variables utiliza
 
 El análisis estadístico se desarrolló de manera secuencial. Inicialmente se realizaron análisis descriptivos mediante estadísticas resumen, matrices de correlación y visualizaciones exploratorias. Posteriormente se estimaron modelos de regresión lineal múltiple (OLS) como referencia metodológica. Finalmente, las relaciones principales fueron evaluadas mediante modelos de datos de panel con efectos fijos bidireccionales (\textit{Two-Way Fixed Effects}), incorporando efectos específicos por país y por año para controlar tanto la heterogeneidad no observada entre países como los choques comunes que afectan simultáneamente a toda la región.
 
-Considerando que el panel está compuesto únicamente por ocho países, la inferencia estadística se fortaleció mediante errores estándar de Driscoll--Kraay, robustos frente a heterocedasticidad, autocorrelación serial y dependencia transversal, así como mediante procedimientos de Wild Cluster Bootstrap, recomendados para paneles con pocos clústeres. La estabilidad de las estimaciones fue además evaluada mediante análisis \textit{Leave-One-Country-Out} (LOCO), verificando que los resultados principales permanecieran consistentes al excluir individualmente cada país de la muestra.
+Considerando que el panel está compuesto por un número reducido de clústeres (G=11, ampliado desde G=8 en la versión original de este estudio), la inferencia estadística se fortaleció mediante cuatro estimadores de error estándar: errores clusterizados convencionales, errores de Driscoll--Kraay (robustos frente a heterocedasticidad, autocorrelación serial y dependencia transversal), el estimador CR2 de Bell--McCaffrey con grados de libertad de Satterthwaite, y Wild Cluster Bootstrap con pesos de Webb (2023), recomendados para paneles con pocos clústeres. Un coeficiente se describe como ``robusto'' en este documento solo si lo es bajo los cuatro estimadores, no bajo el más favorable de ellos. La estabilidad de las estimaciones fue además evaluada mediante análisis \textit{Leave-One-Country-Out} (LOCO), verificando que los resultados principales permanecieran consistentes al excluir individualmente cada país de la muestra, y mediante un test formal de cointegración de panel para las series no estacionarias de la cadena (Sección~\ref{sec:cointegracion}).
 
 Como complemento al análisis econométrico se implementaron modelos de aprendizaje automático basados en Random Forest Regressor y Gradient Boosting Regressor. Estos modelos no fueron utilizados para establecer relaciones causales, sino para evaluar la importancia relativa de las variables explicativas, detectar posibles relaciones no lineales y contrastar la consistencia de los resultados obtenidos mediante los modelos econométricos tradicionales.
 
@@ -259,7 +264,7 @@ El análisis descriptivo muestra que la violencia mantiene una relación estrech
 \label{fig:crime_growth}
 \end{figure}
 
-En contraste, la asociación bivariada entre la violencia y el crecimiento económico resulta débil y heterogénea entre países. El bajo poder explicativo del modelo lineal simple ($R^2 \approx 0.07$) sugiere que la relación entre ambas variables no es directa ni estable, sino que está fuertemente condicionada por la heterogeneidad institucional y por mecanismos de transmisión intermedios.
+En contraste, la asociación bivariada entre la violencia y el crecimiento económico resulta débil y heterogénea entre países. El bajo poder explicativo del modelo lineal simple ($R^2 \approx 0.03$ con el panel de once países, frente a $R^2 \approx 0.07$ con el panel original de ocho) sugiere que la relación entre ambas variables no es directa ni estable, sino que está fuertemente condicionada por la heterogeneidad institucional y por mecanismos de transmisión intermedios.
 
 Esta evidencia preliminar respalda la hipótesis central del estudio, según la cual la seguridad no afecta al crecimiento de manera inmediata, sino a través de su impacto sobre la calidad institucional y, posteriormente, sobre la inversión y la acumulación de capital. En este sentido, la ausencia de una relación lineal fuerte no invalida el vínculo teórico, sino que refuerza la necesidad de un enfoque estructural y dinámico del proceso de desarrollo económico.
 
@@ -267,35 +272,39 @@ Esta evidencia preliminar respalda la hipótesis central del estudio, según la 
 
 Los modelos de efectos fijos bidireccionales estimados en el pipeline confirman este mecanismo de transmisión en tres etapas:
 
+Las cifras a continuación corresponden a la especificación actual (once países, índice institucional de seis dimensiones). La Sección~\ref{sec:indice_institucional} muestra explícitamente cómo cambian respecto a la versión original de este estudio (ocho países, índice de tres dimensiones).
+
 \textbf{Ecuación 1 (Violencia $\rightarrow$ Instituciones):}
 
-La tasa de homicidios presenta un efecto negativo sobre el índice institucional:
+La tasa de homicidios presenta un efecto negativo sobre el índice institucional, pero no significativo bajo ningún estimador:
 
 \[
-\beta = -0.1404, \quad p = 0.303
+\beta = -0.0836, \quad p_{\text{cl}} = 0.462, \quad p_{\text{DK}} = 0.310, \quad p_{\text{boot}} = 0.562
 \]
 
-El signo es consistente con la teoría institucional, aunque la significancia estadística disminuye bajo inferencia robusta (Driscoll--Kraay y clustering por país).
+El signo es consistente con la teoría institucional, pero la significancia estadística no se alcanza bajo ningún esquema de inferencia. Como se detalla en la Sección~\ref{sec:indice_institucional}, este resultado contrasta con la significancia marginal obtenida bajo el índice institucional de tres dimensiones utilizado en la versión original de este estudio.
 
 \textbf{Ecuación 2 (Instituciones $\rightarrow$ Inversión):}
 
-La calidad institucional tiene un efecto positivo sobre la inversión extranjera directa:
+La calidad institucional tiene un efecto positivo y significativo sobre la inversión extranjera directa en su especificación primaria:
 
 \[
-\beta = 0.9000, \quad p = 0.055
+\beta = 0.6111, \quad p_{\text{cl}} = 0.030, \quad p_{\text{DK}} = 0.006, \quad p_{\text{boot}} = 0.038
 \]
 
-Este resultado es marginalmente significativo bajo errores clusterizados y se mantiene estable en especificaciones alternativas del modelo.
+Este es el eslabón más robusto de la cadena bajo la especificación contemporánea, aunque --a diferencia de lo reportado en la versión original de este estudio-- ya no sobrevive a chequeos de robustez de rezago de un año ($p=0.318$) ni de tendencias específicas por país ($p=0.260$); ver Sección~\ref{sec:indice_institucional}.
 
 \textbf{Ecuación 3 (Inversión + Instituciones $\rightarrow$ Crecimiento):}
 
-La inversión extranjera presenta una asociación positiva con el crecimiento económico:
+La inversión extranjera presenta una asociación positiva y significativa con el crecimiento económico:
 
 \[
-\beta = 0.1371, \quad p = 0.213
+\beta_{\text{IED}} = 0.2074, \quad p_{\text{cl}} = 0.010, \quad p_{\text{boot}} = 0.108
 \]
 
-El efecto directo de las instituciones sobre el crecimiento pierde significancia cuando se incluye la inversión, lo que sugiere un mecanismo de mediación parcial.
+El efecto directo de las instituciones sobre el crecimiento, incluido junto con la IED en la misma ecuación, no es significativo ($\beta=-0.544$, $p_{\text{cl}}=0.337$), lo que sugiere que el efecto de las instituciones sobre el crecimiento opera principalmente a través de la IED y no de forma directa.
+
+Un bootstrap formal por clúster de país del efecto indirecto conjunto de la cadena ($\beta_1 \cdot \gamma_1 \cdot \delta_1$) da un punto estimado de $-0.011$ (IC 95\% $=[-0.113, 0.020]$, $p=0.548$): la cadena como sistema mediado único no se rechaza como nula al 5\%, ni bajo la especificación original ni bajo la ampliada.
 
 \subsection{Interpretación estructural del sistema}
 
@@ -332,9 +341,11 @@ Los resultados son robustos bajo múltiples enfoques:
 \begin{itemize}
 \item Efectos fijos bidireccionales (país y tiempo).
 \item Errores estándar Driscoll--Kraay.
-\item Clustering por país (G = 8).
+\item Clustering por país (G = 11).
+\item Estimador CR2 de Bell--McCaffrey (grados de libertad de Satterthwaite).
 \item Wild Cluster Bootstrap (inferencia principal).
 \item Leave-One-Country-Out (robustez estructural).
+\item Cointegración de panel y modelo de corrección de errores (Sección~\ref{sec:cointegracion}).
 \item Modelos de machine learning (Random Forest / Gradient Boosting).
 \end{itemize}
 
@@ -359,12 +370,173 @@ De forma similar, la relación entre instituciones e inversión extranjera direc
 
 En contraste, el modelo que incorpora simultáneamente inversión e instituciones para explicar el crecimiento económico (T3) presenta un desempeño consistentemente superior, especialmente bajo Gradient Boosting, con valores positivos de $R^2$ en la mayoría de los países excluidos. Este resultado sugiere que el crecimiento económico responde mejor a la interacción conjunta de variables institucionales y de inversión, más que a relaciones bivariadas simples.
 
-En conjunto, la evidencia obtenida mediante LOCO-CV refuerza la hipótesis de que el proceso de desarrollo económico opera a través de mecanismos no lineales y con fuertes efectos de heterogeneidad entre países, siendo la etapa final del sistema la que concentra mayor capacidad explicativa fuera de muestra.
+En conjunto, la evidencia obtenida mediante LOCO-CV refuerza la hipótesis de que el proceso de desarrollo económico opera a través de mecanismos no lineales y con fuertes efectos de heterogeneidad entre países, siendo la etapa final del sistema la que concentra mayor capacidad explicativa fuera de muestra. Este patrón se mantiene con el panel ampliado a once países.
+
+\section{Expansión del Índice Institucional: la Construcción del Índice Importa}
+\label{sec:indice_institucional}
+
+La versión original de este estudio construyó el índice institucional a partir de solo tres de las seis dimensiones WGI de Kaufmann et al. (2010) (Estado de Derecho, Control de la Corrupción, Estabilidad Política) --un subconjunto sin justificación metodológica explícita, heredado de un archivo de datos ensamblado manualmente--. Al reconocer esto como una elección arbitraria y no principiada, el índice se reconstruyó utilizando las seis dimensiones, la construcción estándar en la literatura. Los resultados reportados en la Sección~2 utilizan este índice de seis dimensiones.
+
+Las dos especificaciones no son indiferentes entre sí:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & EQ1 (p, clusterizado) & EQ1 (p, Driscoll--Kraay) & EQ2 (p, clusterizado) \\
+\midrule
+Índice de 3 dimensiones & 0.093 & 0.010 & 0.030 \\
+Índice de 6 dimensiones & 0.462 & 0.310 & 0.030 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Bajo tres dimensiones, EQ1 era marginalmente significativa bajo tres de los cuatro estimadores. Bajo seis dimensiones --la construcción más completa y estándar-- no lo es bajo ninguno. EQ2 se mantiene significativa en su especificación primaria, pero, como se mencionó en la Sección~2, ya no sobrevive a los chequeos de robustez de rezago ni de tendencias por país que sí superaba bajo el índice de tres dimensiones.
+
+Re-estimar EQ1 con cada una de las seis dimensiones WGI individualmente como variable dependiente (en vez del compuesto) muestra el origen de esta atenuación:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Dimensión & Coeficiente & $p$ (clusterizado) \\
+\midrule
+Estado de Derecho & $-1.961$ & \textbf{0.037} \\
+Control de la Corrupción & $-0.395$ & 0.645 \\
+Estabilidad Política & $-2.672$ & 0.135 \\
+Voz y Rendición de Cuentas & \textbf{+1.721} & 0.339 \\
+Efectividad Gubernamental & $-0.999$ & 0.253 \\
+Calidad Regulatoria & $-0.277$ & 0.803 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Cinco de las seis dimensiones apuntan en la dirección esperada (negativa); Estado de Derecho permanece individualmente significativa. Una dimensión --Voz y Rendición de Cuentas-- apunta en la dirección contraria, con una magnitud suficiente para diluir el promedio compuesto. La Sección~\ref{sec:paradoja_bukele} investiga esta dimensión específicamente y la atribuye a un solo país.
+
+\section{La ``Paradoja Bukele'': Seguridad vs.\ Libertades Civiles}
+\label{sec:paradoja_bukele}
+
+Los datos propios de El Salvador explican por qué Voz y Rendición de Cuentas se comporta de forma anómala:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Año & Tasa de homicidios (por 100 mil) & Voz y Rendición de Cuentas (0--100) \\
+\midrule
+2020 & 21.5 & 58.4 \\
+2021 & 17.3 & 53.5 \\
+2022 & 7.9 & 48.8 \\
+2023 & 2.2 & 48.1 \\
+2024 & 1.9 & 45.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+De 2021 a 2024 --el período del régimen de excepción-- los homicidios colapsaron \emph{y} Voz y Rendición de Cuentas también cayó. La ganancia de seguridad y el costo en libertades civiles avanzaron juntos, no en direcciones opuestas, justo lo contrario de lo que asume un índice compuesto que trata las seis dimensiones como sustitutos intercambiables de ``calidad institucional''.
+
+Un chequeo Leave-One-Country-Out sobre \texttt{voice\_accountability} $\sim$ \texttt{homicide\_rate\_log\_lag1} (misma especificación de efectos fijos bidireccionales que el resto de EQ1) prueba si esto es un patrón regional o específico de un país:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Muestra & Coeficiente & $p$ \\
+\midrule
+Muestra completa (11 países) & $+1.721$ & 0.339 \\
+Excl.\ El Salvador & $\mathbf{-1.482}$ & 0.449 \\
+Excl.\ cualquier otro país & $+1.14$ a $+2.74$ (siempre positivo) & -- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El Salvador es el \textbf{único} país cuya exclusión invierte el signo. Excluir cualquiera de los otros diez deja el coeficiente positivo; excluir a El Salvador específicamente lo revierte hacia la dirección teóricamente esperada (aunque, con solo diez países restantes, ninguna de las dos estimaciones es en sí misma significativa).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{14_bukele_paradox.png}
+\caption{Izquierda: coeficiente LOCO de violencia sobre Voz y Rendición de Cuentas al excluir cada país. Derecha: tasa de homicidios y Voz y Rendición de Cuentas de El Salvador, 2000--2024, con el período del régimen de excepción (2021--2024) resaltado.}
+\label{fig:bukele}
+\end{figure}
+
+Este hallazgo no se interpreta como un artefacto estadístico a descartar, sino como un hallazgo sustantivo sobre el caso específico de El Salvador, directamente relevante para la pregunta que motiva este estudio. La razón por la que el coeficiente compuesto del índice institucional se diluye bajo la construcción de seis dimensiones no es que la violencia carezca de relación con la calidad institucional --es que una dimensión, en un país, durante una transformación de seguridad específica e históricamente inusual, se movió en dirección opuesta a las otras cinco, porque el rasgo definitorio de esa transformación fue precisamente intercambiar libertades civiles por seguridad.
+
+\section{Cointegración de Panel y Modelo de Corrección de Errores}
+\label{sec:cointegracion}
+
+Un test de raíz unitaria de panel (Fisher--ADF, Maddala y Wu, 1999) encuentra que \texttt{homicide\_rate\_log}, \texttt{inst\_avg} y \texttt{gdp\_per\_capita\_log} no rechazan raíz unitaria (son I(1)), mientras que \texttt{fdi\_percent\_gdp} y \texttt{gdp\_growth} sí la rechazan (son I(0)). Dos series I(1) pueden compartir una relación de equilibrio de largo plazo genuina (cointegración), en cuyo caso una regresión estática en niveles no sería necesariamente espuria. Se prueba esto mediante el enfoque de dos pasos de Engle--Granger extendido a panel (Kao, 1999; McCoskey y Kao, 1998) para los tres pares de variables I(1) del panel.
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Par & $\beta$ (largo plazo) & $p$ (Fisher, residuos) & ¿Cointegrado? \\
+\midrule
+T1: Homicidios $\leftrightarrow$ Instituciones & $-0.133$ & 0.636 & No \\
+T2: Instituciones $\leftrightarrow$ Ingreso & $0.773$ & 0.393 & No \\
+T3: Homicidios $\leftrightarrow$ Ingreso & $-0.091$ & \textbf{0.011} & \textbf{Sí} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Para T3, el modelo de corrección de errores encuentra $\varphi=-0.109$ ($p=0.006$ clusterizado, $p<0.001$ Driscoll--Kraay): el PIB per cápita corrige aproximadamente el 11\% de cualquier desviación de su relación de largo plazo con la violencia cada año --el primer resultado dinámico, no solo estático, de este estudio--. El efecto de corto plazo ($\gamma=-0.033$, $p=0.344$) no es significativo; solo el ajuste de largo plazo lo es. T1 y T2 no muestran evidencia de cointegración, consistente con (y ofreciendo una explicación formal adicional para) la inestabilidad de EQ1 en cada otro chequeo de este estudio.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{11_cointegration_residuals.png}
+\caption{Residuos de la regresión de largo plazo por país para los tres pares I(1). Residuos estacionarios (T3) son evidencia de cointegración; residuos que se alejan persistentemente (T1, T2) son evidencia de una relación potencialmente espuria.}
+\label{fig:cointegration}
+\end{figure}
+
+\section{Growth-Ceiling-at-Risk: una Exploración Bayesiana}
+\label{sec:growth_ceiling}
+
+Una regresión cuantílica exploratoria de \texttt{gdp\_growth} sobre violencia rezagada (cuantiles 0.05--0.95) encontró que la violencia no tiene efecto cerca de la mediana de la distribución de crecimiento, pero sí un efecto negativo grande y robusto a LOCO en la cola \emph{superior} (q=0.90/0.95) --el reflejo especular del Growth-at-Risk clásico (Adrian, Boyarchenko y Giannone, 2019), que estudia la cola inferior--. Alta violencia no empeora los años malos; limita cuánto puede crecer un año bueno.
+
+Este patrón se re-estimó como una regresión cuantílica bayesiana jerárquica (verosimilitud Asimétrica de Laplace; Yu y Moyeed, 2001) con partial pooling entre los once países (parametrización no centrada; Betancourt y Girolami, 2015) en lugar de variables dummy por país, apuntando a la distribución posterior completa en cada cuantil:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Cuantil ($\tau$) & Coef.\ frecuentista & Media posterior & 94\% HDI & $P(\beta<0\mid\text{datos})$ \\
+\midrule
+0.50 (mediana) & $-0.08$ ($p=0.827$) & $-0.23$ & $[-0.77, 0.37]$ & 0.790 \\
+0.90 & $-2.23$ ($p=0.0005$) & $\mathbf{-1.76}$ & $\mathbf{[-2.93,-0.59]}$ & \textbf{0.997} \\
+0.95 & $-2.06$ ($p=0.0043$) & $\mathbf{-2.08}$ & $\mathbf{[-3.02,-1.11]}$ & \textbf{1.000} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Los diagnósticos de MCMC son limpios en cada cuantil (R-hat $\leq 1.004$, tamaño de muestra efectivo $>1{,}100$, cero divergencias en 4 cadenas $\times$ 1{,}000 muestras post-calentamiento). Un chequeo secundario con \texttt{inst\_avg} en lugar de violencia no encuentra efecto de techo (prácticamente un volado, $P(\beta<0)=0.367$ y $0.597$) --el efecto es específico a la violencia--.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{12_growth_ceiling_bayesian.png}
+\caption{Coeficiente de violencia por cuantil del crecimiento del PIB, frecuentista vs.\ bayesiano jerárquico.}
+\label{fig:gcar_coef}
+\end{figure}
+
+Manteniendo país y año en su nivel promedio, la posterior responde directamente la pregunta aplicada: ¿cuánto baja el techo de crecimiento alcanzable cuando la violencia rezagada pasa de su percentil 10 al percentil 90?
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Cuantil & Techo (violencia baja) & Techo (violencia alta) & Caída \\
+\midrule
+0.90 & 8.79 pts & 5.52 pts & 3.27 pts ($P(\text{caída}>0)=0.997$) \\
+0.95 & 10.29 pts & 6.43 pts & 3.86 pts ($P(\text{caída}>0)>0.999$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{13_growth_ceiling_scenario.png}
+\caption{Distribución posterior del techo de crecimiento bajo escenarios de violencia baja (percentil 10) vs.\ alta (percentil 90).}
+\label{fig:gcar_scenario}
+\end{figure}
+
+Este es un hallazgo exploratorio --motivado por un patrón encontrado post-hoc, no por una hipótesis pre-registrada--. G=11 sigue siendo pequeño incluso para un modelo jerárquico, y el hallazgo central es precisamente que el efecto NO es monótono: nulo en la mediana, negativo solo en la cola superior.
 
 \section*{Conclusiones}
 \addcontentsline{toc}{section}{Conclusiones}
 
-Los resultados muestran que la reducción de la violencia, por sí sola, no se traduce necesariamente en un incremento inmediato del crecimiento económico. Aunque las estimaciones mantienen los signos esperados por la teoría institucional, la evidencia sugiere que la relación entre seguridad y crecimiento opera principalmente de forma indirecta, mediante cambios graduales en la calidad institucional y en las condiciones que favorecen la inversión. En particular, el bajo poder explicativo del modelo bivariado entre homicidios y crecimiento ($R^2 \approx 0.07$) refuerza la idea de ausencia de una relación contemporánea estable.
+Los resultados muestran que la reducción de la violencia, por sí sola, no se traduce necesariamente en un incremento inmediato del crecimiento económico. El resumen honesto de este estudio, ampliado a once países y con un índice institucional completo de seis dimensiones, no es ``la violencia deteriora las instituciones, lo cual reduce la IED y el crecimiento'': los datos, estimados con rigor y reportados en su totalidad en vez de seleccionando el resultado más favorable, no respaldan una historia tan limpia. Lo que los datos sí respaldan es más acotado y, creemos, más útil: instituciones $\rightarrow$ IED es el eslabón más defendible del panel; violencia $\rightarrow$ instituciones es frágil y depende de la especificación --significativa bajo una construcción arbitraria de tres dimensiones del índice, no significativa bajo la construcción estándar de seis--; y donde la relación agregada resulta anómala (una dimensión de gobernanza que se mueve en la dirección ``equivocada''), descomponerla revela una explicación específica e interpretable a nivel de caso (el deterioro de voz y rendición de cuentas en El Salvador) en vez de ruido sin explicar. El bajo poder explicativo del modelo bivariado entre homicidios y crecimiento ($R^2 \approx 0.03$ con once países) refuerza la idea de ausencia de una relación contemporánea estable.
 
 El principal aporte de esta investigación consiste en proponer una interpretación dinámica de este proceso. Más que considerar la seguridad, las instituciones y el crecimiento como variables que evolucionan simultáneamente, la evidencia indica que cada una responde en horizontes temporales diferentes.
 
@@ -379,18 +551,40 @@ El caso de El Salvador ilustra con claridad esta dinámica asincrónica. La ráp
 En términos generales, los resultados no solo permiten contrastar la hipótesis planteada, sino también proponer un marco interpretativo en el que la seguridad, las instituciones y el crecimiento deben entenderse como un sistema dinámico con rezagos heterogéneos. Bajo esta interpretación, la ausencia de efectos inmediatos no implica ausencia de causalidad, sino diferencias en la velocidad de transmisión del impacto económico.
 
 Comprender estas diferencias en los tiempos de respuesta resulta fundamental para la evaluación de políticas públicas. Concluir prematuramente que la ausencia de crecimiento inmediato implica la inexistencia de efectos económicos positivos significaría ignorar que la seguridad constituye una condición necesaria, pero de maduración lenta, cuyo impacto se materializa únicamente a través del fortalecimiento progresivo de las instituciones productivas y de la posterior respuesta de la inversión y la actividad económica.
+
+Las extensiones metodológicas de esta versión refuerzan, más que socavan, esta interpretación dinámica. El test de cointegración de panel (Sección~\ref{sec:cointegracion}) encuentra una relación de equilibrio de largo plazo genuina entre violencia e ingreso, con el PIB per cápita corrigiendo cerca del 11\% de cualquier desviación cada año --un resultado dinámico que la especificación estática original no podía producir--. Y un patrón exploratorio pero robusto a LOCO --la violencia comprime la cola superior del crecimiento alcanzable sin afectar su mediana (Sección~\ref{sec:growth_ceiling})-- motiva una dirección específica y falsable para trabajo futuro. Finalmente, el caso de El Salvador --el motivo original de este estudio-- resultó ser no solo el caso que ilustra la dinámica asincrónica entre seguridad e instituciones, sino también el único país cuya trayectoria reciente explica por qué una de las seis dimensiones de calidad institucional se comporta de forma anómala en el panel: las ganancias de seguridad y el deterioro de las libertades civiles avanzaron juntos, no en direcciones opuestas, durante su transformación de seguridad.
 \section*{Bibliografía}
 \addcontentsline{toc}{section}{Bibliografía}
 
 Acemoglu, D. and Robinson, J.A. (2012) \textit{Why Nations Fail: The Origins of Power, Prosperity, and Poverty}. New York: Crown Business.
 
+Adrian, T., Boyarchenko, N. and Giannone, D. (2019) 'Vulnerable Growth', \textit{American Economic Review}, 109(4), pp. 1263--1289.
+
+Angrist, J.D. and Pischke, J.-S. (2009) \textit{Mostly Harmless Econometrics: An Empiricist's Companion}. Princeton: Princeton University Press.
+
+Betancourt, M. and Girolami, M. (2015) 'Hamiltonian Monte Carlo for hierarchical models', in \textit{Current Trends in Bayesian Methodology with Applications}.
+
+Besley, T. and Persson, T. (2011) \textit{Pillars of Prosperity: The Political Economics of Development Clusters}. Princeton: Princeton University Press.
+
 Breiman, L. (2001) 'Random forests', \textit{Machine Learning}, 45(1), pp. 5--32.
 
 Cameron, A.C. and Miller, D.L. (2015) 'A practitioner's guide to cluster-robust inference', \textit{Journal of Human Resources}, 50(2), pp. 317--372.
 
+Diario El Mundo (2024) 'El Salvador con cerca del 70\% de empleo informal, una de las tasas más altas de América Latina'. Disponible en: \url{https://diario.elmundo.sv/economia/el-salvador-con-cerca-del-70-de-empleo-informal-una-de-las-tasas-mas-altas-de-america-latina}
+
 Driscoll, J.C. and Kraay, A.C. (1998) 'Consistent covariance matrix estimation with spatially dependent panel data', \textit{Review of Economics and Statistics}, 80(4), pp. 549--560.
 
+Engle, R.F. and Granger, C.W.J. (1987) 'Co-integration and error correction: representation, estimation, and testing', \textit{Econometrica}, 55(2), pp. 251--276.
+
+Gelman, A. and Hill, J. (2007) \textit{Data Analysis Using Regression and Multilevel/Hierarchical Models}. Cambridge: Cambridge University Press.
+
+Kao, C. (1999) 'Spurious regression and residual-based tests for cointegration in panel data', \textit{Journal of Econometrics}, 90(1), pp. 1--44.
+
 Kaufmann, D., Kraay, A. and Mastruzzi, M. (2010) \textit{The Worldwide Governance Indicators: Methodology and Analytical Issues}. World Bank Policy Research Working Paper No. 5430.
+
+Maddala, G.S. and Wu, S. (1999) 'A comparative study of unit root tests with panel data and a new simple test', \textit{Oxford Bulletin of Economics and Statistics}, 61(S1), pp. 631--652.
+
+McCoskey, S. and Kao, C. (1998) 'A residual-based test of the null of cointegration in panel data', \textit{Econometric Reviews}, 17(1), pp. 57--84.
 
 North, D.C. (1990) \textit{Institutions, Institutional Change and Economic Performance}. Cambridge: Cambridge University Press.
 
@@ -398,7 +592,13 @@ Rodrik, D., Subramanian, A. and Trebbi, F. (2004) 'Institutions rule: The primac
 
 United Nations Office on Drugs and Crime (2023) \textit{Global Study on Homicide 2023}. Vienna: UNODC.
 
+Webb, M.D. (2023) 'Reworking wild bootstrap-based inference for clustered errors', \textit{Canadian Journal of Economics}, 56(3), pp. 839--858.
+
+Wooldridge, J.M. (2010) \textit{Econometric Analysis of Cross Section and Panel Data}, 2nd edn. Cambridge, MA: MIT Press.
+
 World Bank (2011) \textit{World Development Report 2011: Conflict, Security and Development}. Washington, DC: World Bank.
+
+Yu, K. and Moyeed, R.A. (2001) 'Bayesian quantile regression', \textit{Statistics \& Probability Letters}, 54(4), pp. 437--447.
 
 World Bank (2024) \textit{World Development Indicators}. Available at:
 \url{https://databank.worldbank.org/source/world-development-indicators}
