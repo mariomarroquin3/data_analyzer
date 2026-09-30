@@ -1,0 +1,917 @@
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+
+\usepackage{mdframed}
+
+% ── Colours ───────────────────────────────────────────────────────────────
+\definecolor{deepblue}{RGB}{30, 60, 140}
+\definecolor{midblue}{RGB}{37, 99, 235}
+\definecolor{darkgrey}{RGB}{55, 65, 81}
+\definecolor{lightgrey}{RGB}{243, 244, 246}
+\definecolor{alertred}{RGB}{185, 28, 28}
+\definecolor{softblue}{RGB}{219, 234, 254}
+\definecolor{softgreen}{RGB}{220, 252, 231}
+\definecolor{softyellow}{RGB}{254, 249, 195}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=midblue,
+  urlcolor=midblue,
+  citecolor=deepblue,
+  pdftitle={Fundamentos Matemáticos del Pipeline Econométrico},
+  pdfauthor={},
+}
+
+% ── Intuition box ─────────────────────────────────────────────────────────
+\newmdenv[
+  backgroundcolor=softblue,
+  linecolor=midblue,
+  linewidth=1pt,
+  roundcorner=4pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  skipabove=8pt,
+  skipbelow=8pt
+]{intuitionbox}
+
+\newmdenv[
+  backgroundcolor=softgreen,
+  linecolor=deepblue,
+  linewidth=1pt,
+  roundcorner=4pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  skipabove=8pt,
+  skipbelow=8pt
+]{resultbox}
+
+\newmdenv[
+  backgroundcolor=softyellow,
+  linecolor=alertred,
+  linewidth=1pt,
+  roundcorner=4pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  skipabove=8pt,
+  skipbelow=8pt
+]{warningbox}
+
+% ── Section formatting ────────────────────────────────────────────────────
+\titleformat{\section}[block]
+  {\large\bfseries\color{deepblue}}
+  {\thesection.}{0.5em}{}[\vspace{2pt}\hrule\vspace{4pt}]
+
+\titleformat{\subsection}[block]
+  {\normalsize\bfseries\color{darkgrey}}
+  {\thesubsection.}{0.5em}{}
+
+\titleformat{\subsubsection}[block]
+  {\normalsize\itshape\color{darkgrey}}
+  {\thesubsubsection.}{0.5em}{}
+
+% ── Theorem environments ──────────────────────────────────────────────────
+\theoremstyle{definition}
+\newtheorem{definition}{Definición}[section]
+\newtheorem{proposition}{Proposición}[section]
+\newtheorem{remark}{Nota}[section]
+
+% ── Math operators ─────────────────────────────────────────────────────────
+\DeclareMathOperator{\plim}{plim}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\sign}{sign}
+
+% ── Convenience macros ────────────────────────────────────────────────────
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bZ}{\mathbf{Z}}
+\newcommand{\be}{\bm{\varepsilon}}
+\newcommand{\bbeta}{\bm{\beta}}
+\newcommand{\bhat}[1]{\hat{\bm{#1}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\inner}[2]{\langle #1,\, #2 \rangle}
+
+% ── Header / footer ───────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{darkgrey}Fundamentos Matemáticos del Pipeline}
+\fancyhead[R]{\small\color{darkgrey}Violencia $\to$ Instituciones $\to$ IED $\to$ Crecimiento}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ══════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries\color{deepblue}
+Fundamentos Matemáticos\\[0.4em]
+del Pipeline Econométrico}\\[1.5em]
+{\large\color{darkgrey}
+Violencia $\longrightarrow$ Calidad Institucional $\longrightarrow$ IED $\longrightarrow$ Crecimiento Económico\\[0.5em]
+Centroamérica, Colombia y República Dominicana, 2000--2024}\\[3em]
+\hrule\vspace{1em}
+{\normalsize
+\textit{Roadmap matemático completo: desde los fundamentos de datos de panel}\\
+\textit{hasta inferencia bootstrap, diagnósticos y aprendizaje automático}}
+\vspace{1em}\hrule
+\vfill
+{\small Elaborado como material de apoyo académico\\
+para discusión con profesor revisor.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Estructura del Problema y Notación General}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Datos de panel no balanceados}
+
+El conjunto de datos es un \emph{panel no balanceado}. Sea $\mathcal{I} = \{1,\ldots,N\}$ el conjunto de países ($N=8$: Colombia, Costa Rica, República Dominicana, Guatemala, Honduras, Nicaragua, Panamá y El Salvador) y $\mathcal{T}_i \subseteq \{2000,\ldots,2024\}$ el conjunto de años observados para el país $i$, con $|\mathcal{T}_i|$ potencialmente distinto entre países (entre 20 y 24 años según el país). El número total de observaciones es
+\[
+  n \;=\; \sum_{i=1}^{N} |\mathcal{T}_i| \;=\; 179 \;\leq\; N \cdot T_{\max}.
+\]
+El panel es \emph{no balanceado} porque algunos países carecen de datos en ciertos años: Nicaragua, por ejemplo, no tiene observaciones para 2020, 2022--2024, mientras que El Salvador sí cubre todos los años de 2000 a 2024. Cada observación es un par $(i,t)$ con $i \in \mathcal{I}$ y $t \in \mathcal{T}_i$.
+
+\begin{intuitionbox}
+\textbf{¿Por qué importa el panel no balanceado?} En un panel balanceado, todos los países tienen exactamente el mismo número de observaciones, lo que simplifica el álgebra. En nuestro caso, la heterogeneidad en cobertura temporal obliga a utilizar operadores de demeaning iterativos (véase Sección~3.2) y matrices de peso distintas por país. En la práctica, las estimaciones son válidas siempre que los datos faltantes sean \emph{aleatorios} (no sistemáticamente relacionados con las variables del modelo).
+\end{intuitionbox}
+
+\subsection{Hipótesis causal y cadena de transmisión}
+
+La hipótesis central postula un mecanismo causal secuencial en cuatro etapas:
+\[
+\underbrace{H_{it}}_{\text{Violencia}}
+\;\xrightarrow{\;\beta_1 < 0\;}
+\underbrace{Q_{it}}_{\text{Instituciones}}
+\;\xrightarrow{\;\gamma_1 > 0\;}
+\underbrace{F_{it}}_{\text{IED}}
+\;\xrightarrow{\;\delta_1 > 0\;}
+\underbrace{G_{it}}_{\text{Crecimiento PIB}}
+\]
+donde el subíndice $it$ indica el país $i$ en el año $t$.
+
+\begin{intuitionbox}
+\textbf{Lectura económica de la cadena.} La hipótesis sostiene que la violencia (medida por la tasa de homicidios) deteriora las instituciones de gobernanza --- erosiona el estado de derecho, fomenta la corrupción e incrementa la inestabilidad política ($\beta_1 < 0$). Instituciones más débiles elevan los costes de transacción y el riesgo político para los inversores extranjeros, reduciendo la IED ($\gamma_1 > 0$ implica que \emph{mejores} instituciones atraen más IED). Finalmente, la IED contribuye al crecimiento a través de transferencia tecnológica, creación de empleo y efectos de derrame sobre la productividad ($\delta_1 > 0$). El pipeline estima las tres ecuaciones de forma secuencial, contrastando cada eslabón de esta cadena.
+\end{intuitionbox}
+
+El sistema comprende tres ecuaciones estructurales estimadas independientemente con efectos fijos de dos vías (Sección~\ref{sec:twfe}).
+
+\subsection{Notación matricial para una ecuación genérica}
+
+Para una ecuación genérica con variable dependiente escalar $y_{it}$ y vector de regresores $\bm{x}_{it} \in \R^k$, define:
+\begin{align*}
+  \bm{y}_i &= (y_{i,t_1}, \ldots, y_{i,t_{T_i}})^\top \in \R^{T_i}, \\
+  \bm{X}_i &= (\bm{x}_{i,t_1}, \ldots, \bm{x}_{i,t_{T_i}})^\top \in \R^{T_i \times k}, \\
+  \bm{y}   &= (\bm{y}_1^\top, \ldots, \bm{y}_N^\top)^\top \in \R^n, \\
+  \bm{X}   &= (\bm{X}_1^\top, \ldots, \bm{X}_N^\top)^\top \in \R^{n \times k}.
+\end{align*}
+Esta notación apila las observaciones primero por país (índice $i$) y luego por año dentro de cada país (índice $t$), formando un vector largo de $n = 179$ filas que el estimador de efectos fijos procesa como una sola regresión aumentada con variables dummy de país y año.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Variables del Modelo: Definición y Fuentes}
+\label{sec:variables}
+% ══════════════════════════════════════════════════════════════════════════
+
+Antes de desarrollar el aparato matemático conviene precisar qué mide cada variable y cómo se construye, pues su comprensión es necesaria para interpretar los coeficientes estimados.
+
+\subsection{Variable de violencia: $H_{it}$}
+
+$H_{it}$ es el \textbf{logaritmo natural de la tasa de homicidios} del país $i$ en el año $t$, expresada en número de homicidios por cada 100.000 habitantes. Formalmente:
+\[
+  H_{it} = \ln\!\left(\text{homicidios}_{it} / \text{pob}_{it} \times 100{,}000 + 1\right),
+\]
+donde se añade 1 antes del logaritmo para evitar $\ln(0)$ en países con tasas cercanas a cero. La transformación logarítmica comprime la distribución fuertemente asimétrica de las tasas de homicidio (que van de 1,9 a 107,6 por 100.000 en la muestra) y permite interpretar los coeficientes como elasticidades o semi-elasticidades. En las ecuaciones estructurales se emplea $H_{i,t-1}$, es decir, el valor \emph{rezagado un período} respecto al año de la variable dependiente, para reducir la posible simultaneidad causal.
+
+\begin{intuitionbox}
+\textbf{¿Por qué rezagar la violencia?} Si se usara $H_{it}$ contemporáneo en la Ecuación~1, la causalidad sería ambigua: las instituciones débiles podrían \emph{causar} violencia, y la violencia podría deteriorar instituciones en el mismo año. Al usar $H_{i,t-1}$ se asegura que el nivel de violencia del año anterior precede temporalmente a la calidad institucional del año actual, lo que es una condición necesaria (aunque no suficiente) para la interpretación causal.
+\end{intuitionbox}
+
+\subsection{Variables institucionales: $Q_{it}$}
+
+$Q_{it}$ es el \textbf{índice de calidad institucional compuesto} del país $i$ en el año $t$. Se construye a partir de tres indicadores de los Worldwide Governance Indicators (WGI) del Banco Mundial (Kaufmann et al., 2010), que miden percepciones de gobernanza en percentiles de 0 a 100:
+
+\begin{itemize}
+  \item \textbf{Estado de derecho} (\textit{Rule of Law}, $V^{(1)}_{it}$): captura la confianza en las reglas sociales y su cumplimiento, en particular la calidad de los contratos, derechos de propiedad, policía y tribunales.
+  \item \textbf{Control de la corrupción} (\textit{Control of Corruption}, $V^{(2)}_{it}$): mide la capacidad del Estado de limitar el uso del poder público para el beneficio privado.
+  \item \textbf{Estabilidad política y ausencia de violencia} (\textit{Political Stability}, $V^{(3)}_{it}$): recoge la probabilidad percibida de desestabilización política o violencia, incluyendo terrorismo.
+\end{itemize}
+
+El pipeline construye dos versiones de $Q_{it}$:
+\begin{enumerate}
+  \item \textbf{Índice primario} $Q^{\textsc{avg}}_{it}$: promedio de los tres indicadores estandarizados (Sección~\ref{sec:inst_primary}). Es la medida empleada en las ecuaciones estructurales.
+  \item \textbf{Índice de robustez} $Q^{\textsc{pca}}_{it}$: primer componente principal de los tres indicadores (Sección~\ref{sec:inst_pca}), usado para verificar que los resultados no dependen de la metodología de construcción del índice.
+\end{enumerate}
+
+En la muestra, $Q^{\textsc{avg}}_{it}$ tiene media $\approx 0$ y desviación estándar $\approx 0.89$ (por construcción de la estandarización); un valor positivo indica instituciones por encima de la media muestral y uno negativo, por debajo. Costa Rica y Panamá concentran los valores más altos del índice; Honduras y Guatemala, los más bajos.
+
+\subsection{Variable de IED: $F_{it}$}
+
+$F_{it}$ es la \textbf{inversión extranjera directa como porcentaje del PIB} del país $i$ en el año $t$, tomada directamente de los World Development Indicators (WDI) del Banco Mundial. No se aplica transformación logarítmica porque la variable ya tiene una escala acotada y manejable (entre $-5.0\%$ y $15.8\%$ en la muestra), aunque presenta valores negativos (salidas netas de capital) en algunos años-país. En la muestra, la media es 4.4\% del PIB con desviación estándar de 2.7 puntos porcentuales.
+
+\subsection{Variable de crecimiento: $G_{it}$}
+
+$G_{it}$ es la \textbf{tasa de crecimiento real del PIB} del país $i$ en el año $t$, expresada en puntos porcentuales (e.g., $G_{it} = 3.97$ significa un crecimiento de $3.97\%$). Proviene de los WDI del Banco Mundial. La varianza \emph{within-país} de esta variable es muy alta (96.2\%), lo que significa que casi toda la variación del crecimiento ocurre a lo largo del tiempo dentro de cada país, y no entre países. Esto hace a $G_{it}$ especialmente adecuada para la estimación con efectos fijos.
+
+\subsection{Variables de control}
+
+En las tres ecuaciones estructurales aparece el vector de controles $\bm{c}_{it}$, que agrupa cinco variables macroeconómicas estándar de la literatura de crecimiento y determinantes de la IED:
+
+\begin{itemize}
+  \item $\ln(\text{PIBpc})_{it}$: logaritmo natural del PIB per cápita en dólares constantes. Controla el nivel de desarrollo económico inicial, que puede correlacionarse tanto con la calidad institucional como con la capacidad de atraer IED.
+  \item $\pi_{it}$: tasa de inflación anual (\%). Proxy de la estabilidad macroeconómica. En la Ecuación~3 resultó ser el determinante más robusto del crecimiento (coeficiente $-0.113$, significativo al $0.01\%$).
+  \item $u_{it}$: tasa de desempleo (\%). Indicador de condiciones del mercado laboral que puede afectar tanto la inversión como el crecimiento.
+  \item $x_{it}$: exportaciones como porcentaje del PIB. Controla el grado de apertura comercial, variable relacionada con la integración en cadenas de valor globales y la atracción de IED.
+  \item $\ln(\text{pob})_{it}$: logaritmo natural de la población total. Controla el tamaño del mercado doméstico, factor relevante para las decisiones de localización de la IED.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Índice Institucional: Construcción Matemática}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Estandarización (z-score)}
+\label{sec:zscore}
+
+Los tres indicadores WGI ($V^{(1)}_{it}$: Rule of Law; $V^{(2)}_{it}$: Control of Corruption; $V^{(3)}_{it}$: Political Stability) se expresan originalmente en percentiles sobre $[0,100]$, lo que hace que su \emph{escala} y \emph{dispersión} sean comparables entre sí. Sin embargo, para garantizar pesos iguales en el promedio y facilitar la interpretación, el pipeline los estandariza mediante el estadístico z-score. Para cada indicador $j \in \{1,2,3\}$:
+\[
+  Z^{(j)}_{it} \;=\; \frac{V^{(j)}_{it} - \bar{V}^{(j)}}{\hat{\sigma}_{V^{(j)}}},
+\]
+donde $\bar{V}^{(j)} = \frac{1}{n}\sum_{i,t} V^{(j)}_{it}$ y $\hat{\sigma}_{V^{(j)}} = \sqrt{\frac{1}{n-1}\sum_{i,t}(V^{(j)}_{it}-\bar{V}^{(j)})^2}$ se estiman sobre el pool completo de $n=179$ observaciones.
+
+\begin{intuitionbox}
+\textbf{¿Qué hace el z-score y para qué sirve aquí?} El z-score transforma cada indicador para que tenga \emph{media cero} y \emph{desviación estándar uno} en el conjunto de datos. Esto tiene dos consecuencias importantes en este contexto:
+\begin{enumerate}
+  \item \textbf{Comparabilidad de escala}: aunque los tres indicadores WGI ya están en percentiles de 0 a 100, pequeñas diferencias en sus distribuciones empíricas (e.g., Rule of Law con media 48.0 y Political Stability con media 61.3) harían que el promedio simple estuviera sesgado hacia el indicador con mayor media. El z-score elimina este sesgo.
+  \item \textbf{Interpretabilidad}: después de estandarizar, un valor $Z^{(j)}_{it} = 1.0$ significa que el país $i$ en el año $t$ se encuentra exactamente una desviación estándar \emph{por encima} de la media muestral en la dimensión $j$. Esta interpretación en «desviaciones estándar respecto a la media» es intuitiva y facilita las comparaciones entre países y períodos.
+\end{enumerate}
+En la práctica, tras la estandarización el indicador de Rule of Law para Costa Rica en 2022 tiene $Z^{(1)} \approx 2.0$, indicando que ese país-año se encuentra dos desviaciones estándar por encima de la media regional; Honduras en el mismo año tiene $Z^{(1)} \approx -0.8$, es decir, 0.8 desviaciones estándar por debajo.
+\end{intuitionbox}
+
+\subsection{Índice primario: promedio estandarizado}
+\label{sec:inst_primary}
+
+El índice institucional primario es el promedio aritmético de los tres z-scores:
+\[
+  \boxed{Q_{it}^{\textsc{avg}} \;=\; \frac{1}{3}\sum_{j=1}^{3} Z^{(j)}_{it}}
+\]
+Esta construcción asigna \textbf{pesos iguales} a cada dimensión, lo que refleja el supuesto teórico de que el Estado de derecho, el control de la corrupción y la estabilidad política contribuyen por igual a la calidad institucional general. La media de $Q^{\textsc{avg}}$ en la muestra es $\approx 0$ y su desviación estándar es $\approx 0.89 < 1$ (con igualdad sólo si los tres indicadores están perfectamente correlacionados entre sí, lo que no ocurre: la correlación promedio entre los tres z-scores es $\approx 0.69$).
+
+\begin{resultbox}
+\textbf{Resultado empírico (Pipeline, Módulo 01).} El índice $Q^{\textsc{avg}}$ tiene media $= 0.000$, desviación estándar $= 0.888$, rango $[-1.414,\, 2.259]$. La alta consistencia interna ($\alpha = 0.863 > 0.70$) confirma que las tres dimensiones WGI miden un único constructo latente de calidad institucional.
+\end{resultbox}
+
+\subsubsection{Consistencia interna: Alfa de Cronbach}
+
+La confiabilidad del índice se evalúa mediante el coeficiente $\alpha$ de Cronbach:
+\[
+  \alpha \;=\; \frac{k}{k-1}\left(1 - \frac{\sum_{j=1}^{k} \hat{\sigma}^2_{Z^{(j)}}}{\hat{\sigma}^2_{\sum_j Z^{(j)}}}\right),
+\]
+con $k=3$. El umbral aceptado en la literatura es $\alpha > 0.70$.
+
+\begin{intuitionbox}
+\textbf{Intuición del alfa de Cronbach.} El numerador de la fracción, $\sum_j \hat{\sigma}^2_{Z^{(j)}}$, es la suma de las varianzas individuales de cada ítem. El denominador, $\hat{\sigma}^2_{\sum_j Z^{(j)}}$, es la varianza de la suma. Si los tres indicadores midieran exactamente lo mismo (correlación perfecta), la varianza de la suma sería igual a la suma de las varianzas más todos los términos de covarianza, haciendo que la fracción interior tendiera a cero y $\alpha \to 1$. Si los indicadores fueran completamente independientes (sin correlación), la varianza de la suma igualaría la suma de las varianzas individuales, la fracción interior valdría 1 y $\alpha \to 0$. El valor empírico $\alpha = 0.863$ indica que las tres dimensiones WGI comparten un componente común muy sustancial, lo que justifica resumirlas en un único índice.
+\end{intuitionbox}
+
+\subsection{Índice de robustez: Análisis de Componentes Principales}
+\label{sec:inst_pca}
+
+Sea $\bm{Z}_{it} = (Z^{(1)}_{it}, Z^{(2)}_{it}, Z^{(3)}_{it})^\top$ y $\bm{\Sigma} = \frac{1}{n-1}\sum_{i,t}(\bm{Z}_{it}-\bar{\bm{Z}})(\bm{Z}_{it}-\bar{\bm{Z}})^\top$ la matriz de covarianza muestral ($3\times 3$).
+
+La descomposición espectral es $\bm{\Sigma} = \bm{P}\bm{\Lambda}\bm{P}^\top$, donde $\bm{\Lambda} = \mathrm{diag}(\lambda_1 \geq \lambda_2 \geq \lambda_3 > 0)$ y las columnas de $\bm{P}$ son los vectores propios ortonormales.
+
+El primer componente principal es:
+\[
+  Q^{\textsc{pca}}_{it} \;=\; \bm{p}_1^\top \bm{Z}_{it},
+\]
+donde $\bm{p}_1 \in \R^3$ es el vector propio asociado a $\lambda_1$. La fracción de varianza explicada es $\lambda_1 / \tr(\bm{\Sigma})$.
+
+\begin{intuitionbox}
+\textbf{¿Qué aporta el PCA respecto al promedio simple?} Mientras que $Q^{\textsc{avg}}$ asigna el mismo peso ($1/3$) a cada dimensión WGI, el PCA determina los pesos \emph{óptimos} que maximizan la varianza capturada por el índice. En nuestros datos, los pesos estimados son $0.63$ para Rule of Law, $0.59$ para Control of Corruption y $0.51$ para Political Stability (véase Tabla de cargas). El hecho de que los tres pesos sean muy similares entre sí valida el supuesto de pesos iguales del índice primario, y la correlación $r = 0.9994$ entre $Q^{\textsc{avg}}$ y $Q^{\textsc{pca}}$ confirma que ambas medidas son prácticamente intercambiables. El PCA sirve aquí como \emph{verificación de robustez}, no como alternativa principal.
+\end{intuitionbox}
+
+\begin{resultbox}
+\textbf{Resultado empírico.} PC1 explica el $78.9\%$ de la varianza total de los tres indicadores WGI. La alta correlación entre los dos índices ($r = 0.9994$) confirma que la elección de método de agregación no afecta materialmente los resultados.
+\end{resultbox}
+
+\subsubsection{Adecuación del PCA: medida KMO}
+
+La medida de Kaiser-Meyer-Olkin (Kaiser, 1970) evalúa si la matriz de correlaciones es apropiada para PCA:
+\[
+  \mathrm{KMO} \;=\; \frac{\sum_{j \neq \ell} r_{j\ell}^2}{\sum_{j \neq \ell} r_{j\ell}^2 + \sum_{j \neq \ell} p_{j\ell}^2},
+\]
+donde $r_{j\ell}$ son correlaciones simples y $p_{j\ell} = -r^{j\ell}/\sqrt{r^{jj}r^{\ell\ell}}$ son correlaciones parciales. Se requiere $\mathrm{KMO} > 0.50$ como mínimo. El valor empírico $\mathrm{KMO} = 0.534$ supera el umbral mínimo aunque permanece por debajo del nivel deseable ($> 0.60$), lo que se acepta dado el bajo número de ítems ($k = 3$) y la alta consistencia interna del índice.
+
+\subsubsection{Test de esfericidad de Bartlett}
+
+La hipótesis nula $H_0: \bm{\Sigma} = \bm{I}_k$ (indicadores no correlacionados) se rechaza con el estadístico:
+\[
+  \chi^2 \;=\; -\!\left(n - 1 - \frac{2k+5}{6}\right)\ln\!\det(\hat{\bm{R}}),
+\]
+que se distribuye asintóticamente $\chi^2\!\left(\frac{k(k-1)}{2}\right)$ bajo $H_0$.
+
+\begin{resultbox}
+\textbf{Resultado.} $\chi^2(3) = 406.8$, $p = 0.000$. Se rechaza $H_0$ con alta confianza, confirmando que los tres indicadores están suficientemente correlacionados para justificar la reducción dimensional.
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{El Estimador de Efectos Fijos de Dos Vías}
+\label{sec:twfe}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{El modelo}
+
+El estimador principal de cada ecuación es el modelo de efectos fijos de dos vías (\textit{Two-Way Fixed Effects}, TWFE):
+\[
+  \boxed{y_{it} \;=\; \alpha_i + \lambda_t + \bm{x}_{it}^\top \bm{\beta} + \varepsilon_{it}}
+\]
+
+\begin{intuitionbox}
+\textbf{¿Qué hace y para qué sirve el TWFE?} El modelo introduce dos conjuntos de parámetros adicionales respecto a una regresión OLS ordinaria:
+
+\begin{itemize}
+  \item $\alpha_i$ (\textbf{efecto fijo de país}): un intercepto distinto para cada uno de los 8 países. Absorbe \emph{todo lo que es constante dentro de un país a lo largo del tiempo}: su ubicación geográfica, historia colonial, cultura política, tamaño del mercado y cualquier otro factor invariante en el tiempo que pudiera correlacionarse con las variables del modelo. Al controlarlo, se elimina el sesgo de variable omitida proveniente de estas características estructurales.
+  
+  \item $\lambda_t$ (\textbf{efecto fijo de año}): un intercepto distinto para cada uno de los 24 años. Absorbe \emph{shocks comunes a todos los países en un año dado}: la crisis financiera global de 2008 (que contrajo el crecimiento en todos los países simultáneamente), la pandemia de COVID-19 en 2020 (que provocó caídas del PIB de hasta $-17.8\%$) o variaciones globales en los precios de las materias primas.
+\end{itemize}
+
+Sin el TWFE, un modelo OLS pooled confundiría, por ejemplo, el hecho de que El Salvador tiene sistemáticamente más homicidios que Costa Rica (efecto $\alpha_i$) con el efecto causal de la violencia sobre las instituciones. El TWFE identifica $\bm{\beta}$ exclusivamente de cómo \emph{cambia} la violencia dentro de cada país a lo largo del tiempo, controlando por las tendencias comunes a todos.
+\end{intuitionbox}
+
+donde $\alpha_i$ es el efecto fijo de entidad y $\lambda_t$ es el efecto fijo temporal.
+
+\subsection{El operador within de dos vías}
+
+La estimación del TWFE equivale a transformar todas las variables mediante el operador \emph{within} de dos vías, que elimina simultáneamente la media de país y la media de año de cada observación. Define los operadores de demeaning:
+\begin{align*}
+  \ddot{y}_{it} &\;=\; y_{it} - \bar{y}_{i\cdot} - \bar{y}_{\cdot t} + \bar{y}_{\cdot\cdot},
+\end{align*}
+donde $\bar{y}_{i\cdot} = |\mathcal{T}_i|^{-1}\sum_{t \in \mathcal{T}_i} y_{it}$ es la media temporal del país $i$, $\bar{y}_{\cdot t} = N_t^{-1}\sum_{i: t\in\mathcal{T}_i} y_{it}$ es la media transversal del año $t$ y $\bar{y}_{\cdot\cdot} = n^{-1}\sum_{i,t}y_{it}$ es la media global.
+
+\begin{intuitionbox}
+\textbf{Intuición del demeaning.} Al restar la media temporal de cada país ($\bar{y}_{i\cdot}$), se elimina el nivel promedio de cada país --- lo que hace que Colombia siempre tenga más homicidios que Costa Rica deja de contar. Al restar también la media anual ($\bar{y}_{\cdot t}$), se elimina el efecto de los años de crisis global. Lo que queda, $\ddot{y}_{it}$, es la \emph{desviación} de cada país-año respecto a su tendencia propia y al ciclo global. La regresión de $\ddot{y}_{it}$ sobre $\ddot{\bm{x}}_{it}$ captura únicamente la covarianza temporal \emph{dentro} de cada país, neta de los shocks comunes.
+\end{intuitionbox}
+
+\begin{remark}
+En el caso balanceado, el operador within de dos vías es idempotente y corresponde a la proyección ortogonal sobre el complemento del espacio generado por las dummies de entidad y tiempo. Para paneles no balanceados (nuestro caso), el operador se aplica iterativamente (algoritmo de Gaure, 2013), convergiendo en a lo sumo 20 iteraciones.
+\end{remark}
+
+\subsection{Estimación}
+
+El estimador TWFE es equivalente a OLS sobre las variables transformadas:
+\[
+  \hat{\bm{\beta}}_{\textsc{fe}} \;=\; \left(\sum_{i,t} \ddot{\bm{x}}_{it}\ddot{\bm{x}}_{it}^\top\right)^{-1} \sum_{i,t} \ddot{\bm{x}}_{it}\ddot{y}_{it}
+  \;=\; (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1}\ddot{\bm{X}}^\top\ddot{\bm{y}}.
+\]
+
+Los residuos within son $\hat{\varepsilon}_{it} = \ddot{y}_{it} - \ddot{\bm{x}}_{it}^\top\hat{\bm{\beta}}_{\textsc{fe}}$.
+
+\subsection{Descomposición de varianza: within vs.\ between}
+
+El TWFE identifica $\bm{\beta}$ exclusivamente de la \emph{variación temporal dentro de cada país} (variación within). Define:
+\begin{align*}
+  \text{Varianza total: }   & \hat{\sigma}^2_{\text{total}} = \frac{1}{n-1}\sum_{i,t}(y_{it}-\bar{y})^2, \\
+  \text{Varianza between: } & \hat{\sigma}^2_{\text{btw}} = \frac{1}{N-1}\sum_{i}(\bar{y}_{i\cdot}-\bar{y})^2, \\
+  \text{Varianza within: }  & \hat{\sigma}^2_{\text{win}} = \frac{1}{n-N}\sum_{i,t}(y_{it}-\bar{y}_{i\cdot})^2.
+\end{align*}
+
+\begin{resultbox}
+\textbf{Varianza within en la muestra.} Las fracciones within de las variables clave son: tasa de homicidios (53.7\%), instituciones (25.0\%), IED (74.4\%) y crecimiento del PIB (96.2\%). El bajo porcentaje within de las instituciones (25\%) es una advertencia de que el estimador FE explota relativamente poca variación en esta variable, lo que contribuye a los errores estándar amplios en la Ecuación~1.
+\end{resultbox}
+
+\subsection{Comparación Hausman-tipo: FE vs.\ estimador between}
+
+El estimador between (BE) es OLS sobre los promedios temporales:
+\[
+  \hat{\bm{\beta}}_{\textsc{be}} = (\bar{\bm{X}}^\top\bar{\bm{X}})^{-1}\bar{\bm{X}}^\top\bar{\bm{y}},
+  \quad \bar{\bm{x}}_i = |\mathcal{T}_i|^{-1}\sum_{t\in\mathcal{T}_i}\bm{x}_{it}.
+\]
+Si $\hat{\bm{\beta}}_{\textsc{fe}}$ y $\hat{\bm{\beta}}_{\textsc{be}}$ divergen sistemáticamente, esto evidencia heterogeneidad no observada correlacionada con los regresores, validando el uso de FE (Hausman, 1978):
+\[
+  \hat{H} = (\hat{\bm{\beta}}_{\textsc{fe}} - \hat{\bm{\beta}}_{\textsc{be}})^\top
+            \left[\hat{\bm{V}}_{\textsc{fe}} - \hat{\bm{V}}_{\textsc{be}}\right]^{-1}
+            (\hat{\bm{\beta}}_{\textsc{fe}} - \hat{\bm{\beta}}_{\textsc{be}})
+  \;\xrightarrow{d}\; \chi^2(k).
+\]
+
+\begin{resultbox}
+\textbf{Resultado empírico.} Las estimaciones FE y BE divergen sustancialmente en las tres ecuaciones. Por ejemplo, en la Ecuación~1 el coeficiente de la violencia pasa de $-0.14$ (FE) a $+0.05$ (BE), un cambio de signo que evidencia heterogeneidad no observada entre países correlacionada con la violencia. Esto justifica el uso del FE frente a un estimador pooled o between.
+\end{resultbox}
+
+\subsection{R-cuadrado within}
+
+El $R^2$ within mide el ajuste en el espacio transformado:
+\[
+  R^2_{\text{within}} = 1 - \frac{\sum_{i,t}\hat{\varepsilon}_{it}^2}{\sum_{i,t}\ddot{y}_{it}^2}.
+\]
+
+Los valores empíricos son: EQ1 ($R^2_{\text{within}} = 0.074$), EQ2 ($0.247$) y EQ3 ($0.095$). El bajo $R^2_{\text{within}}$ de la EQ1 refleja que la variación temporal dentro de cada país en las instituciones es modesta y difícil de explicar con las variables disponibles.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{El Sistema de Ecuaciones Secuenciales}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Las tres ecuaciones estructurales}
+
+El pipeline estima el siguiente sistema TWFE secuencial. Cada ecuación es \emph{auto-contenida}: utiliza valores observados (no predichos) de sus regresores, de modo que cada una puede interpretarse independientemente.
+
+\medskip
+\noindent\textbf{Ecuación 1 — Violencia $\to$ Instituciones:}
+\begin{equation}
+  Q_{it} = \alpha_i^{(1)} + \lambda_t^{(1)} + \beta_1 H_{i,t-1} + \beta_2 \ln(\text{PIBpc})_{it} + \beta_3 \pi_{it} + \beta_4 x_{it} + \beta_5 \ln(\text{pob})_{it} + \beta_6 u_{it} + \varepsilon^{(1)}_{it}. \label{eq:1}
+\end{equation}
+
+\noindent\textit{Descripción de variables:}
+\begin{itemize}
+  \item $Q_{it}$: índice institucional promedio ($Q^{\textsc{avg}}$), variable dependiente.
+  \item $H_{i,t-1}$: logaritmo de la tasa de homicidios rezagada un año. Regresor de interés; se espera $\hat\beta_1 < 0$.
+  \item $\ln(\text{PIBpc})_{it}$: nivel de desarrollo, controla el hecho de que los países más ricos suelen tener mejores instituciones.
+  \item $\pi_{it}$: inflación, proxy de inestabilidad macroeconómica que puede erosionar la confianza institucional.
+  \item $x_{it}$: apertura exportadora, que puede correlacionarse con reformas institucionales exigidas por socios comerciales.
+  \item $\ln(\text{pob})_{it}$: tamaño del país, que afecta la capacidad administrativa del Estado.
+  \item $u_{it}$: desempleo, factor de tensión social potencialmente relacionado con la demanda de cambio institucional.
+\end{itemize}
+
+\begin{resultbox}
+\textbf{Resultado principal (EQ1).} $\hat\beta_1 = -0.140$, error estándar clusterizado $= 0.136$, $p$-valor bootstrap $= 0.429$. El coeficiente negativo es consistente con la hipótesis, pero estadísticamente no significativo a los niveles convencionales, principalmente debido al bajo $G = 8$ clusters y a la escasa variación within de las instituciones (25\%).
+\end{resultbox}
+
+\medskip
+\noindent\textbf{Ecuación 2 — Instituciones $\to$ IED:}
+\begin{equation}
+  F_{it} = \alpha_i^{(2)} + \lambda_t^{(2)} + \gamma_1 Q_{it} + \gamma_2 \ln(\text{PIBpc})_{it} + \gamma_3 \pi_{it} + \gamma_4 x_{it} + \gamma_5 \ln(\text{pob})_{it} + \gamma_6 u_{it} + \varepsilon^{(2)}_{it}. \label{eq:2}
+\end{equation}
+
+\noindent\textit{Descripción de variables:}
+\begin{itemize}
+  \item $F_{it}$: IED como \% del PIB, variable dependiente.
+  \item $Q_{it}$: índice institucional contemporáneo (observado, no predicho de EQ1). Regresor de interés; se espera $\hat\gamma_1 > 0$ porque mejores instituciones reducen el riesgo de apropiación y mejoran la seguridad jurídica para el inversor extranjero.
+  \item Los controles tienen la misma interpretación que en EQ1, ahora en el contexto de los determinantes de la IED.
+\end{itemize}
+
+\begin{resultbox}
+\textbf{Resultado principal (EQ2).} $\hat\gamma_1 = 0.900$, $p$-valor bootstrap $= 0.062$. Marginalmente significativo al $10\%$. Interpretación: una mejora de una desviación estándar en el índice institucional ($\Delta Q \approx 0.89$) se asocia, \emph{ceteris paribus}, con un aumento de aproximadamente $0.80$ puntos porcentuales en la IED como \% del PIB.
+\end{resultbox}
+
+\medskip
+\noindent\textbf{Ecuación 3 — IED e Instituciones $\to$ Crecimiento:}
+\begin{equation}
+  G_{it} = \alpha_i^{(3)} + \lambda_t^{(3)} + \delta_1 F_{it} + \delta_2 Q_{it} + \delta_3 \ln(\text{PIBpc})_{it} + \delta_4 \pi_{it} + \delta_5 x_{it} + \delta_6 \ln(\text{pob})_{it} + \delta_7 u_{it} + \varepsilon^{(3)}_{it}. \label{eq:3}
+\end{equation}
+
+\noindent\textit{Descripción de variables:}
+\begin{itemize}
+  \item $G_{it}$: tasa de crecimiento real del PIB (\%), variable dependiente.
+  \item $F_{it}$: IED como \% del PIB, regresor de interés primario. Se espera $\hat\delta_1 > 0$.
+  \item $Q_{it}$: índice institucional, regresor de interés secundario. Se incluye directamente para capturar efectos institucionales sobre el crecimiento más allá del canal IED.
+  \item $\pi_{it}$: único regresor que resultó estadísticamente robusto ($\hat\delta_4 = -0.113$, $p < 0.001$).
+\end{itemize}
+
+\begin{resultbox}
+\textbf{Resultado principal (EQ3).} $\hat\delta_1 = 0.137$ ($p$-valor bootstrap $= 0.409$, no significativo). La inflación es el único regresor con significancia estadística robusta. El signo de la IED es el esperado, pero los amplios intervalos de confianza bootstrap (CI 95\%: $[-0.240,\, 0.241]$) son compatibles tanto con efectos nulos como con efectos moderados de magnitud económica relevante.
+\end{resultbox}
+
+\subsection{El problema de los regresores generados (Pagan, 1984)}
+
+\begin{warningbox}
+\textbf{Nota metodológica importante.} Una alternativa de estimación que \emph{no} emplea el pipeline sería el enfoque de «cadena de OLS»: usar el valor predicho $\hat{Q}_{it}$ de la Ecuación~1 como regresor en la Ecuación~2, y $\hat{F}_{it}$ (predicho de EQ2 con $\hat{Q}_{it}$) como regresor en la Ecuación~3. Este enfoque sufre del \emph{problema de regresores generados} de Pagan (1984): los errores estándar de la ecuación downstream son inconsistentes porque ignoran la varianza muestral del regresor upstream. Formalmente, si $\hat{Q}_{it} = Q_{it} - \hat\varepsilon^{(1)}_{it}$, el regresor usado en EQ2 contiene un error de medición $-\hat\varepsilon^{(1)}_{it}$ cuya varianza no se propaga. La solución adoptada es usar valores \emph{observados} en cada ecuación (cada ecuación es auto-contenida), y recurrir al bootstrap del Módulo~4 para manejar la incertidumbre conjunta del sistema.
+\end{warningbox}
+
+Nótese que el pipeline \textbf{no implementa 2SLS} (mínimos cuadrados en dos etapas), que requeriría instrumentos externos válidos (e.g., un índice de precios de la cocaína o anomalías de precipitación) que no están disponibles en el conjunto de datos actual. La arquitectura del pipeline documenta esta posibilidad como extensión futura, pero la estimación actual es TWFE con valores observados y bootstrap para la inferencia.
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Matrices de Covarianza de los Errores Estándar}
+% ══════════════════════════════════════════════════════════════════════════
+
+El pipeline implementa tres estimadores de la matriz de covarianza de $\hat{\bm{\beta}}_{\textsc{fe}}$, cada uno diseñado para hacer frente a distintas formas de dependencia en los errores:
+
+\subsection{Errores estándar agrupados convencionales}
+
+\[
+  \hat{\bm{V}}_{\textsc{cl}} = (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1}
+  \left[\sum_{g=1}^{G}\ddot{\bm{X}}_g^\top\hat{\bm{e}}_g\hat{\bm{e}}_g^\top\ddot{\bm{X}}_g\right]
+  (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1},
+\]
+donde $g$ indexa los grupos (países). Esta expresión es el \emph{sandwich estimator} de Liang \& Zeger (1986). Permite correlación arbitraria entre los residuos de un mismo país a lo largo del tiempo, pero asume independencia entre países.
+
+\begin{warningbox}
+\textbf{Limitación crítica con $G = 8$ clusters.} Los errores estándar agrupados convencionales son asintóticos en $G \to \infty$. Con $G = 8$ países, la aproximación asintótica es pobre: los errores estándar están \emph{sub-estimados} y los tests sobre-rechazan $H_0$ con distorsiones de tamaño que pueden superar 15 puntos porcentuales (Cameron \& Miller, 2015). Por esta razón, la inferencia primaria del pipeline se basa en el bootstrap de cluster silvestre (Sección~\ref{sec:bootstrap}) y los errores CR2 (Sección~\ref{sec:cr2}).
+\end{warningbox}
+
+\subsection{Errores Driscoll-Kraay (HAC bidimensional)}
+
+Los diagnósticos del Módulo~3 detectaron tanto autocorrelación serial (test de Wooldridge: $p < 0.001$ en EQ1) como dependencia transversal (test de Pesaran CD: estadístico $\approx -67$, $p < 0.001$) en las tres ecuaciones. Los errores estándar clusterizados convencionales sólo controlan la correlación serial dentro de cada país, pero no la dependencia entre países. El estimador de Driscoll \& Kraay (1998) extiende la corrección a ambas dimensiones:
+
+\[
+  \hat{\bm{V}}_{\textsc{dk}} = (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1}
+  \hat{\bm{S}}\,
+  (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1},
+\]
+donde
+\[
+  \hat{\bm{S}} = \hat{\bm{S}}_0 + \sum_{\ell=1}^{m}\kappa\!\left(\frac{\ell}{m+1}\right)\left(\hat{\bm{S}}_\ell + \hat{\bm{S}}_\ell^\top\right),
+  \quad
+  \hat{\bm{S}}_\ell = \frac{1}{n}\sum_{t}\bm{h}_t\bm{h}_{t-\ell}^\top,
+\]
+con $\bm{h}_t = \sum_{i} \ddot{\bm{x}}_{it}\hat\varepsilon_{it}$ el score agregado en $t$, $\kappa(\cdot)$ el kernel de Bartlett y $m = \lfloor 4(T/100)^{2/9}\rfloor = 2$ el ancho de banda de Newey-West.
+
+\begin{intuitionbox}
+\textbf{Intuición del estimador Driscoll-Kraay.} A diferencia del estimador clustered (que opera columna a columna sobre los países), DK agrega los scores $\bm{h}_t$ transversalmente para cada período $t$, y luego aplica una corrección HAC (\textit{Heteroskedasticity and Autocorrelation Consistent}) sobre la dimensión temporal de esos scores agregados. De este modo captura tanto la correlación serial dentro de cada país como la correlación contemporánea entre países (dependencia transversal). En presencia de shocks comunes (2008, COVID-19), DK produce errores estándar más conservadores que el estimador clustered.
+\end{intuitionbox}
+
+\subsection{Errores CR2 de Bell-McCaffrey con grados de libertad de Satterthwaite}
+\label{sec:cr2}
+
+\subsubsection{El estimador CR2}
+
+Sea $\tilde{\bm{X}}_g = \ddot{\bm{X}}_g$ la submatriz de regresores within-transformados para el cluster $g$. El bloque de la matriz hat dentro del cluster es:
+\[
+  \bm{H}_{gg} = \tilde{\bm{X}}_g (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1} \tilde{\bm{X}}_g^\top \in \R^{T_g \times T_g}.
+\]
+
+La corrección CR2 de Bell \& McCaffrey (2002) emplea la pseudo-inversa simétrica de $(I_{T_g} - \bm{H}_{gg})$:
+\[
+  \bm{A}_g = (I_{T_g} - \bm{H}_{gg})^{-1/2},
+\]
+donde la raíz cuadrada matricial inversa se calcula mediante la descomposición espectral.
+
+\begin{intuitionbox}
+\textbf{¿Por qué CR2 y no simplemente los errores clusterizados convencionales?} Los errores clusterizados estándar utilizan los residuos $\hat{\bm{e}}_g$ directamente en la «carne» del sandwich. Pero los residuos están sesgados como estimadores de los errores verdaderos porque la proyección FE los comprime: $\E[\hat{\bm{e}}_g\hat{\bm{e}}_g^\top] = (I - \bm{H}_{gg})\bm{\Sigma}_g(I - \bm{H}_{gg})^\top$, no $\bm{\Sigma}_g$. La corrección $\bm{A}_g = (I - \bm{H}_{gg})^{-1/2}$ deshace este sesgo al multiplicar los residuos por el inverso de la raíz cuadrada de la matriz de compresión. Con $G = 8$ clusters, este sesgo es especialmente relevante y CR2 es preferible al estimador convencional.
+\end{intuitionbox}
+
+El estimador CR2 es:
+\[
+  \boxed{\hat{\bm{V}}_{\textsc{cr2}} = (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1}
+  \left[\sum_{g=1}^{G} \tilde{\bm{X}}_g^\top \bm{A}_g \hat{\bm{e}}_g \hat{\bm{e}}_g^\top \bm{A}_g \tilde{\bm{X}}_g\right]
+  (\ddot{\bm{X}}^\top\ddot{\bm{X}})^{-1}}
+\]
+
+\subsubsection{Grados de libertad de Satterthwaite (Pustejovsky \& Tipton, 2018)}
+
+Con $G = 8$, los grados de libertad efectivos para la prueba $t$ del coeficiente $j$ son inferiores a $G - 1 = 7$:
+\[
+  \boxed{\hat{\nu}_j = \frac{\left(\displaystyle\sum_{g=1}^{G} B_{g,jj}\right)^2}{\displaystyle\sum_{g=1}^{G} B_{g,jj}^2}}
+\]
+
+\begin{resultbox}
+\textbf{Resultado empírico.} Los grados de libertad de Satterthwaite son: EQ1: $\hat\nu = 3.16$; EQ2: $\hat\nu = 2.38$; EQ3: $\hat\nu = 1.79$. Estos valores, muy por debajo de $G - 1 = 7$, reflejan que el panel no balanceado hace que sólo unos pocos clusters contribuyan de forma efectiva a la estimación de cada coeficiente. La distribución $t$ con $\hat\nu \approx 2{-}3$ grados de libertad es mucho más pesada en las colas que una normal, lo que explica los $p$-valores CR2 más conservadores que los convencionales.
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Wild Cluster Bootstrap con Pesos de Webb}
+\label{sec:bootstrap}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Motivación: el problema de inferencia con $G = 8$}
+
+Los errores estándar agrupados son asintóticos en $G \to \infty$ bajo regularidad. Con $G = 8$, la aproximación es pobre. El bootstrap de cluster silvestre (\textit{wild cluster bootstrap}, WCB) de Cameron, Gelbach \& Miller (2008) provee una corrección de orden superior que controla el tamaño del test incluso con $G$ pequeño, a costa de un mayor coste computacional (999 réplicas $\times$ 3 ecuaciones $\approx$ 5 minutos de cómputo en el pipeline).
+
+\subsection{El proceso generador de datos bootstrap}
+
+Dada la ecuación TWFE bajo $H_0: \beta_j = 0$ (para el coeficiente de interés), el DGP restringido es:
+\[
+  y_{it} = \alpha_i + \lambda_t + \bm{x}_{it,(-j)}^\top\hat{\bm{\beta}}_{(-j)} + \hat\varepsilon^R_{it},
+\]
+donde $\hat\varepsilon^R_{it}$ son los residuos del modelo restringido (sin el regresor $j$).
+
+\subsection{Los pesos de Webb (2023)}
+
+Webb (2023) propone la distribución discreta de 6 puntos:
+\[
+  w_g \in \left\{-\sqrt{\tfrac{3}{2}},\; -1,\; -\sqrt{\tfrac{1}{2}},\; \sqrt{\tfrac{1}{2}},\; 1,\; \sqrt{\tfrac{3}{2}}\right\},
+\]
+cada uno con probabilidad $1/6$. Esta distribución satisface $\E[w_g] = 0$, $\E[w_g^2] = 1$ y $\E[w_g^3] = 0$.
+
+\begin{intuitionbox}
+\textbf{¿Por qué pesos de Webb en lugar de Rademacher ($\pm 1$)?} Con $G = 8$ clusters, la distribución de Rademacher sólo genera $2^8 = 256$ posibles configuraciones de pesos, lo que hace que la distribución bootstrap sea muy discreta y que los $p$-valores sólo puedan tomar un número limitado de valores. La distribución de Webb con 6 puntos genera $6^8 = 1{,}679{,}616$ configuraciones posibles, produciendo una distribución bootstrap más continua y mejor control del tamaño del test. Adicionalmente, la condición $\E[w_g^3] = 0$ (asimetría cero) garantiza que la distribución bootstrap sea simétrica bajo $H_0$, lo que mejora la precisión del $p$-valor bilateral.
+\end{intuitionbox}
+
+\subsection{Pseudo-muestras bootstrap}
+
+Para cada replicación $b = 1, \ldots, B = 999$:
+
+\textbf{Paso 1.} Sortear un peso $w_g^{(b)} \sim \text{Webb}(6)$ por cluster, independientemente.
+
+\textbf{Paso 2.} Construir la variable dependiente bootstrap:
+\[
+  y^{*(b)}_{it} = \hat{y}^R_{it} + w_g^{(b)} \cdot \hat\varepsilon^R_{it}, \quad g = g(i).
+\]
+
+\textbf{Paso 3.} Estimar el modelo TWFE completo con $y^{*(b)}_{it}$ como variable dependiente.
+
+\textbf{Paso 4.} Calcular el estadístico pivot bootstrap:
+\[
+  T^{*(b)}_j = \frac{\hat\beta^{*(b)}_j}{\hat\sigma^{*(b)}_{\textsc{cl},j}}.
+\]
+
+\subsection{P-valor bootstrap y región de confianza}
+
+El p-valor bootstrap bilateral es:
+\[
+  \hat{p}_{\textsc{wcb}} = \frac{1}{B}\sum_{b=1}^{B}\mathbf{1}\!\left[\abs{T^{*(b)}_j} \geq \abs{\hat{T}_j}\right].
+\]
+
+El intervalo de confianza del 95\% se obtiene de los percentiles de la distribución empírica de $\hat\beta^{*(b)}_j$:
+\[
+  \mathrm{IC}_{95\%} = \left[\hat{q}_{0.025}\!\left(\hat\beta^{*(b)}_j\right),\; \hat{q}_{0.975}\!\left(\hat\beta^{*(b)}_j\right)\right].
+\]
+
+\begin{resultbox}
+\textbf{Resultados bootstrap (B=999, pesos Webb).}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Ecuación & $\hat\beta$ & $p$-valor WCB & IC 95\% bootstrap \\
+\midrule
+EQ1: Violencia $\to$ Inst. & $-0.140$ & $0.429$ & $[-0.204,\; 0.207]$ \\
+EQ2: Inst. $\to$ IED       & $+0.900$ & $0.062^*$ & $[-0.842,\; 0.839]$ \\
+EQ3: IED $\to$ Crecimiento & $+0.137$ & $0.409$ & $[-0.240,\; 0.241]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{resultbox}
+
+\begin{remark}
+El bootstrap utiliza el estadístico pivot $T^{*(b)}$ (no directamente $\hat\beta^{*(b)}$) porque la distribución del pivote es más estable bajo $H_0$, produciendo una mejora asintótica de orden superior sobre el $p$-valor basado en la normal estándar (\textit{asymptotic refinement}; ver Hall, 1992).
+\end{remark}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Diagnósticos de Panel}
+% ══════════════════════════════════════════════════════════════════════════
+
+Los diagnósticos del Módulo~3 evalúan tres supuestos del modelo de efectos fijos: independencia serial en los errores, independencia transversal entre países y homocedasticidad entre grupos. Los tres son rechazados en las tres ecuaciones, lo que justifica el uso combinado de errores DK, CR2 y bootstrap como estrategias de inferencia robusta.
+
+\subsection{Test de Wooldridge (2002) para correlación serial}
+
+\textbf{Procedimiento:}
+
+\textbf{Paso 1.} Estimar el modelo en primeras diferencias: $\Delta y_{it} = \Delta\bm{x}_{it}^\top\bm{\beta} + \Delta\varepsilon_{it}$.
+
+\textbf{Paso 2.} Obtener residuos $\hat{e}_{it}$.
+
+\textbf{Paso 3.} Regresar $\hat{e}_{it}$ sobre $\hat{e}_{i,t-1}$ (pool, sin constante).
+
+\textbf{Paso 4.} Contrastar $H_0: \rho = -1/2$.
+
+\begin{intuitionbox}
+\textbf{¿Por qué $\rho = -1/2$ bajo la hipótesis nula?} Si los errores en niveles son ruido blanco ($\varepsilon_{it} = u_{it}$ i.i.d.), entonces las primeras diferencias $\Delta\varepsilon_{it} = u_{it} - u_{i,t-1}$ y $\Delta\varepsilon_{i,t-1} = u_{i,t-1} - u_{i,t-2}$ comparten el término $-u_{i,t-1}$ y $u_{i,t-1}$ respectivamente, lo que produce una correlación de exactamente $-1/2$ entre residuos en diferencias adyacentes. Si se rechaza $H_0: \rho = -1/2$, los errores en niveles presentan autocorrelación ($\rho^* \neq 0$), lo que invalida los errores estándar OLS convencionales.
+\end{intuitionbox}
+
+\begin{resultbox}
+\textbf{Resultado.} EQ1: $\hat\rho = -0.132$, $t = 4.76$, $p < 0.001$. EQ2: $\hat\rho = -0.350$, $t = 2.07$, $p = 0.04$. EQ3: $\hat\rho = -0.323$, $t = 2.33$, $p = 0.02$. Autocorrelación serial detectada en las tres ecuaciones $\Rightarrow$ se recomienda HAC (DK).
+\end{resultbox}
+
+\subsection{Test de Pesaran (2004) para dependencia transversal}
+
+El estadístico CD de Pesaran (2004) es:
+\[
+  \mathrm{CD} = \sqrt{\frac{2\bar{T}}{N(N-1)}}\sum_{i=1}^{N-1}\sum_{j=i+1}^{N} T_{ij}\,\hat\rho_{ij},
+\]
+donde $\hat\rho_{ij}$ es la correlación muestral de los residuos entre los países $i$ y $j$.
+
+\begin{intuitionbox}
+\textbf{¿Por qué es importante la dependencia transversal?} Si existe un shock común no observado (e.g., una caída del precio del café que afecta simultáneamente a varios países de la muestra), los residuos de países con estructuras económicas similares estarán correlacionados entre sí en los mismos años. El estimador clustered convencional no captura este tipo de correlación \emph{entre} países. El test de Pesaran detecta si el promedio de las $\binom{N}{2} = 28$ correlaciones entre pares de residuos es significativamente distinto de cero.
+\end{intuitionbox}
+
+\begin{resultbox}
+\textbf{Resultado.} EQ1: $\mathrm{CD} = -66.7$, $p < 0.001$. EQ2: $\mathrm{CD} = -64.8$, $p < 0.001$. EQ3: $\mathrm{CD} = -72.1$, $p < 0.001$. Dependencia transversal severa en las tres ecuaciones $\Rightarrow$ el estimador Driscoll-Kraay es apropiado.
+\end{resultbox}
+
+\subsection{Test de Wald modificado para heterocedasticidad grupal}
+
+\[
+  W = \sum_{g=1}^{G} \frac{T_g(\hat\sigma^2_g - \hat\sigma^2)^2}{2\hat\sigma^4} \;\xrightarrow{H_0}\; \chi^2(G-1).
+\]
+
+\begin{resultbox}
+\textbf{Resultado.} EQ1: $W = 38.0$ ($p < 0.001$); EQ2: $W = 67.6$ ($p < 0.001$); EQ3: $W = 40.9$ ($p < 0.001$). Heterocedasticidad grupal detectada $\Rightarrow$ errores estándar clusterizados ya aplicados. En EQ2 la varianza residual de Panamá ($\hat\sigma^2 = 6.10$) es seis veces mayor que la de Costa Rica ($\hat\sigma^2 = 0.57$), lo que refleja la mayor volatilidad de los flujos de IED hacia el centro financiero panameño.
+\end{resultbox}
+
+\subsection{Factor de inflación de varianza (FIV)}
+
+Para el regresor $j$:
+\[
+  \mathrm{VIF}_j = \frac{1}{1 - R^2_j},
+\]
+donde $R^2_j$ es el coeficiente de determinación de la regresión de $\ddot{x}^{(j)}_{it}$ sobre todos los demás regresores within-transformados. El umbral $\mathrm{VIF}_j > 10$ señala colinealidad severa.
+
+\begin{resultbox}
+\textbf{Resultado.} Todos los VIFs se encuentran entre 1.19 y 1.89, muy por debajo del umbral de 10, y los números de condición oscilan entre 2.3 y 2.6 (umbral: 30). No hay evidencia de multicolinealidad problemática en ninguna de las tres ecuaciones.
+\end{resultbox}
+
+\subsection{DFBETA por país (diagnósticos de influencia)}
+
+\[
+  \mathrm{DFBETA}_{j,g} = \frac{\hat\beta_j - \hat\beta_j^{(-g)}}{\hat\sigma_{\textsc{cl},j}}.
+\]
+
+Un valor $|\mathrm{DFBETA}_{j,g}| > 1$ indica influencia excesiva.
+
+\begin{resultbox}
+\textbf{Resultado.} Colombia ejerce influencia excesiva en EQ2 ($|\mathrm{DFBETA}| = 1.73$) y Panamá en EQ3 ($|\mathrm{DFBETA}| = 1.18$). Ningún país muestra influencia excesiva en EQ1. Estos resultados son esperables: Colombia es un outlier en la relación instituciones-IED por la escala de su atracción de inversión post-acuerdo de paz, y Panamá por su condición de hub financiero.
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Análisis de Robustez}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Principio de consistencia del estimador}
+
+Todos los ejercicios de robustez estiman exactamente el mismo modelo que la especificación principal:
+\[
+  \texttt{PanelOLS}(\text{entity\_effects}=\texttt{True},\; \text{time\_effects}=\texttt{True},\; \text{drop\_absorbed}=\texttt{True})
+\]
+con errores agrupados por entidad. Cualquier sustitución silenciosa alteraría el estimador y haría las comparaciones inválidas.
+
+\subsection{Leave-One-Country-Out (LOCO)}
+
+Para cada $g \in \{1,\ldots,G\}$:
+\[
+  \hat\beta^{(-g)}_j = \left(\ddot{\bm{X}}_{(-g)}^\top\ddot{\bm{X}}_{(-g)}\right)^{-1}\ddot{\bm{X}}_{(-g)}^\top\ddot{\bm{y}}_{(-g)}.
+\]
+
+\begin{resultbox}
+\textbf{Resultado LOCO (EQ1).} El coeficiente permanece negativo en 7 de las 8 exclusiones (la excepción es Post-2010, no LOCO). No hay reversión de signo en ninguna exclusión de país, lo que indica que el resultado negativo no depende de un único país. Sin embargo, la magnitud varía entre $-0.020$ (excl. Colombia) y $-0.267$ (excl. El Salvador), señalando heterogeneidad en el efecto a través de la muestra.
+\end{resultbox}
+
+\subsection{Test placebo (permutación)}
+
+\[
+  p_{\text{placebo}} = \frac{1}{R}\sum_{r=1}^{R}\mathbf{1}\!\left[\abs{\hat\beta^{(\pi_r)}_j} \geq \abs{\hat\beta_j}\right].
+\]
+
+\begin{resultbox}
+\textbf{Resultado (EQ1).} El coeficiente verdadero ($\hat\beta_1 = -0.140$) es más extremo que el 100\% de los 500 coeficientes placebo obtenidos con violencia permutada ($p_{\text{placebo}} = 0.000$). La distribución placebo tiene media $= 0.001$ y desviación estándar $= 0.024$, frente al verdadero de $-0.140$. Esto confirma que el resultado no es artefacto de correlaciones espurias, aunque la significancia estadística convencional sea marginal.
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Triangulación con Aprendizaje Automático}
+% ══════════════════════════════════════════════════════════════════════════
+
+\subsection{Rol epistemológico del ML}
+
+Los métodos de ML son \textbf{predictivos, no causales}. Su función en el pipeline es de triangulación: si las mismas variables que son causalmente significativas en TWFE también dominan la importancia predictiva en RF/SHAP, este \textit{convergence check} (Athey \& Imbens, 2019) fortalece la narrativa. Si divergen, señala posibles no-linealidades o confusores que el modelo lineal ignora.
+
+\begin{warningbox}
+\textbf{Advertencia de interpretación.} Los LOCO-CV $R^2$ para T1 (Violencia $\to$ Instituciones) son negativos ($R^2_{\text{RF}} = -33.1$, $R^2_{\text{GB}} = -49.1$), lo que indica que los modelos ML predicen peor que la media del conjunto de test. Esto no contradice los resultados econométricos: los efectos causales pueden ser reales y pequeños aún cuando la predicción fuera de muestra sea difícil, especialmente con $G = 8$ países de test. El rendimiento predictivo mejoró sustancialmente en T3 ($R^2_{\text{RF}} = 0.099$, $R^2_{\text{GB}} = 0.242$), donde la IED es un predictor más estable del crecimiento.
+\end{warningbox}
+
+\subsection{Validación cruzada Leave-One-Country-Out (LOCO-CV)}
+
+Con $N=8$ países, el K-fold ordinario filtra información del país entre entrenamiento y test, produciendo estimaciones optimistamente sesgadas. La validación LOCO es la única estrategia que garantiza independencia estricta entre entrenamiento y test:
+\[
+  \hat{R}^2_{\text{LOCO}} = \frac{1}{G}\sum_{g=1}^{G} R^2_g, \quad
+  R^2_g = 1 - \frac{\sum_{t\in\mathcal{T}_g}(y_{gt} - \hat{y}^{(-g)}_{gt})^2}{\sum_{t\in\mathcal{T}_g}(y_{gt} - \bar{y}_g)^2}.
+\]
+
+\subsection{Random Forest e importancia de variables}
+
+Un Random Forest con $B$ árboles produce la predicción $\hat{y}(\bm{x}) = \frac{1}{B}\sum_{b=1}^{B} f_b(\bm{x})$.
+
+\subsubsection{Importancia por permutación}
+
+\[
+  \mathrm{PI}_j = \frac{1}{R}\sum_{r=1}^{R}\left(\mathrm{MSE}^{(j,r)} - \mathrm{MSE}\right).
+\]
+
+La importancia por permutación es más robusta que la importancia Gini ante variables correlacionadas, porque mide el deterioro \emph{real} de la predicción al destruir la información de la variable $j$.
+
+\subsection{Valores SHAP}
+
+Los valores SHAP (Lundberg \& Lee, 2017) distribuyen la predicción entre las variables usando la teoría de juegos cooperativos:
+\[
+  \phi_j(\bm{x}) = \sum_{S \subseteq \mathcal{F}\setminus\{j\}} \frac{|S|!(k-|S|-1)!}{k!}\left[f_{S\cup\{j\}}(\bm{x}) - f_S(\bm{x})\right].
+\]
+
+\begin{intuitionbox}
+\textbf{¿Qué mide el valor SHAP?} $\phi_j(\bm{x}_{it})$ cuantifica la contribución marginal promedio de la variable $j$ a la predicción del modelo para la observación $(i,t)$, promediando sobre todos los posibles subconjuntos de variables que pueden usarse sin $j$. La propiedad de eficiencia garantiza que la suma de todos los SHAP más la predicción base iguala la predicción completa: $f(\bm{x}) = \E[f(\bm{X})] + \sum_j \phi_j(\bm{x})$. A diferencia de los coeficientes de regresión, los valores SHAP capturan efectos no lineales e interacciones entre variables, lo que los hace más flexibles para la triangulación.
+\end{intuitionbox}
+
+\begin{resultbox}
+\textbf{Convergencia FE-ML.} Las variables de interés econométrico alcanzan las siguientes posiciones en los rankings de importancia SHAP y permutación:
+\begin{itemize}
+  \item \textbf{T1} (Violencia $\to$ Instituciones): violencia lag-1 ocupa el puesto \#3 por SHAP y \#3 por permutación $\Rightarrow$ convergencia fuerte.
+  \item \textbf{T2} (Instituciones $\to$ IED): índice institucional ocupa \#3 por SHAP y \#4 por permutación $\Rightarrow$ convergencia parcial.
+  \item \textbf{T3} (IED $\to$ Crecimiento): IED ocupa \#1 por SHAP y \#2 por permutación $\Rightarrow$ convergencia fuerte.
+\end{itemize}
+\end{resultbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section{Resumen: Mapa de Métodos y su Función}
+% ══════════════════════════════════════════════════════════════════════════
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{3.5cm}p{4.5cm}p{5cm}@{}}
+\toprule
+\textbf{Método} & \textbf{Función matemática} & \textbf{Problema que resuelve} \\
+\midrule
+Z-score + promedio & Estandarización lineal a media 0, SD 1 & Comparabilidad de escala entre indicadores WGI \\
+PCA & Diagonalización de $\bm{\Sigma}$ & Reducción dimensional óptima; verificación de robustez del índice \\
+TWFE & Proyección ortogonal within (demeaning doble) & Heterogeneidad no observada constante por país y shocks globales por año \\
+Errores DK & HAC bidimensional sobre scores agregados & Autocorrelación serial y dependencia transversal simultáneas \\
+CR2 + Satterthwaite & $\bm{A}_g = (I-\bm{H}_{gg})^{-1/2}$; $\hat\nu_j$ Satterthwaite & Sesgo de la carne del sandwich con pocos clusters \\
+Wild bootstrap (Webb) & Pesos $w_g \sim \text{Webb}(6)$, 999 réplicas & Inferencia fiable con $G = 8$ clusters \\
+Wooldridge AR(1) & Test en primera diferencia: $H_0: \rho = -0.5$ & Correlación serial en errores del panel \\
+Pesaran CD & Correlaciones cruzadas de residuos & Dependencia transversal (shocks comunes) \\
+Wald modificado & Varianzas por grupo vs.\ pooled, $\chi^2(G-1)$ & Heterocedasticidad grupal \\
+VIF / $\kappa$ & $1/(1-R^2_j)$; valores propios de $\tilde{\bm{X}}^\top\tilde{\bm{X}}$ & Multicolinealidad \\
+DFBETA & $(\hat\beta_j - \hat\beta^{(-g)}_j)/\hat\sigma_j$ & Países con influencia excesiva \\
+LOCO & Estimación TWFE excluyendo el país $g$ & Dependencia del resultado de un único país \\
+Placebo & Permutación de $H_{i,t-1}$ dentro de años & Descarte de correlaciones espurias \\
+RF + PI + SHAP & Valores de Shapley cooperativos, promedio sobre subconjuntos & Triangulación predictiva no causal \\
+\bottomrule
+\end{tabular}
+\caption{Métodos del pipeline, su fundamento matemático y el problema que resuelven.}
+\label{tab:resumen}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════
+\section*{Referencias Bibliográficas}
+% ══════════════════════════════════════════════════════════════════════════
+\addcontentsline{toc}{section}{Referencias Bibliográficas}
+
+\begin{enumerate}[label={[\arabic*]}, leftmargin=*, itemsep=4pt]
+
+\item Angrist, J.~D.\ \& Pischke, J.-S.\ (2009). \textit{Mostly Harmless Econometrics}. Princeton University Press.
+
+\item Arellano, M.\ \& Bond, S.\ (1991). Some tests of specification for panel data: Monte Carlo evidence and an application to employment equations. \textit{Review of Economic Studies}, 58(2), 277--297.
+
+\item Athey, S.\ \& Imbens, G.\ (2019). Machine learning methods that economists should know about. \textit{Annual Review of Economics}, 11, 685--725.
+
+\item Bell, R.~M.\ \& McCaffrey, D.~F.\ (2002). Bias reduction in standard errors for linear regression with multi-stage samples. \textit{Survey Methodology}, 28(2), 169--181.
+
+\item Belsley, D.~A., Kuh, E., \& Welsch, R.~E.\ (1980). \textit{Regression Diagnostics}. Wiley.
+
+\item Bartlett, M.~S.\ (1954). A note on the multiplying factors for various $\chi^2$ approximations. \textit{Journal of the Royal Statistical Society (B)}, 16(2), 296--298.
+
+\item Breiman, L.\ (2001). Random forests. \textit{Machine Learning}, 45(1), 5--32.
+
+\item Cameron, A.~C., Gelbach, J.~B., \& Miller, D.~L.\ (2008). Bootstrap-based improvements for inference with clustered errors. \textit{Review of Economics and Statistics}, 90(3), 414--427.
+
+\item Cameron, A.~C.\ \& Miller, D.~L.\ (2015). A practitioner's guide to cluster-robust inference. \textit{Journal of Human Resources}, 50(2), 317--372.
+
+\item Driscoll, J.~C.\ \& Kraay, A.~C.\ (1998). Consistent covariance matrix estimation with spatially dependent panel data. \textit{Review of Economics and Statistics}, 80(4), 549--560.
+
+\item Gaure, S.\ (2013). OLS with multiple high dimensional category variables. \textit{Computational Statistics \& Data Analysis}, 66, 8--18.
+
+\item Hall, P.\ (1992). \textit{The Bootstrap and Edgeworth Expansion}. Springer.
+
+\item Hausman, J.~A.\ (1978). Specification tests in econometrics. \textit{Econometrica}, 46(6), 1251--1271.
+
+\item Kaiser, H.~F.\ (1970). A second generation Little Jiffy. \textit{Psychometrika}, 35(4), 401--415.
+
+\item Kaufmann, D., Kraay, A., \& Mastruzzi, M.\ (2010). The Worldwide Governance Indicators: Methodology and Analytical Issues. \textit{World Bank Policy Research Working Paper} No.~5430.
+
+\item Liang, K.-Y.\ \& Zeger, S.~L.\ (1986). Longitudinal data analysis using generalized linear models. \textit{Biometrika}, 73(1), 13--22.
+
+\item Lundberg, S.~M.\ \& Lee, S.-I.\ (2017). A unified approach to interpreting model predictions. \textit{Advances in Neural Information Processing Systems} (NeurIPS), 30.
+
+\item Mundlak, Y.\ (1978). On the pooling of time series and cross section data. \textit{Econometrica}, 46(1), 69--85.
+
+\item Pagan, A.\ (1984). Econometric issues in the analysis of regressions with generated regressors. \textit{Review of Economic Studies}, 51(2), 221--247.
+
+\item Pesaran, M.~H.\ (2004). General Diagnostic Tests for Cross Section Dependence in Panels. \textit{Cambridge Working Papers in Economics} No.~0435.
+
+\item Pustejovsky, J.~E.\ \& Tipton, E.\ (2018). Small-sample methods for cluster-robust variance estimation and hypothesis testing in fixed effects models. \textit{Journal of Business \& Economic Statistics}, 36(4), 672--683.
+
+\item Webb, M.~D.\ (2023). Reworking wild bootstrap-based inference for clustered errors. \textit{Canadian Journal of Economics}, 56(3), 839--858.
+
+\item Wooldridge, J.~M.\ (2002). \textit{Econometric Analysis of Cross Section and Panel Data}. MIT Press.
+
+\item Wooldridge, J.~M.\ (2010). \textit{Econometric Analysis of Cross Section and Panel Data}, 2nd ed. MIT Press.
+
+\end{enumerate}
+
+\end{document}
