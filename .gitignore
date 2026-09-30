@@ -1,1 +1,20 @@
 econometric_pipeline/pipeline/__pycache__/utils.cpython-313.pyc
+
+# LaTeX build artifacts (paper/latex/)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+
+# Windows Explorer folder metadata
+desktop.ini
