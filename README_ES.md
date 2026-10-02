@@ -164,6 +164,36 @@ El Salvador es el **único** país cuya exclusión invierte el signo. La exclusi
 
 Esto no invalida el hallazgo de EQ1 sobre las otras cinco dimensiones WGI —lo afina—. La razón por la que el coeficiente compuesto de `inst_avg` se diluyó bajo el índice de 6 dimensiones (ver arriba) no es que la violencia no tenga relación con la calidad institucional; es que una dimensión, en un país, durante una transformación de seguridad específica, se movió en dirección opuesta al resto —porque el rasgo definitorio de esa transformación *fue* precisamente intercambiar libertades civiles por seguridad. Este es un hallazgo sustantivo sobre el caso de El Salvador específicamente, directamente relevante a la pregunta que motiva este proyecto, no un artefacto estadístico que haya que explicar y descartar.
 
+## Control Sintético: La Paradoja Bukele como Estudio de Caso Causal (Octubre 2026)
+
+El chequeo LOCO de arriba es un chequeo de robustez, no un diseño causal —muestra que El Salvador por sí solo genera el signo anómalo, pero no qué habría sido de `voice_accountability` sin el régimen de excepción de 2021-2024. El [Módulo 09](econometric_pipeline/pipeline/09_synthetic_control.py) responde esa pregunta más estrecha con el Método de Control Sintético (Abadie, Diamond y Hainmueller, 2010): se construye un "El Salvador sintético" como combinación ponderada de los otros 10 países, ajustada para replicar la trayectoria real de El Salvador en 2000–2020 (emparejando sobre la trayectoria completa de la variable, no sobre covariables, para evitar sobreajuste con solo 10 donantes), y se compara con la trayectoria real observada después de 2020.
+
+**Pesos de los países donantes:** Perú (0.325), República Dominicana (0.320), Colombia (0.247), Nicaragua (0.108) —el resto en cero. El ajuste pre-tratamiento es muy bueno (RMSPE = 0.79 puntos, 2000–2020).
+
+| | Real | Sintético | Brecha |
+|---|---|---|---|
+| `voice_accountability` 2024 | 45.0 | 56.9 | **−11.9 puntos** |
+
+**Inferencia por placebo-en-el-espacio** (Abadie et al., 2010): se repite el procedimiento idéntico tratando a cada uno de los otros 10 países como si fueran la unidad tratada, y se ordena la razón RMSPE post/pre-tratamiento de El Salvador contra esta distribución placebo.
+
+| Rango | País | Razón RMSPE post/pre |
+|---|---|---|
+| **1** | **El Salvador (caso real)** | **11.63** |
+| 2 | Rep. Dominicana | 5.64 |
+| 3 | Nicaragua | 3.48 |
+| 4 | Honduras | 3.46 |
+| 5–11 | Colombia, Ecuador, Guatemala, Costa Rica, Panamá, México, Perú | 0.33–2.33 |
+
+El Salvador ocupa el puesto #1 de 11 —el p-valor exacto de aleatorización es **0.091** (el mínimo posible con 11 unidades). Restringiendo la comparación a los 5 países cuyo propio ajuste pre-tratamiento es al menos tan bueno como el de El Salvador, sigue en primer lugar (p = 0.200).
+
+![Control Sintético: El Salvador](econometric_pipeline/pipeline/figures/15_synthetic_control_bukele.png)
+
+*Izquierda: `voice_accountability` real de El Salvador vs. su contrafactual sintética, 2000–2024. Derecha: la brecha de El Salvador (real − sintética, en rojo) frente a las 10 brechas placebo (en gris), con el régimen de excepción sombreado.*
+
+Esto eleva la paradoja Bukele de "El Salvador es el único país cuya exclusión invierte el signo" (un enunciado de robustez) a "la caída de `voice_accountability` en El Salvador es, por un margen amplio, la más extrema de la región frente a su propia trayectoria contrafactual" (un enunciado de estudio de caso cuasi-causal). Con solo 10 países donantes, esto debe leerse como ilustrativo y no como un efecto causal estimado con precisión, pero es una afirmación considerablemente más fuerte que el chequeo LOCO por sí solo.
+
+**Una pregunta natural de seguimiento —¿muestra este panel clustering de volatilidad que valga la pena modelar con GARCH/MS-GARCH?** No: el [Módulo 10](econometric_pipeline/pipeline/10_arch_lm_test.py) corre el test ARCH-LM de Engle (por país, combinado vía Fisher, ya que el panel no puede agruparse en una sola serie temporal sin crear saltos espurios en los límites entre países). Los dos eslabones económicos principales (residuos de EQ2 y EQ3) no muestran evidencia de heterocedasticidad condicional (p=0.292, p=0.215). Los residuos de EQ1 y la serie de homicidios sí muestran algo de señal —concentrada en un puñado de países (Ecuador, México, Perú para los cambios en la tasa de homicidios; la mayoría de los países para EQ1, consistente con un nivel de ruido común y variable en el tiempo del índice WGI, más que con cambios de régimen específicos por país)— pero con T~20-24 observaciones anuales por país, no hay ni remotamente suficientes datos para ajustar de forma confiable ni siquiera un GARCH(1,1) estándar, mucho menos un Markov-Switching GARCH. Esto se reporta como un diagnóstico, no como una acción a tomar: los errores estándar clusterizados/Driscoll-Kraay que el panel ya usa son precisamente el tipo de corrección adecuada para la heterocedasticidad detectada aquí.
+
 ## Limitaciones
 
 - **Número pequeño de grupos (N=11, antes N=8)**: Todos los métodos de inferencia (incluso el bootstrap de grupo silvestre y los errores estándar de Driscoll-Kraay) dependen de propiedades asintóticas que pueden no ser válidas con tan pocos grupos independientes. Los intervalos de confianza deben interpretarse como sugestivos. La Extensión del Panel (arriba) muestra empíricamente cuánto pesaba esta restricción: subir de 8 a 11 países movió la significancia de EQ1/EQ2/EQ3 sustancialmente.
@@ -219,6 +249,9 @@ data_analyzer/
 │       ├── 05_robustness.py
 │       ├── 06_ml_triangulation.py
 │       ├── 07_cointegration.py
+│       ├── 08_growth_ceiling_risk.py
+│       ├── 09_synthetic_control.py
+│       ├── 10_arch_lm_test.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
