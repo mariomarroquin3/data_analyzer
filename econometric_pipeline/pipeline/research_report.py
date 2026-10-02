@@ -153,6 +153,13 @@ def _build_styles() -> Any:
         alignment=TA_LEFT, textColor=C_SLATE, spaceBefore=2, spaceAfter=6,
     ))
 
+    # ── Table header (white text on navy background, see _base_table_style)
+    base.add(ParagraphStyle(
+        name="TableHeader",
+        fontName="Helvetica-Bold", fontSize=9.5, leading=12,
+        textColor=colors.white, alignment=TA_CENTER,
+    ))
+
     # ── Interpretation / callout boxes ────────────────────
     base.add(ParagraphStyle(
         name="BoxTitle",
@@ -620,7 +627,7 @@ class ResearchReport:
         s = self._styles
         tbl_data = []
         for ri, row in enumerate(data):
-            style = s["BoxTitle"] if ri == 0 else s["BodyPara"]
+            style = s["TableHeader"] if ri == 0 else s["BodyPara"]
             tbl_data.append([_p(str(c), style) for c in row])
 
         tbl = Table(tbl_data, colWidths=widths, repeatRows=1)
@@ -698,7 +705,7 @@ class ResearchReport:
         tbl_data = []
         for ri, row in enumerate(rows):
             if ri == 0:
-                tbl_data.append([_p(str(c), s["BoxTitle"]) for c in row])
+                tbl_data.append([_p(str(c), s["TableHeader"]) for c in row])
             elif ri >= n_data_rows - 4:
                 # footer meta rows — span or italic
                 tbl_data.append([_p(str(c), s["TableNote"]) for c in row])

@@ -70,6 +70,7 @@ MODULES = [
     ("06", "06_ml_triangulation.py",    "ML Triangulation"),
     ("07", "07_cointegration.py",       "Panel Cointegration & ECM"),
     ("08", "08_growth_ceiling_risk.py", "Growth-Ceiling-at-Risk (Bayesian MCMC)"),
+    ("09", "09_synthetic_control.py",   "Synthetic Control (Bukele Paradox)"),
 ]
 
 
@@ -910,8 +911,104 @@ def build_robustness_section(report: ResearchReport, rob: Dict, base_dir: Path) 
         report.add_table(ur_rows, col_widths=[2.0, 1.0, 1.0, 0.7, 1.2, 1.6])
 
 
+def build_synthetic_control_section(report: ResearchReport, sc: Dict, base_dir: Path) -> None:
+    if not sc:
+        return
+    report.add_section_h1('13. Control Sintético: La "Paradoja Bukele" como Estudio de Caso')
+    report.add_body_text(
+        "El chequeo Leave-One-Country-Out de la Sección 12 estableció que El Salvador es "
+        "el único país cuya exclusión invierte el signo del coeficiente agregado de "
+        "voice_accountability -- un chequeo de robustez, no un diseño causal. Esta sección "
+        "responde una pregunta más estrecha y mejor identificada con el Método de Control "
+        "Sintético (Abadie, Diamond y Hainmueller, 2010): ¿qué habría pasado con "
+        "voice_accountability en El Salvador si no hubiera ocurrido el régimen de excepción "
+        "de 2021-2024? Se construye un 'El Salvador sintético' como combinación ponderada "
+        "de los otros 10 países de la muestra, ajustada para replicar la trayectoria real "
+        "de El Salvador en el período previo (2000-2020), y se compara con la trayectoria "
+        "observada después."
+    )
+
+    names = {
+        "COL": "Colombia", "CRI": "Costa Rica", "DOM": "Rep. Dominicana",
+        "ECU": "Ecuador", "GTM": "Guatemala", "HND": "Honduras", "MEX": "México",
+        "NIC": "Nicaragua", "PAN": "Panamá", "PER": "Perú", "SLV": "El Salvador",
+    }
+
+    slv = sc.get("el_salvador", {})
+    weights = slv.get("weights", {})
+    if weights:
+        report.add_body_text(
+            "El Salvador sintético se construye como la combinación ponderada que mejor "
+            "replica su propia trayectoria pre-tratamiento (sin usar covariables adicionales, "
+            "para evitar sobreajuste con solo 10 países donantes):"
+        )
+        w_rows = [["País donante", "Peso"]]
+        for code, w in sorted(weights.items(), key=lambda kv: -kv[1]):
+            w_rows.append([names.get(code, code), f"{w:.3f}"])
+        report.add_table(w_rows, col_widths=[2.4, 1.0])
+
+    report.add_body_text(
+        f"El ajuste pre-tratamiento es muy bueno (RMSPE = {_fmt(slv.get('pre_rmspe'), 2)} "
+        f"puntos, 2000-2020). En 2024, el valor observado de voice_accountability es "
+        f"{_fmt(slv.get('actual_2024'), 1)}, frente a {_fmt(slv.get('synthetic_2024'), 1)} "
+        f"en la contrafactual sintética -- una brecha de {_fmt(slv.get('gap_2024'), 1)} "
+        "puntos que el modelo atribuye al régimen de excepción y no a una tendencia "
+        "preexistente."
+    )
+
+    fig_sc = base_dir / "figures" / "15_synthetic_control_bukele.png"
+    if fig_sc.exists():
+        report.add_image(
+            fig_sc,
+            label="Figura 15 — Control sintético de El Salvador",
+            caption=(
+                "Izquierda: voice_accountability real de El Salvador vs. su contrafactual "
+                "sintética, 2000-2024. Derecha: brecha (real - sintética) de El Salvador "
+                "(línea roja) frente a las brechas placebo de los otros 10 países "
+                "(líneas grises), con el régimen de excepción sombreado."
+            ),
+        )
+
+    report.add_section_h2("Inferencia por placebo-en-el-espacio")
+    report.add_body_text(
+        "Siguiendo a Abadie et al. (2010), se repite el procedimiento asignando el papel "
+        "de 'tratado' a cada uno de los otros 10 países (placebos), y se compara la razón "
+        "RMSPE post/pre-tratamiento de El Salvador contra la distribución de razones "
+        "placebo -- un test exacto de aleatorización, no un p-valor asintótico."
+    )
+    placebo_ratios = sc.get("placebo_ratios", {})
+    if placebo_ratios:
+        pr_rows = [["País", "Razón RMSPE post/pre"]]
+        for code, r in sorted(placebo_ratios.items(), key=lambda kv: -kv[1]):
+            marker = " (caso real)" if code == sc.get("treated_unit") else ""
+            pr_rows.append([names.get(code, code) + marker, _fmt(r, 2)])
+        report.add_table(pr_rows, col_widths=[2.6, 1.4])
+
+    p_val = sc.get("p_value")
+    rank  = sc.get("rank_of_slv")
+    n     = sc.get("n_countries")
+    p_val_wf = sc.get("p_value_well_fitting_only")
+    n_wf     = sc.get("n_well_fitting")
+    report.add_interpretation_box(
+        "De chequeo de robustez a estudio de caso cuasi-causal",
+        f"El Salvador tiene la razón RMSPE post/pre más alta de los {n} países "
+        f"(rank {rank}/{n}), lo que da un p-valor exacto de aleatorización de "
+        f"{_fmt(p_val, 3)} -- el valor mínimo posible con {n} unidades. Restringiendo la "
+        f"comparación a los {n_wf} países cuyo propio ajuste pre-tratamiento es al menos "
+        f"tan bueno como el de El Salvador, sigue ocupando el primer lugar "
+        f"(p = {_fmt(p_val_wf, 3)}). Esto no es solo 'El Salvador es el único país cuya "
+        "exclusión invierte el signo' (Sección 12) -- es que la caída observada en "
+        "voice_accountability es, en sí misma, la más extrema de la región frente a su "
+        "propia trayectoria contrafactual. Con solo 10 países donantes, este resultado "
+        "debe leerse como ilustrativo y no como una estimación causal precisa (el p-valor "
+        "mínimo atribuible es 1/11 = 0.091), pero eleva la 'paradoja Bukele' de un patrón "
+        "correlacional a un caso con diseño cuasi-experimental explícito.",
+        style="info",
+    )
+
+
 def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: Path) -> None:
-    report.add_section_h1("13. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
+    report.add_section_h1("14. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
     report.add_body_text(
         "El test de raíz unitaria de panel (Sección 12) encontró que homicide_rate_log, "
         "inst_avg y gdp_per_capita_log no rechazan raíz unitaria (son I(1)), mientras que "
@@ -1009,7 +1106,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
 
 
 def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: Path) -> None:
-    report.add_section_h1("14. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
+    report.add_section_h1("15. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
     report.add_body_text(
         "Un análisis exploratorio de regresión cuantílica frecuentista (ver README, sección "
         "'Exploratory Finding') encontró que la violencia rezagada no tiene efecto cerca de la "
@@ -1114,7 +1211,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
 
 
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("15. Triangulación Machine Learning")
+    report.add_section_h1("16. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -1194,7 +1291,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("16. Conclusiones")
+    report.add_section_h1("17. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1366,6 +1463,7 @@ def main():
     ml    = _load_json(json_dir / "06_ml_results.json")
     coint = _load_json(json_dir / "07_cointegration.json")
     gcar  = _load_json(json_dir / "08_growth_ceiling_risk.json")
+    sc    = _load_json(json_dir / "09_synthetic_control.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1396,6 +1494,9 @@ def main():
     report.add_page_break()
 
     build_robustness_section(report, rob, base_dir)
+    report.add_page_break()
+
+    build_synthetic_control_section(report, sc, base_dir)
     report.add_page_break()
 
     build_cointegration_section(report, coint, base_dir)

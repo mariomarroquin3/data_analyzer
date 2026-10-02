@@ -41,6 +41,9 @@ data_analyzer/
 │       ├── 05_robustness.py
 │       ├── 06_ml_triangulation.py
 │       ├── 07_cointegration.py
+│       ├── 08_growth_ceiling_risk.py
+│       ├── 09_synthetic_control.py
+│       ├── 10_arch_lm_test.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -241,6 +244,36 @@ El Salvador is the **only** country whose exclusion flips the sign. Every other 
 
 This does not invalidate EQ1's finding across the other five WGI dimensions — it sharpens it. The reason `inst_avg`'s composite coefficient washed out under the 6-dimension index (see above) is not that violence has no relationship with institutional quality; it is that one dimension, in one country, during one specific security transformation, moved in the opposite direction from the rest — because that transformation's defining feature *was* trading civil liberties for security. This is a substantive finding about El Salvador's case specifically, directly relevant to this project's motivating question, not a statistical artifact to explain away.
 
+## Synthetic Control: The Bukele Paradox as a Causal Case Study (October 2026)
+
+The LOCO check above is a robustness check, not a causal design — it shows El Salvador alone drives the anomalous sign, but not what `voice_accountability` would have looked like absent the 2021–2024 state-of-exception crackdown. [Module 09](econometric_pipeline/pipeline/09_synthetic_control.py) answers that narrower question with the Synthetic Control Method (Abadie, Diamond & Hainmueller, 2010): a "synthetic El Salvador" is built as a weighted combination of the other 10 countries, chosen to closely track El Salvador's own 2000–2020 pre-treatment path (matched on the full outcome path rather than covariates, to avoid overfitting with only 10 donors), then compared to the real post-2020 path.
+
+**Donor weights:** Peru (0.325), Dominican Republic (0.320), Colombia (0.247), Nicaragua (0.108) — the rest at zero. Pre-treatment fit is tight (RMSPE = 0.79 points, 2000–2020).
+
+| | Actual | Synthetic | Gap |
+|---|---|---|---|
+| 2024 `voice_accountability` | 45.0 | 56.9 | **−11.9 points** |
+
+**Placebo-in-space inference** (Abadie et al., 2010): the identical procedure is re-run treating each of the other 10 countries as if they were the treated unit, and El Salvador's post/pre-treatment RMSPE ratio is ranked against this placebo distribution.
+
+| Rank | Country | Post/Pre RMSPE ratio |
+|---|---|---|
+| **1** | **El Salvador (actual case)** | **11.63** |
+| 2 | Dominican Republic | 5.64 |
+| 3 | Nicaragua | 3.48 |
+| 4 | Honduras | 3.46 |
+| 5–11 | Colombia, Ecuador, Guatemala, Costa Rica, Panama, Mexico, Peru | 0.33–2.33 |
+
+El Salvador ranks #1 of 11 — the exact randomization p-value is **0.091** (the minimum attainable with 11 units). Restricting the comparison to the 5 countries whose own pre-treatment fit is at least as good as El Salvador's, it still ranks first (p = 0.200).
+
+![Synthetic Control: El Salvador](econometric_pipeline/pipeline/figures/15_synthetic_control_bukele.png)
+
+*Left: El Salvador's actual `voice_accountability` vs. its synthetic counterfactual, 2000–2024. Right: El Salvador's gap (actual − synthetic, red) against the 10 placebo gaps (gray), state-of-exception period shaded.*
+
+This upgrades the Bukele paradox from "El Salvador is the only country whose exclusion flips the sign" (a robustness statement) to "El Salvador's `voice_accountability` decline is, by a wide margin, the most extreme in the region relative to its own counterfactual trajectory" (a quasi-causal case-study statement). With only 10 donor countries this should be read as illustrative rather than a precisely estimated causal effect, but it is a materially stronger claim than the LOCO check alone.
+
+**A natural follow-up — does this panel show volatility clustering worth modeling with GARCH/MS-GARCH?** No: [Module 10](econometric_pipeline/pipeline/10_arch_lm_test.py) runs Engle's ARCH-LM test (per country, Fisher-combined, since the panel cannot be pooled into one time series without creating spurious jumps at country boundaries). The two headline economic links (EQ2, EQ3 residuals) show no evidence of conditional heteroskedasticity (p=0.292, p=0.215). EQ1 residuals and the homicide-rate series do show some signal — concentrated in a handful of countries (Ecuador, Mexico, Peru for homicide-rate changes; most countries for EQ1, consistent with a common time-varying noise level in the WGI index rather than country-specific regime-switching) — but with T~20–24 annual observations per country, there is nowhere near enough data to fit even a standard GARCH(1,1) reliably, let alone a Markov-Switching GARCH. This is reported as a diagnostic, not acted on: the panel's existing clustered/Driscoll-Kraay standard errors already account for the kind of error heteroskedasticity detected here.
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).
@@ -258,6 +291,8 @@ The reproducible workflow is centered on the pipeline under [econometric_pipelin
 | [econometric_pipeline/pipeline/06_ml_triangulation.py](econometric_pipeline/pipeline/06_ml_triangulation.py) | Trains random forest and gradient boosting models for exploratory ML triangulation and feature importance, using leave-one-country-out cross-validation with a leakage-free (fold-safe) institution index. | Panel with predictions → ML results JSON and plots. | ML / Visualization | Core |
 | [econometric_pipeline/pipeline/07_cointegration.py](econometric_pipeline/pipeline/07_cointegration.py) | Tests whether the non-stationary variable pairs identified in Module 05 (homicide rate, institutions, GDP per capita) are cointegrated (two-step Engle-Granger/Kao residual-based test) and, where they are, estimates a panel error-correction model separating short-run dynamics from the long-run speed of adjustment. | Panel with predictions → cointegration JSON and residual plots. | Econometrics | Core |
 | [econometric_pipeline/pipeline/08_growth_ceiling_risk.py](econometric_pipeline/pipeline/08_growth_ceiling_risk.py) | Re-estimates the exploratory "growth-ceiling" quantile pattern with a hierarchical Bayesian quantile regression (ALD likelihood, MCMC via PyMC, partial pooling across countries), benchmarked against the frequentist LSDV quantile regression, plus a Growth-Ceiling-at-Risk scenario (posterior growth ceiling under low vs. high violence). | Panel with predictions → Bayesian quantile-regression JSON, LaTeX table, and figures. | Bayesian Econometrics | Core |
+| [econometric_pipeline/pipeline/09_synthetic_control.py](econometric_pipeline/pipeline/09_synthetic_control.py) | Builds a "synthetic El Salvador" from a weighted combination of the other 10 countries to estimate the counterfactual `voice_accountability` path absent the 2021-2024 state-of-exception crackdown, with placebo-in-space inference (Abadie, Diamond & Hainmueller, 2010). | Enriched panel → synthetic-control JSON and figure. | Econometrics (Causal) | Core |
+| [econometric_pipeline/pipeline/10_arch_lm_test.py](econometric_pipeline/pipeline/10_arch_lm_test.py) | Engle's ARCH-LM test (per country, Fisher-combined) for conditional heteroskedasticity in the FE residuals and raw series, to check whether a GARCH/MS-GARCH volatility model would have anything to estimate. | Enriched panel + FE residuals → ARCH-LM JSON. | Diagnostics | Standalone (not in main PDF report) |
 | [econometric_pipeline/pipeline/utils.py](econometric_pipeline/pipeline/utils.py) | Shared helpers for plotting, directory creation, output handling, formatting, and normalizing FE-result JSON lookups across equations (`get_fe_key_stats`). | None → reusable utility functions. | Utility | Core |
 | [econometric_pipeline/pipeline/research_report.py](econometric_pipeline/pipeline/research_report.py) | Builds the structured research report used by the pipeline runner. | Text/JSON sections → report objects and PDF-ready content. | Utility | Core |
 | [archive/legacy_scripts/01clean_panel.py](archive/legacy_scripts/01clean_panel.py) | Early script for cleaning and preparing a panel-ready dataset from a broader research file. | Raw research dataset → panel-ready CSV. | ETL | Archived (auxiliary) |
