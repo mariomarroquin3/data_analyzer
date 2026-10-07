@@ -1,107 +1,107 @@
 {
   "eq1": {
-    "beta_full": -0.08364639191881626,
-    "se_full_cl": 0.11358805477197782,
-    "t_full": -0.7364013063409889,
-    "p_boot": 0.5615615615615616,
-    "ci_lo": -0.1838957996071837,
-    "ci_hi": 0.17055858807573346,
+    "beta_full": -0.1305355627801003,
+    "se_full_cl": 0.09154030324307183,
+    "t_full": -1.425990062906852,
+    "p_boot": 0.14914914914914915,
+    "ci_lo": -0.13925402564194997,
+    "ci_hi": 0.1307800782333857,
     "n_valid": 999,
     "n_fails": 0,
     "cr2_se": {
-      "homicide_rate_log_lag1": 0.13741084211656676,
-      "gdp_per_capita_log": 0.3384996507126587,
-      "inflation": 0.007777556909998919,
-      "exports_percent_gdp": 0.009470658047704078,
-      "population_log": 1.7676966761384887,
-      "unemployment": 0.01721812699833793
+      "homicide_rate_log_lag1": 0.10078113195109697,
+      "gdp_per_capita_log": 0.1555302940941951,
+      "inflation": 0.0030524873205692105,
+      "exports_percent_gdp": 0.00598638865188857,
+      "population_log": 0.6464649966771325,
+      "unemployment": 0.008690573407343489
     },
     "cr2_df_satt": {
-      "homicide_rate_log_lag1": 2.117367648195656,
-      "gdp_per_capita_log": 2.7447496537728697,
-      "inflation": 3.705800554044457,
-      "exports_percent_gdp": 3.4530649147783836,
-      "population_log": 1.4623001043145452,
-      "unemployment": 4.005420730873111
+      "homicide_rate_log_lag1": 2.3797440994859045,
+      "gdp_per_capita_log": 5.262267986658137,
+      "inflation": 5.620792145930141,
+      "exports_percent_gdp": 2.542632255991176,
+      "population_log": 4.571379891227047,
+      "unemployment": 5.889272113400212
     },
     "cr2_p": {
-      "homicide_rate_log_lag1": 0.6016038467544762,
-      "gdp_per_capita_log": 0.43475362698833087,
-      "inflation": 0.49864577896538675,
-      "exports_percent_gdp": 0.25729481825856,
-      "population_log": 0.6430808188222435,
-      "unemployment": 0.535795012875784
+      "homicide_rate_log_lag1": 0.3065966363791901,
+      "gdp_per_capita_log": 0.010147759135442613,
+      "inflation": 0.26071957600248863,
+      "exports_percent_gdp": 0.9368749903170517,
+      "population_log": 0.8985257302759938,
+      "unemployment": 0.4742652071563118
     }
   },
   "eq2": {
-    "beta_full": 0.6111197625572138,
-    "se_full_cl": 0.2795495673115853,
-    "t_full": 2.1860873133674397,
-    "p_boot": 0.03803803803803804,
-    "ci_lo": -0.5616350676552567,
-    "ci_hi": 0.6063442217252212,
+    "beta_full": 0.6799777437301412,
+    "se_full_cl": 0.5010992755307355,
+    "t_full": 1.3569721149765142,
+    "p_boot": 0.1991991991991992,
+    "ci_lo": -0.97272771118372,
+    "ci_hi": 0.9961255634625334,
     "n_valid": 999,
     "n_fails": 0,
     "cr2_se": {
-      "inst_avg": 0.2946037001386982,
-      "gdp_per_capita_log": 1.0669821738947105,
-      "inflation": 0.014380827714369352,
-      "exports_percent_gdp": 0.02370753332797073,
-      "population_log": 5.361455585067155,
-      "unemployment": 0.14484874317470492
+      "inst_avg": 0.5145888769033868,
+      "gdp_per_capita_log": 1.0628414162458046,
+      "inflation": 0.011617000981987587,
+      "exports_percent_gdp": 0.025360666189335152,
+      "population_log": 5.464477457044002,
+      "unemployment": 0.09914239556046098
     },
     "cr2_df_satt": {
-      "inst_avg": 3.9524208564239474,
-      "gdp_per_capita_log": 6.563414637555063,
-      "inflation": 2.009875680347579,
-      "exports_percent_gdp": 5.213008729233823,
-      "population_log": 2.1374896336676303,
-      "unemployment": 2.439529836118373
+      "inst_avg": 6.354977899355155,
+      "gdp_per_capita_log": 4.703154598199257,
+      "inflation": 4.144638118874079,
+      "exports_percent_gdp": 6.002481289069583,
+      "population_log": 4.049731326918053,
+      "unemployment": 2.455403459254768
     },
     "cr2_p": {
-      "inst_avg": 0.10753791545569959,
-      "gdp_per_capita_log": 0.8472422407929039,
-      "inflation": 0.6156000613415493,
-      "exports_percent_gdp": 0.00570900557392077,
-      "population_log": 0.25614298989341305,
-      "unemployment": 0.26345605192539484
+      "inst_avg": 0.23194939448906868,
+      "gdp_per_capita_log": 0.7402234059417898,
+      "inflation": 0.9567799705641273,
+      "exports_percent_gdp": 0.029797415840532655,
+      "population_log": 0.5487068477330165,
+      "unemployment": 0.26147199247802005
     }
   },
   "eq3": {
-    "beta_full": 0.20743676670202113,
-    "se_full_cl": 0.07962342433698673,
-    "t_full": 2.6052228779321975,
-    "p_boot": 0.10810810810810811,
-    "ci_lo": -0.2286992497800965,
-    "ci_hi": 0.22997064677548434,
+    "beta_full": 0.03214054016653169,
+    "se_full_cl": 0.08207556670197257,
+    "t_full": 0.39159693265644235,
+    "p_boot": 0.7147147147147147,
+    "ci_lo": -0.14231050286596317,
+    "ci_hi": 0.1387194614483127,
     "n_valid": 999,
     "n_fails": 0,
     "cr2_se": {
-      "fdi_percent_gdp": 0.08130427758716095,
-      "inst_avg": 0.6220167594193841,
-      "gdp_per_capita_log": 1.1531439865668327,
-      "inflation": 0.041061651678522076,
-      "exports_percent_gdp": 0.029650434886249702,
-      "population_log": 6.935818732647241,
-      "unemployment": 0.08532045132303959
+      "fdi_percent_gdp": 0.08063080096471144,
+      "inst_avg": 0.933556080489289,
+      "gdp_per_capita_log": 1.3676081205794401,
+      "inflation": 0.04316238800690544,
+      "exports_percent_gdp": 0.027930174819318507,
+      "population_log": 5.441340062520738,
+      "unemployment": 0.10556333481405779
     },
     "cr2_df_satt": {
-      "fdi_percent_gdp": 2.7070484903252408,
-      "inst_avg": 1.8620223636179034,
-      "gdp_per_capita_log": 7.755210934980274,
-      "inflation": 1.6535192125633065,
-      "exports_percent_gdp": 3.1230630435970816,
-      "population_log": 1.7255483563198628,
-      "unemployment": 4.900395377987764
+      "fdi_percent_gdp": 3.4710010158568356,
+      "inst_avg": 4.665754248620767,
+      "gdp_per_capita_log": 4.122427332503729,
+      "inflation": 1.3438673244130508,
+      "exports_percent_gdp": 5.716832521536462,
+      "population_log": 5.151652453804568,
+      "unemployment": 7.628606607735472
     },
     "cr2_p": {
-      "fdi_percent_gdp": 0.09286703706464085,
-      "inst_avg": 0.47971527709161405,
-      "gdp_per_capita_log": 0.06758368397152484,
-      "inflation": 0.3854165880740237,
-      "exports_percent_gdp": 0.17875067281135137,
-      "population_log": 0.6903940943269833,
-      "unemployment": 0.10597479020815712
+      "fdi_percent_gdp": 0.7134586552833393,
+      "inst_avg": 0.5309028816767114,
+      "gdp_per_capita_log": 0.6934968022181321,
+      "inflation": 0.27968955637457443,
+      "exports_percent_gdp": 0.04064292520277093,
+      "population_log": 0.5123263085668678,
+      "unemployment": 0.08490656342274107
     }
   }
 }

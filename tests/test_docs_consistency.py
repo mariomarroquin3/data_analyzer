@@ -27,16 +27,22 @@ def test_readme_headline_numbers_match_json(readme, load_json):
     assert f"{fe['EQ1']['pval_key_cl']:.3f}" in text or f"{fe['EQ1']['pval_key_cl']:.2f}" in text
 
 
-def test_report_text_has_no_stale_panel_size():
-    """The PDF report text must not describe the old 8-country panel."""
+def test_report_text_has_no_hardcoded_panel_size():
+    """The PDF report text must derive the country count from the data
+    (via NC), not hard-code it."""
     src = _read(PIPE / "run_pipeline.py")
-    assert not re.search(r"G\s*=\s*8\b", src)
-    assert "8 países" not in src
+    assert not re.search(r"G\s*=\s*\d+", src.replace("G={NC}", ""))
+    assert not re.search(r"\d+ países", src)
 
 
-def test_module_docstrings_have_no_stale_cluster_count():
-    for mod in sorted(PIPE.glob("0[2-9]_*.py")):
-        assert not re.search(r"\b[GN]\s*=\s*8\b", _read(mod)), mod.name
+def test_module_docstrings_match_current_cluster_count(meta):
+    """Every 'G=<n>' / 'N=<n> countries' mentioned in module docstrings and the
+    pipeline README must equal the current number of countries."""
+    n = meta["N"]
+    files = sorted(PIPE.glob("0[2-8]_*.py")) + [PIPE / "README.md"]
+    for f in files:
+        for m in re.finditer(r"\b[GN]\s*=\s*(\d+)\b", _read(f)):
+            assert int(m.group(1)) == n, f"{f.name}: '{m.group(0)}' but the panel has {n} countries"
 
 
 @pytest.mark.skipif(not (ROOT / "paper" / "manuscript.md").exists(), reason="paper/ not present")

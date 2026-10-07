@@ -19,7 +19,7 @@ This module re-estimates that pattern with a proper Bayesian model
 instead of treating the scratch analysis as final, for two reasons
 specific to this project's constraints:
 
-1. G=11 countries is small even for the LSDV country dummies the
+1. G=18 countries is small even for the LSDV country dummies the
    exploratory script used, which consume 10 degrees of freedom with
    no regularisation and can overfit noisy small-country intercepts.
    A hierarchical (partial-pooling) prior on country intercepts
@@ -29,7 +29,7 @@ specific to this project's constraints:
 2. A full posterior distribution at each quantile gives an honest,
    finite-sample uncertainty statement (a credible interval and
    P(beta<0 | data)) instead of a p-value computed from the asymptotic
-   approximation this pipeline has flagged as unreliable at G=11
+   approximation this pipeline has flagged as unreliable at G=18
    everywhere else (see Module 04/05's small-cluster caveats).
 
 Method: Bayesian Quantile Regression via the Asymmetric Laplace
@@ -85,7 +85,7 @@ Caveats
   pre-registered hypothesis -- every result here should be read as
   suggestive, consistent with every other small-sample caveat in this
   pipeline.
-- G=11 is small even for a hierarchical model: partial pooling
+- G=18 is small even for a hierarchical model: partial pooling
   regularises but cannot manufacture information the data does not
   contain. Priors are weakly informative, not flat.
 - The ALD likelihood targets one quantile at a time; it is not a joint
@@ -444,7 +444,7 @@ gcar_df = pd.DataFrame(table_rows).set_index("Quantile")
 latex_gcar = gcar_df.round(4).to_latex(
     caption=("Growth-ceiling effect of lagged violence on GDP growth: frequentist "
              "quantile regression (LSDV) vs. Bayesian hierarchical quantile regression "
-             "(ALD likelihood, partial pooling across 11 countries)."),
+             f"(ALD likelihood, partial pooling across {len(COUNTRIES)} countries)."),
     label="tab:growth_ceiling_bayesian",
     column_format="l" + "r" * gcar_df.shape[1],
 )

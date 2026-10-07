@@ -16,6 +16,13 @@ ISO2_TO_ISO3 = {
     'MX': 'MEX',  # México
     'EC': 'ECU',  # Ecuador
     'PE': 'PER',  # Perú
+    'BS': 'BHS',  # Bahamas
+    'BZ': 'BLZ',  # Belice
+    'BR': 'BRA',  # Brasil
+    'CL': 'CHL',  # Chile
+    'HT': 'HTI',  # Haití
+    'PY': 'PRY',  # Paraguay
+    'UY': 'URY',  # Uruguay
 }
 
 # ============================================================================
@@ -33,6 +40,13 @@ ISO3_TO_SPANISH_NAME = {
     'MEX': 'México',
     'ECU': 'Ecuador',
     'PER': 'Perú',
+    'BHS': 'Bahamas',
+    'BLZ': 'Belice',
+    'BRA': 'Brasil',
+    'CHL': 'Chile',
+    'HTI': 'Haití',
+    'PRY': 'Paraguay',
+    'URY': 'Uruguay',
 }
 
 # ============================================================================
@@ -251,24 +265,22 @@ final_dataset = merged[final_columns].sort_values(['country_code', 'year']).rese
 # scattered gaps) is a genuine reporting gap that also existed in the
 # original project dataset -- left as NaN, same as always.
 #
-# PROVENANCE (checked 2026-10): these two values were inherited from the
-# previously committed panel_ready_for_modeling.csv, where they had no
-# recorded source. Official figures found in press reports of the Fiscalia
-# General de la Republica (FGR):
+# PROVENANCE (checked and corrected 2026-10): official figures from press
+# reports of the Fiscalia General de la Republica (FGR):
 #   2023: 154 homicides, 2.4 per 100,000  (6.6M inhabitants; 495 / 7.8 in 2022)
 #         https://www.tvn-2.com/mundo/salvador-tuvo-2023-tasa-homicidios_1_2100083.html
 #   2024: 114 homicides, 1.9 per 100,000
 #         https://diario.elmundo.sv/nacionales/ano-2024-cierra-con-114-homicidios-intencionales-en-el-salvador-segun-fiscalia
-# The 2024 value (1.90) matches the official figure. The 2023 value (2.24)
-# does NOT match the official 2.4 and has no traceable source; sensitivity
-# check: using 2.4 changes the EQ1 coefficient from -0.0836 to -0.0848
-# (clustered p 0.462 -> 0.458), i.e. no substantive change. Note also that
-# the official series is a government count and excludes some deaths that
-# earlier governments counted (e.g. gang members killed in confrontations
-# with police), so it is not strictly comparable with the pre-2022 UNODC
-# series. This is a documented, auditable exception, not a silent one --
-# remove this block if a future WDI vintage mirrors the values.
-EL_SALVADOR_HOMICIDE_PATCH = {2023: 2.24, 2024: 1.90}
+# Earlier versions of this project used 2.24 for 2023, inherited from a
+# previously committed panel with no recorded source and not matching the
+# official 2.4; it was replaced by 2.4 (sensitivity before the change: EQ1
+# coefficient -0.0836 -> -0.0848, i.e. no substantive difference).
+# Caveat: these are government counts and, per press reports, exclude some
+# deaths that earlier governments counted (e.g. gang members killed in
+# confrontations with police), so the series is not strictly comparable with
+# the pre-2022 UNODC series. This is a documented, auditable exception, not
+# a silent one -- remove this block if a future WDI vintage mirrors the values.
+EL_SALVADOR_HOMICIDE_PATCH = {2023: 2.4, 2024: 1.90}
 for patch_year, patch_value in EL_SALVADOR_HOMICIDE_PATCH.items():
     mask = (final_dataset['country_code'] == 'SLV') & (final_dataset['year'] == patch_year)
     if mask.any() and final_dataset.loc[mask, 'homicide_rate'].isna().all():

@@ -1,3 +1,4 @@
+import time
 import requests
 import pandas as pd
 
@@ -17,6 +18,13 @@ PAISES = {
     'MX': 'México',
     'EC': 'Ecuador',
     'PE': 'Perú',
+    'BS': 'Bahamas',
+    'BZ': 'Belice',
+    'BR': 'Brasil',
+    'CL': 'Chile',
+    'HT': 'Haití',
+    'PY': 'Paraguay',
+    'UY': 'Uruguay',
 }
 
 AÑOS = set(range(2000, 2025))
@@ -55,6 +63,23 @@ INDICADORES = {
     "VC.IHR.PSRC.P5": "homicide_rate"
 }
 
+
+def fetch(url, tries=6):
+    """GET with retries: transient API timeouts/resets must not silently drop a
+    country-indicator series (an earlier run lost COL/NIC imports and HTI
+    unemployment this way)."""
+    last = None
+    for attempt in range(tries):
+        try:
+            r = requests.get(url, timeout=30)
+            if r.status_code == 200:
+                return r
+            last = f"HTTP {r.status_code}"
+        except Exception as e:
+            last = e
+        time.sleep(2 * (attempt + 1))
+    raise RuntimeError(f"failed after {tries} attempts: {last}")
+
 # =========================
 # DESCARGA LONG FORMAT
 # =========================
@@ -65,10 +90,10 @@ for code, country in PAISES.items():
 
     for ind, name in INDICADORES.items():
 
-        url = f"https://api.worldbank.org/v2/country/{code}/indicator/{ind}?format=json&per_page=20000"
+        url = f"https://api.worldbank.org/v2/country/{code}/indicator/{ind}?format=json&per_page=200&date=2000:2024"
 
         try:
-            r = requests.get(url, timeout=30)
+            r = fetch(url)
 
             if r.status_code != 200:
                 print(f"Error {r.status_code} en {country} - {ind}")

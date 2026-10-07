@@ -8,7 +8,7 @@ SECONDARY: CR2 Bell-McCaffrey bias-corrected clustered SE (manual).
 
 Why not conventional clustered SE?
 ───────────────────────────────────
-With only G=11 clusters, standard clustered SE are still known to be
+With only G=18 clusters, standard clustered SE are still known to be
 undersized (over-reject H0); see the small-G simulation evidence and
 corrections surveyed in Cameron & Miller (2015).
 Wild cluster bootstrap with Webb weights controls size much better.
@@ -680,7 +680,7 @@ print("""
   resampling unit is the COUNTRY (all of its years move together), as
   in the SHAP cluster bootstrap of Module 06 and the Wild Cluster
   Bootstrap above (Cameron & Miller 2015).
-    1. Resample G=11 countries WITH replacement.
+    1. Resample G=18 countries WITH replacement.
     2. Relabel resampled countries uniquely per draw (e.g. "SLV__0",
        "SLV__1") so that a country drawn more than once contributes as
        distinct panel entities with a valid (entity, time) index, and
@@ -879,11 +879,11 @@ for eq_label, spec in specs.items():
 
 print("""
   Columns:
-    SE(Cl.)   — conventional clustered SE [UNDERSIZED with G=11, use for reference only]
+    SE(Cl.)   — conventional clustered SE [UNDERSIZED with G=18, use for reference only]
     SE(DK)    — Driscoll-Kraay HAC SE (robust to cross-sectional dependence)
     SE(CR2)   — Bell-McCaffrey bias-corrected SE (Bell & McCaffrey 2002)
     df(Satt.) — Satterthwaite effective df for t-test (Pustejovsky & Tipton 2018)
-    p(WCB)    — wild cluster bootstrap p-value [PREFERRED for G=11]
+    p(WCB)    — wild cluster bootstrap p-value [PREFERRED for G=18]
 
   Preferred inference: p(WCB) from wild cluster bootstrap (Webb weights).
   SE(CR2) with df_Satterthwaite as secondary check.
@@ -923,7 +923,7 @@ for eq_label, spec in specs.items():
 se_comp_df = pd.DataFrame(se_rows).set_index("Equation")
 latex_se = se_comp_df.round(4).to_latex(
     caption=("Sensitivity of key coefficients to the standard-error estimator. "
-             "p(Clustered) is systematically anti-conservative at $G=11$ and "
+             "p(Clustered) is systematically anti-conservative at $G=18$ and "
              "should never be quoted alone as evidence of robustness — see "
              "Cameron \\& Miller (2015)."),
     label="tab:se_comparison",

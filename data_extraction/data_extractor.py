@@ -6,7 +6,12 @@ import time
 # CONFIGURACIÓN
 # =========================
 
-PAISES = ['SV', 'GT', 'HN', 'NI', 'CR', 'PA', 'DO', 'CO', 'MX', 'EC', 'PE']
+# Original 11 countries + 7 added October 2026 under an ex-ante coverage rule:
+# homicide rate >= 15 of 25 years, each WGI dimension >= 20 of 24, each core WDI
+# series >= 20 of 25, unemployment >= 15 (all other LAC economies fail it because
+# WDI does not publish a core series, e.g. exports for JAM/TTO, inflation for ARG/VEN).
+PAISES = ['SV', 'GT', 'HN', 'NI', 'CR', 'PA', 'DO', 'CO', 'MX', 'EC', 'PE',
+          'BS', 'BZ', 'BR', 'CL', 'HT', 'PY', 'UY']
 
 PAISES_NOMBRES = {
     'SV': 'El Salvador',
@@ -20,6 +25,13 @@ PAISES_NOMBRES = {
     'MX': 'México',
     'EC': 'Ecuador',
     'PE': 'Perú',
+    'BS': 'Bahamas',
+    'BZ': 'Belice',
+    'BR': 'Brasil',
+    'CL': 'Chile',
+    'HT': 'Haití',
+    'PY': 'Paraguay',
+    'UY': 'Uruguay',
 }
 
 INDICADORES = {
@@ -45,6 +57,23 @@ AÑOS = set(range(2000, 2025))
 # EXTRACCIÓN (FORMATO LONG)
 # =========================
 
+
+def fetch(url, tries=6):
+    """GET with retries: transient API timeouts/resets must not silently drop a
+    country-indicator series (an earlier run lost COL/NIC imports and HTI
+    unemployment this way)."""
+    last = None
+    for attempt in range(tries):
+        try:
+            r = requests.get(url, timeout=30)
+            if r.status_code == 200:
+                return r
+            last = f"HTTP {r.status_code}"
+        except Exception as e:
+            last = e
+        time.sleep(2 * (attempt + 1))
+    raise RuntimeError(f"failed after {tries} attempts: {last}")
+
 data = []
 
 print("=== DESCARGANDO DATOS WORLD BANK ===")
@@ -55,10 +84,10 @@ for country in PAISES:
 
     for var_name, var_code in INDICADORES.items():
 
-        url = f"https://api.worldbank.org/v2/country/{country}/indicator/{var_code}?format=json&per_page=20000"
+        url = f"https://api.worldbank.org/v2/country/{country}/indicator/{var_code}?format=json&per_page=200&date=2000:2024"
 
         try:
-            response = requests.get(url, timeout=30)
+            response = fetch(url)
 
             if response.status_code != 200:
                 print(f"  ❌ Error HTTP {response.status_code} en {var_name}")

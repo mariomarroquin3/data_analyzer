@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This repository implements an empirical research workflow for studying how violent crime affects institutional quality and, through that channel, economic growth. The project combines a structured panel-data econometric pipeline with machine-learning triangulation to examine whether the relationship between homicide exposure and growth is direct or mediated by institutional quality and foreign direct investment. The core analysis focuses on a panel of 11 countries — the original 8 in Central America, Colombia and the Dominican Republic, plus Mexico, Ecuador and Peru (added September 2026; see Panel Extension below) — over the period 2000–2024. The empirical strategy is designed to be transparent, reproducible, and suitable for academic review. The repository therefore emphasizes clear data preparation, robust inference, and documented estimation steps rather than ad hoc exploratory analysis.
+This repository implements an empirical research workflow for studying how violent crime affects institutional quality and, through that channel, economic growth. The project combines a structured panel-data econometric pipeline with machine-learning triangulation to examine whether the relationship between homicide exposure and growth is direct or mediated by institutional quality and foreign direct investment. The core analysis focuses on a panel of 18 Latin American and Caribbean countries — the original 11 (Central America, Colombia, the Dominican Republic, Mexico, Ecuador and Peru) plus the Bahamas, Belize, Brazil, Chile, Haiti, Paraguay and Uruguay (added October 2026 under an ex-ante coverage rule; see Second Panel Extension below) — over the period 2000–2024 (447 country-year observations). The empirical strategy is designed to be transparent, reproducible, and suitable for academic review. The repository therefore emphasizes clear data preparation, robust inference, and documented estimation steps rather than ad hoc exploratory analysis.
 
 ## Research Question
 
@@ -16,7 +16,7 @@ The project uses a longitudinal panel-data design with country and year effects.
 
 The main entry point of the repository is the econometric pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). This is the core reproducible system. All steps below are executed through the master runner in [econometric_pipeline/pipeline/run_pipeline.py](econometric_pipeline/pipeline/run_pipeline.py).
 
-The workflow proceeds in nine stages:
+The workflow proceeds in twelve stages:
 
 1. Data loading: the pipeline reads a clean panel dataset containing country-year observations.
 2. Cleaning and ETL: the data are validated, missingness is assessed, and institutional variables are standardized and combined into an index.
@@ -27,6 +27,9 @@ The workflow proceeds in nine stages:
 7. Validation: diagnostics, bootstrap inference (including a cluster bootstrap of the full mediation chain's indirect effect), and robustness checks assess sensitivity to influential observations, lag choices, control-set choices, country-specific trends, non-stationarity, and model specification.
 8. Panel cointegration & error-correction: for the pairs of variables found non-stationary in stage 7 (homicide rate, institutions, GDP per capita), a two-step Engle-Granger/Kao residual-based test checks whether they share a genuine long-run equilibrium before estimating an error-correction model; if not, this is reported as a finding in its own right rather than silently assumed away.
 9. Growth-Ceiling-at-Risk (Bayesian MCMC): a hierarchical Bayesian quantile regression (Asymmetric Laplace likelihood, partial pooling across countries) re-estimates an exploratory finding that violence caps the upper tail of GDP growth without affecting its median, replacing LSDV country dummies and asymptotic quantile-regression inference with partial-pooling regularization and full posterior uncertainty.
+10. Synthetic control: a "synthetic El Salvador" built from the other countries estimates the counterfactual voice-and-accountability path absent the post-2020 political-institutional shift, with placebo-in-space inference and robustness checks (leave-one-donor-out, placebo-in-time, a 2022 onset).
+11. Conditional-heteroskedasticity diagnostic: Engle's ARCH-LM test per country, to check whether a GARCH-type volatility model would have anything to estimate.
+12. Specification curve: EQ1 and EQ2 are re-estimated for every one of the 63 subsets of the six WGI dimensions used as the institution index, showing how much the conclusions depend on that choice.
 
 ## Repository Structure
 
@@ -44,6 +47,7 @@ data_analyzer/
 │       ├── 08_growth_ceiling_risk.py
 │       ├── 09_synthetic_control.py
 │       ├── 10_arch_lm_test.py
+│       ├── 11_spec_curve.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -141,6 +145,8 @@ A methodological review of the pipeline — aimed at academic-level scrutiny (ar
 
 ## Panel Extension (September 2026)
 
+*(Historical record of the 8 → 11 step. The panel has since been extended again to 18 countries and the significance pattern changed; see Second Panel Extension below for the current results.)*
+
 Every G=8-related caveat elsewhere in this README speculated that the small number of countries was the binding statistical constraint on this project's results. That hypothesis is now directly testable: Mexico, Ecuador and Peru were added to the panel (11 countries, 274 country-year rows, up from 200), specifically including Mexico for its regional weight in security dynamics (cartel-related violence). The same extraction scripts were reused unchanged in logic — only the country list grew — confirming the data pipeline built during the provenance-fix pass generalizes cleanly.
 
 The effect on results was dramatic, in the direction the small-G caveats predicted:
@@ -153,11 +159,54 @@ The effect on results was dramatic, in the direction the small-G caveats predict
 
 The mediation bootstrap of the full chain's indirect effect moved from a point estimate of -0.0075 (95% CI [-0.069, 0.051], p=0.65) to -0.031 (95% CI [-0.137, 0.015], p=0.144) — the CI still includes zero, but the chain is markedly closer to a formal system-level significance than it was at N=8. Module 07's cointegration test also changed qualitatively: the homicide-rate/GDP-per-capita pair (T3) now shows evidence of cointegration (Fisher-ADF on residuals, p=0.011) where it did not before, and the resulting error-correction model finds a significant speed of adjustment (phi=-0.109, p<0.01): GDP per capita corrects about 11% of any deviation from its long-run relationship with violence each year — the first dynamic (not merely static) causal-adjustment result in this project.
 
+## Second Panel Extension: 11 → 18 Countries (October 2026)
+
+The September extension (8 → 11 countries) moved the results a great deal, and every small-G caveat in this README named the number of countries as the binding constraint. So the panel was extended again, this time under a coverage rule fixed *before* looking at any estimate. The World Bank APIs were queried for all 42 economies in the Latin America & Caribbean region, and a country was added if it had: a homicide rate in at least 15 of the 25 years; each of the six WGI dimensions in at least 20 of the 24 available years; each of six core WDI series (GDP growth, GDP per capita, FDI, inflation, exports, population) in at least 20 years; and unemployment in at least 15 years. The 11 original countries were kept regardless, for continuity with everything reported before (Peru would fail the homicide threshold, with 11 observed years). Seven countries passed: **the Bahamas, Belize, Brazil, Chile, Haiti, Paraguay and Uruguay**, giving **18 countries and 447 country-year rows**. The rest fail because WDI does not publish a required series — for example exports for Jamaica and Trinidad and Tobago, inflation for Argentina and Venezuela, and homicide rates for Bolivia (9 observed years).
+
+Two data issues were found and fixed along the way. (i) The extraction scripts swallowed transient API timeouts silently, which in a first attempt dropped Colombia's and Nicaragua's import series and Haiti's unemployment series; the scripts now retry, and the 11 original countries' data were compared cell by cell with the previous panel (the only differences are the correction below). (ii) El Salvador's 2023 homicide rate was 2.24, a value with no traceable source; the officially reported figure (Fiscalía General) is 2.4 (154 homicides), and the 2024 value of 1.9 was already correct. The correction is statistically immaterial (EQ1 coefficient −0.1295 with 2.24 vs −0.1305 with 2.4).
+
+**The headline links do not survive the larger panel:**
+
+| | EQ1 (violence→institutions) | EQ2 (institutions→FDI) | EQ3 (FDI→growth) |
+|---|---|---|---|
+| Original 11 countries: coefficient (p clustered) | −0.059 (0.485) | 0.882 (**0.030**) | 0.208 (**0.009**) |
+| All 18 countries: coefficient (p clustered) | −0.131 (0.155) | 0.680 (**0.176**) | 0.032 (**0.696**) |
+| 18 countries: p Driscoll–Kraay | **0.015** | 0.101 | 0.632 |
+| 18 countries: p CR2 Bell–McCaffrey | 0.307 | 0.232 | 0.714 |
+| 18 countries: p wild cluster bootstrap | 0.149 | 0.199 | 0.715 |
+| N (country-years), 11 → 18 | 231 → 379 | 264 → 432 | 264 → 432 |
+
+*(Both coefficient rows use the same index definition and data vintage: `inst_avg` is z-scored on the pooled panel, so its scale — and hence the EQ1 and EQ2 coefficients — changes when the panel changes, which is why coefficients are only comparable within a row of like-for-like estimates. The stand-alone 11-country run reported earlier gave clustered p-values of 0.462 / 0.030 / 0.010, Driscoll–Kraay 0.310 / 0.006, and bootstrap 0.562 / 0.038 / 0.108; the small differences from the first row come from re-standardizing the index on the larger panel and from the 2023 homicide correction.)*
+
+The mediation bootstrap of the full chain moves from −0.011 (95% CI [−0.113, 0.020], p=0.548) to −0.003 (95% CI [−0.055, 0.039], p=0.792).
+
+The institutions → FDI link, which this README previously called "the pipeline's most defensible link", is no longer significant under any estimator except Driscoll–Kraay's borderline 0.101, and the FDI → growth link has vanished. The right reading of the earlier 11-country significance is that it was fragile, not that it was confirmed: **these results are sensitive to sample composition.** Adding the seven new countries to the original 11 one at a time shows no single culprit, and the pattern differs by equation (Module 05, Robustness 9). EQ2 loses significance when Belize or Chile is added (p=0.278, 0.243) and turns borderline with the Bahamas or Uruguay (0.068, 0.064), but not with Brazil, Haiti or Paraguay; EQ3 loses it with the Bahamas or Belize (0.274, 0.335) and turns borderline with Haiti or Uruguay (0.057, 0.087), but not with Brazil, Chile or Paraguay. Removing any single country from the 18 never restores significance (best case: EQ2 p=0.061 without Belize; EQ3 never below p=0.23).
+
+Three things go the other way. First, violence → institutions is now significant under Driscoll–Kraay (p=0.015) and at longer lags (lag 2: −0.197, p=0.036; lag 3: −0.234, p=0.012), and **excluding El Salvador alone makes it significant even under conventional clustering (−0.244, p=0.006)**: the country that motivates the study is the one that most dilutes the violence–institutions relationship (see the Bukele Paradox sections). Second, the growth-ceiling result (Module 08) survives intact. Third, the homicides/GDP-per-capita cointegration survives, though more narrowly (Fisher-ADF p=0.0465, up from 0.011).
+
 ## Key Results Summary
 
-The study is designed to test a sequential mechanism from violence to institutions to investment and then growth. Results depend materially on two specification choices this README documents in full: the size of the country panel (8 → 11, see Panel Extension) and the construction of the institution index (3 → 6 WGI dimensions, see Institution Index Expansion) — both changes are reported with their before/after numbers rather than presenting only the final specification. **Under the current specification** (11 countries, 6-dimension institution index): EQ2 (institutions → FDI) is the pipeline's most defensible link — significant in its primary specification (p=0.030 clustered, p=0.006 Driscoll-Kraay, p=0.038 bootstrap) though it no longer survives the one-year-lag or country-trend robustness checks it passed under the narrower 3-dimension index. EQ1 (violence → institutions) is **not significant under any estimator** at 6 dimensions, despite being marginally significant at 3 — testing each WGI dimension individually shows `rule_of_law` alone still moves as expected (p=0.037) while `voice_accountability` does not, diluting the composite. EQ3 (FDI → growth) is significant in its contemporaneous specification (p=0.010) but flips to insignificant-near-zero when lagged, a sensitivity that predates and is unrelated to the institution-index change. The formal test of the full chain as a system (the country-cluster bootstrap of the product of the three path coefficients) does not reject the null at 5% (p=0.548) and is, if anything, further from doing so than under the 3-dimension index. **The honest reading**: EQ2 is reasonably well established; EQ1 should now be treated as a working hypothesis rather than an established result, since its apparent significance under the 3-dimension index did not survive a more complete, standard construction of the same measure; and the *chain as a single mediated system* remains unproven. Module 07's cointegration test supports a genuine long-run equilibrium between violence and income levels (T3, unaffected by the institution-index change, since neither series in that pair is `inst_avg`), with a significant error-correction speed of adjustment, while violence and institutions (T1) and institutions and income (T2) still show no cointegration evidence.
+The study tests a sequential mechanism from violence to institutions to investment and then growth. Results depend materially on three choices that this README documents with before/after numbers: the size of the country panel (8 → 11 → 18, see the two Panel Extension sections), the construction of the institution index (3 vs. 6 WGI dimensions; see Institution Index Expansion and the Specification Curve), and the treatment of El Salvador (see the Bukele Paradox sections).
+
+**Under the current specification** (18 countries, 6-dimension institution index), with p-values given as clustered / Driscoll–Kraay / wild cluster bootstrap:
+
+- **Violence → institutions (EQ1):** β = −0.131 (0.155 / **0.015** / 0.149). Significant only under Driscoll–Kraay, at longer lags (lag 3: p=0.012), and when El Salvador is excluded (p=0.006).
+- **Institutions → FDI (EQ2):** β = 0.680 (0.176 / 0.101 / 0.199). Not significant. Every significant specification in the Specification Curve contains rule of law.
+- **FDI → growth (EQ3):** β = 0.032 (0.696 / 0.632 / 0.715). Not significant.
+- **The chain as a system:** indirect effect −0.003, 95% CI [−0.055, 0.039], p=0.792.
+
+The honest summary is that **no link of the hypothesized chain is robustly significant on this panel**, and that the earlier 11-country significance of institutions → FDI and FDI → growth did not survive a larger, pre-specified sample. What does hold up:
+
+1. **A growth-ceiling pattern** (Module 08): violence lowers the achievable *upper* tail of growth (q=0.90: −1.36, 94% HDI [−2.39, −0.39]; q=0.95: −1.84, [−2.84, −0.89]), with no comparable effect for institutions.
+2. **El Salvador is the single country that breaks the violence–institutions relationship**: it is the only exclusion that flips the sign of the voice-and-accountability coefficient and the only one that makes the composite EQ1 coefficient significant under clustering. A synthetic-control exercise puts its 2024 voice-and-accountability score 10.3 points below its counterfactual, the most extreme gap of the 18 countries (p=0.056, the minimum attainable).
+3. **A long-run equilibrium between homicides and income per capita** (Module 07; Fisher-ADF p=0.0465, error-correction speed −0.098, p<0.001 clustered / 0.004 Driscoll–Kraay), though narrower than at 11 countries.
+4. **The institution-index finding**: significance of the index-dependent links varies widely with which WGI dimensions are averaged (63 definitions tested).
+
+A bivariate scatter of homicides against growth is uninformative (the single-regressor R² was about 0.03 on the 11-country panel), consistent with the interpretation that the relationship is not direct. The findings above are associations under two-way fixed effects, not causal estimates.
 
 ## Exploratory Finding: A "Growth-Ceiling" Pattern (September 2026)
+
+*(Scratch check on the 11-country panel, kept as the historical motivation for Module 08. The formal Bayesian re-estimation below uses the current 18-country panel.)*
 
 Before committing to build a full Growth-at-Risk (GaR) module, a quick exploratory check was run: a pooled quantile regression (Koenker) of `gdp_growth` on `homicide_rate_log_lag1`, with country fixed effects (LSDV) and a linear year trend, at quantiles 0.05–0.95 (N=231, 11 countries). Classic GaR theory (Adrian, Boyarchenko & Giannone, 2019, "Vulnerable Growth") predicts violence should hit the *lower* tail of the growth distribution hardest; this panel shows the opposite:
 
@@ -177,112 +226,150 @@ Because a single influential country could easily produce this kind of tail resu
 
 This was, at the time, a scratch check rather than a committed pipeline module — but robust enough to motivate a proper **Growth-Ceiling-at-Risk** extension. It is now implemented as Module 08; see the section immediately below.
 
-## Growth-Ceiling-at-Risk Module (September 2026)
+## Growth-Ceiling-at-Risk Module (September 2026; re-estimated October 2026 on 18 countries)
 
-The exploratory pattern above was re-estimated as [Module 08](econometric_pipeline/pipeline/08_growth_ceiling_risk.py): a hierarchical Bayesian quantile regression (Asymmetric Laplace likelihood, MCMC via PyMC/NUTS) instead of LSDV country dummies and asymptotic quantile-regression standard errors. Partial pooling shrinks each country's intercept toward the grand mean by an amount the data determines — regularization LSDV cannot provide with only G=11 clusters — and every quantity is reported as a full posterior (mean, 94% highest-density interval, and P(coefficient < 0 | data)) rather than a p-value from an asymptotic approximation already flagged as unreliable at this sample size elsewhere in this pipeline.
+The exploratory pattern above was re-estimated as [Module 08](econometric_pipeline/pipeline/08_growth_ceiling_risk.py): a hierarchical Bayesian quantile regression (Asymmetric Laplace likelihood, MCMC via PyMC/NUTS) instead of LSDV country dummies and asymptotic quantile-regression standard errors. Partial pooling shrinks each country's intercept toward the grand mean by an amount the data determines — regularization LSDV cannot provide with few clusters — and every quantity is reported as a full posterior (mean, 94% highest-density interval, and P(coefficient < 0 | data)) rather than an asymptotic p-value. Results below are for the 18-country panel (N=394 country-years); the September 11-country values are given in the last paragraph.
 
 | Quantile | Frequentist coef. (LSDV) | Bayesian posterior mean | 94% HDI | P(β<0 \| data) |
 |---|---|---|---|---|
-| 0.05 | +2.21 (p=0.040**) | +1.31 | [-0.03, 2.53] | 0.027 |
-| 0.10 | +0.25 (p=0.819) | +0.49 | [-0.53, 1.44] | 0.171 |
-| 0.25 | +0.76 (p=0.045**) | +0.19 | [-0.46, 0.84] | 0.294 |
-| 0.50 (median) | -0.08 (p=0.827) | -0.23 | [-0.77, 0.37] | 0.790 |
-| 0.75 | -0.20 (p=0.650) | -0.45 | [-1.21, 0.26] | 0.880 |
-| 0.90 | -2.23 (p=0.0005***) | **-1.76** | **[-2.93, -0.59]** | **0.997** |
-| 0.95 | -2.06 (p=0.0043***) | **-2.08** | **[-3.02, -1.11]** | **1.000** |
+| 0.05 | +2.21 (p=0.029) | +1.14 | [−0.001, 2.27] | 0.032 |
+| 0.10 | −0.30 (p=0.688) | −0.08 | [−0.94, 0.82] | 0.561 |
+| 0.25 | −0.29 (p=0.499) | −0.15 | [−0.85, 0.52] | 0.661 |
+| 0.50 (median) | −0.41 (p=0.290) | −0.41 | [−0.93, 0.12] | 0.938 |
+| 0.75 | −0.44 (p=0.247) | −0.65 | [−1.23, −0.05] | 0.984 |
+| 0.90 | −2.90 (p<0.001) | **−1.36** | **[−2.39, −0.39]** | **0.995** |
+| 0.95 | −2.29 (p=0.001) | **−1.84** | **[−2.84, −0.89]** | **1.000** |
 
-The Bayesian posterior confirms the frequentist pattern at every quantile — the partial-pooling shrinkage moves point estimates somewhat (e.g. q=0.90: -2.23 → -1.76) without changing the qualitative conclusion — and MCMC diagnostics were clean at every quantile (R-hat ≤ 1.004, effective sample size > 1,100, zero divergent transitions across 4 chains × 1,000 post-warmup draws each). A secondary check repeating the same model with `inst_avg` instead of violence at q=0.90/0.95 found no ceiling effect (P(β<0|data) = 0.367 and 0.597 — essentially a coin flip, HDIs wide and centered near zero) — the effect is specific to violence, not a generic feature of any regressor in this panel. (Numbers reflect the 6-dimension institution index; see Institution Index Expansion below.)
+MCMC diagnostics are clean at every quantile (R-hat ≤ 1.009, effective sample size > 670, zero divergent transitions across 4 chains × 1,000 post-warmup draws). A secondary check repeating the model with `inst_avg` instead of violence at q=0.90/0.95 finds no ceiling effect (P(β<0|data) = 0.269 and 0.636 — essentially a coin flip), so the pattern is specific to violence.
 
-**Growth-Ceiling-at-Risk scenario.** Holding country and year at their average levels, the posterior directly answers the applied question: how much lower is the achievable growth ceiling when lagged violence moves from its empirical 10th to 90th percentile?
+**Growth-Ceiling-at-Risk scenario.** Holding country and year at their average levels, the posterior answers the applied question: how much lower is the achievable growth ceiling when lagged violence moves from its empirical 10th to 90th percentile?
 
 | Quantile | Ceiling, low violence (p10) | Ceiling, high violence (p90) | Drop | 94% HDI (drop) | P(drop>0 \| data) |
 |---|---|---|---|---|---|
-| 0.90 | 8.79 pts | 5.52 pts | 3.27 pts | [1.09, 5.45] | 0.997 |
-| 0.95 | 10.29 pts | 6.43 pts | 3.86 pts | [2.06, 5.61] | >0.999 (positive in every posterior draw) |
+| 0.90 | 8.16 pts | 5.70 pts | 2.46 pts | [0.70, 4.30] | 0.995 |
+| 0.95 | 10.29 pts | 6.98 pts | 3.31 pts | [1.60, 5.11] | 1.000 |
 
-Caveats: this remains exploratory — motivated by a scratch finding, not a pre-registered hypothesis. G=11 is small even for a hierarchical model; partial pooling regularizes but cannot manufacture information the data does not contain, and priors are weakly informative rather than flat. The Asymmetric Laplace likelihood targets one quantile at a time and does not itself guarantee monotonic quantiles in tau — indeed, the central finding is precisely that the effect is *non-monotonic*: null at the median, negative only in the upper tail.
+**What changed from 11 to 18 countries.** At 11 countries the posterior means were −1.76 (q=0.90) and −2.08 (q=0.95), with a ceiling drop of 3.27 and 3.86 points; the effect is somewhat smaller on the larger panel but clearly intact. It is also less confined to the extreme upper tail than the 11-country result suggested: the posterior at q=0.75 now excludes zero (P=0.984) and the median is borderline (P=0.938), so the pattern is better described as a *gradient that strengthens toward the top of the distribution* than as a strictly "null at the median" effect.
 
-## Institution Index Expansion (September 2026)
+Caveats: this remains exploratory — motivated by a scratch finding, not a pre-registered hypothesis. G=18 is small even for a hierarchical model; partial pooling regularizes but cannot manufacture information the data does not contain, and priors are weakly informative rather than flat. The Asymmetric Laplace likelihood targets one quantile at a time and does not itself guarantee monotonic quantiles in tau.
 
-The institution index (`inst_avg` / `inst_pca`) previously used only 3 of the 6 Kaufmann et al. (2010) Worldwide Governance Indicators dimensions (rule of law, control of corruption, political stability) — an arbitrary subset rather than the standard construction. It now uses all six, adding voice & accountability, government effectiveness, and regulatory quality. Remittances (% of GDP), a first-order economic channel in this region (El Salvador alone runs ~20-25% of GDP), were added to the data and tested as a robustness control.
+## Institution Index Expansion and Specification Curve (September–October 2026)
 
-**The 6-dimension index is internally coherent**: Cronbach's α = 0.922 (up from a already-adequate but lower value at 3 dimensions), KMO = 0.863, PC1 explains 72.9% of variance across the six dimensions, and every PCA loading is positive (0.31–0.46) — a single "general governance quality" factor clearly underlies all six series, and `inst_avg`/`inst_pca` remain nearly identical (r = 0.9992).
+The institution index (`inst_avg` / `inst_pca`) previously used only 3 of the 6 Kaufmann et al. (2010) Worldwide Governance Indicators dimensions (rule of law, control of corruption, political stability) — an arbitrary subset rather than the standard construction. It now uses all six, adding voice & accountability, government effectiveness, and regulatory quality. Remittances (% of GDP), a first-order economic channel in this region (El Salvador alone runs about 20–25% of GDP), were added to the data and tested as a robustness control.
 
-**But the expansion changes EQ1 and EQ2's results materially, and the honest finding is that they are less robust than the 3-dimension index suggested:**
+**The 6-dimension index is internally coherent** (18-country panel): Cronbach's α = 0.963, KMO = 0.863, a Bartlett test of sphericity that rejects the identity-correlation null (χ²(15) = 3552, p < 0.001), PC1 explaining 84.7% of the variance across the six dimensions, every PCA loading positive (0.37–0.43), and `inst_avg`/`inst_pca` nearly identical (r = 0.9999). A single "general governance quality" factor clearly underlies the six series.
 
-| | EQ1 (violence→institutions) | EQ2 (institutions→FDI) | EQ3 (FDI→growth) |
-|---|---|---|---|
-| p (clustered), 3→6 dims | 0.093 → 0.462 | 0.030 → 0.030 | 0.010 → 0.010 |
-| p (Driscoll-Kraay) | 0.010 → 0.310 | 0.006 → 0.006 | — |
-| p (wild cluster bootstrap) | 0.085 → 0.562 | 0.002 → 0.038 | 0.108 → 0.108 |
-| Survives 1-year lag? | — | Yes (p=0.036) → **No (p=0.318)** | — |
-| Survives country trends? | — | Yes (p=0.077) → **No (p=0.260)** | — |
+**The index construction changes the results.** Comparing the original 3-dimension index with the 6-dimension one on the current panel:
 
-EQ1 (violence → institutions) is no longer significant under any estimator. Testing each WGI dimension individually explains why: `rule_of_law` alone remains significant (coef=-1.96, p=0.037) and most dimensions point the expected (negative) direction, but `voice_accountability` moves the *wrong* way (coef=+1.72, p=0.339) — diluting the composite average. EQ2 (institutions → FDI) is still significant in its primary (contemporaneous) specification, but **no longer survives the one-year-lag or country-trend robustness checks that it passed at 3 dimensions** — its apparent robustness was partly an artifact of the narrower index. EQ3 is essentially unchanged (its own significance comes from `fdi_percent_gdp`, not `inst_avg`). The mediation bootstrap of the full chain weakens further (indirect effect -0.011, 95% CI [-0.113, 0.020], p=0.548, vs -0.031/p=0.144 at 3 dimensions).
+| | EQ1 (violence→institutions) | EQ2 (institutions→FDI) |
+|---|---|---|
+| 3 dims (RL+CC+PS): coef / p clustered / p Driscoll–Kraay | −0.164 / 0.036 / <0.001 | 0.950 / 0.010 / 0.008 |
+| 6 dims: coef / p clustered / p Driscoll–Kraay | −0.131 / 0.155 / 0.015 | 0.680 / 0.176 / 0.101 |
 
-This is reported as a genuine, important caveat rather than smoothed over: **EQ1 was always the weakest, least stable link in this pipeline (see every prior robustness section), and a more complete, standard construction of the institution index shows it does not survive at all** — the violence→institutions link should now be read as a working hypothesis motivating the rest of the chain, not an established result. EQ2 remains the pipeline's most defensible link, but with a narrower evidence base than previously documented.
+*(An earlier version of this table, written when the panel had 11 countries, listed the 3-dimension EQ2 clustered p-value as 0.030; recomputation shows it was 0.001 at that time. The table above is regenerated from the pipeline.)*
 
-**Remittances robustness check** (added as a control, not the primary specification, since it is itself a plausible mediator/collider between violence-driven emigration and growth): EQ1 is unaffected (p=0.179, still not significant). EQ2 strengthens substantially when remittances are included (coef 0.611→0.967, p=0.030→0.0013) — plausibly because remittances absorb variance that otherwise confounds the institutions-FDI relationship, though this single variant should not be over-read either. EQ3 is unchanged (p=0.025, was p=0.018).
+### Specification curve (Module 11)
 
-## The "Bukele Paradox" (September 2026)
+A two-point comparison hides how arbitrary the choice is, so [Module 11](econometric_pipeline/pipeline/11_spec_curve.py) estimates **every** index definition: each subset of two or more of the six dimensions (57) plus each single dimension (6), 63 in total, with the same two-way fixed-effects specification, for EQ1 and EQ2 (Simonsohn, Simmons & Nelson, 2020).
 
-Testing each WGI dimension individually (above) surfaced one genuine anomaly worth a dedicated look: `voice_accountability` is the only one of the six dimensions where lagged violence has the *wrong* sign — less violence coinciding with *lower* voice & accountability, rather than higher. El Salvador's own data explains why:
+![Specification curve](econometric_pipeline/pipeline/figures/16_spec_curve.png)
+
+| | EQ1 (violence→institutions) | EQ2 (institutions→FDI) |
+|---|---|---|
+| Coefficient: min / median / max | −0.257 / −0.131 / +0.034 | −0.156 / +0.567 / +1.198 |
+| Share with the theoretically expected sign | 97% | 92% |
+| Significant at 5%, clustered SE | 24% | 14% |
+| Significant at 5%, Driscoll–Kraay | 68% | 24% |
+| Significant under both | 24% | 13% |
+| Rank of the original 3-dim index among 63 (1 = most favorable) | 15 | 5 |
+| Rank of the 6-dim index | 32 | 23 |
+
+Three readings. (i) The *sign* is stable (97% / 92% as expected) but *significance* is not: most index definitions are not significant under clustered standard errors, which are themselves anticonservative with 18 clusters, so these shares are an upper bound. (ii) The original 3-dimension index was among the most favorable definitions (5th of 63 for EQ2), so the earlier "significant" result owed something to that choice. (iii) The pattern is dimension-specific: **every significant EQ2 specification contains rule of law** (9 of 9), and in EQ1 rule of law and government effectiveness each appear in 11 of the 15 significant specifications, while **voice & accountability appears in none**.
+
+### Per-dimension decomposition (EQ1, 18 countries)
+
+| Dimension | Coefficient | p (clustered) |
+|---|---|---|
+| Rule of law | −2.533 | **0.004** |
+| Control of corruption | −0.348 | 0.745 |
+| Political stability | −3.201 | 0.057 |
+| Voice & accountability | **+0.387** | 0.826 |
+| Government effectiveness | −2.423 | **0.020** |
+| Regulatory quality | −1.641 | 0.232 |
+
+Five of six dimensions point in the expected (negative) direction, and rule of law and government effectiveness are now individually significant; voice & accountability remains the only wrong-signed dimension, although its coefficient is much smaller than at 11 countries (+1.72, p=0.339).
+
+**Remittances robustness check** (a control tested separately because it is itself a plausible mediator/collider between violence-driven emigration and growth): EQ1 is little changed (−0.144, p=0.098). EQ2 strengthens when remittances are included (1.036, p=0.015), but this single variant — which also loses 24 observations to missing remittance data — should not be over-read.
+
+## The "Bukele Paradox" (September 2026; updated October 2026)
+
+Testing each WGI dimension individually surfaced one anomaly worth a dedicated look: `voice_accountability` is the only one of the six dimensions where lagged violence has the *wrong* sign — less violence coinciding with *lower* voice & accountability. El Salvador's own data explains why:
 
 | Year | Homicide rate (per 100k) | Voice & accountability (0–100) |
 |---|---|---|
 | 2020 | 21.5 | 58.4 |
 | 2021 | 17.3 | 53.5 |
 | 2022 | 7.9 | 48.8 |
-| 2023 | 2.2 | 48.1 |
+| 2023 | 2.4 | 48.1 |
 | 2024 | 1.9 | 45.0 |
 
-From 2021 to 2024 — the period of El Salvador's state-of-exception security crackdown — homicides collapsed *and* voice & accountability fell sharply. The security gain and the civil-liberties cost moved together, not in opposite directions, which is exactly the reverse of what the other five WGI dimensions (and economic theory) predict.
+From 2021 to 2024 homicides collapsed *and* voice & accountability fell sharply. The security gain and the civil-liberties cost moved together, not in opposite directions — the reverse of what the other five WGI dimensions, and the institutional-economics hypothesis, predict. (The 2023–2024 homicide figures are official government counts, which per press reports exclude some deaths that earlier governments counted, so the series is not strictly comparable across the 2022 break.)
 
-**Is this El Salvador specifically, or a broader regional pattern?** A Leave-One-Country-Out check on `voice_accountability ~ homicide_rate_log_lag1` (same Two-Way FE spec as the rest of EQ1) answers this directly — now a permanent part of [Module 05](econometric_pipeline/pipeline/05_robustness.py) (Robustness 4b), not just a one-off script:
+**Is this El Salvador specifically?** A Leave-One-Country-Out check on `voice_accountability ~ homicide_rate_log_lag1` (same Two-Way FE specification as EQ1; [Module 05](econometric_pipeline/pipeline/05_robustness.py), Robustness 4b) answers directly:
 
 | Sample | coef | p |
 |---|---|---|
-| Full sample (11 countries) | +1.72 | 0.339 |
-| Excl. El Salvador | **-1.48** | 0.449 |
-| Excl. any other single country | +1.14 to +2.74 (always positive) | — |
+| Full sample (18 countries) | +0.387 | 0.826 |
+| Excl. El Salvador | **−1.819** | 0.307 |
+| Excl. any other single country | +0.012 to +1.336 (always positive) | — |
 
-El Salvador is the **only** country whose exclusion flips the sign. Every other country's exclusion leaves the coefficient positive; excluding El Salvador reverses it to the theoretically expected direction (though neither estimate is significant — this is a small-sample descriptive pattern, not a precisely estimated effect either way). The anomalous coefficient in the full sample is not a regional relationship between violence and voice & accountability — it is specifically the El Salvador case.
+El Salvador is the **only** country whose exclusion flips the sign (Ecuador's and Nicaragua's exclusions bring it to nearly zero, +0.045 and +0.012, but not below). Neither estimate is individually significant; this is a descriptive small-sample pattern.
+
+**The same country also dilutes the composite violence → institutions link.** Leaving each country out of EQ1 in turn gives coefficients between −0.087 and −0.157 (p between 0.091 and 0.259) for every exclusion except one: dropping El Salvador gives **−0.244 (p=0.006)**. In other words, the violence–institutions relationship is clearer in the other 17 countries, and El Salvador — where homicides collapsed while institutional indicators deteriorated — is what weakens it in the full panel.
 
 ![The Bukele Paradox](econometric_pipeline/pipeline/figures/14_bukele_paradox.png)
 
-*Left: the LOCO coefficients above, plotted. Right: El Salvador's homicide rate and voice & accountability score, 2000–2024, with the 2021–2024 state-of-exception period shaded.*
+*Left: the LOCO coefficients above, plotted. Right: El Salvador's homicide rate and voice & accountability score, 2000–2024, with the post-2020 period shaded.*
 
-This does not invalidate EQ1's finding across the other five WGI dimensions — it sharpens it. The reason `inst_avg`'s composite coefficient washed out under the 6-dimension index (see above) is not that violence has no relationship with institutional quality; it is that one dimension, in one country, during one specific security transformation, moved in the opposite direction from the rest — because that transformation's defining feature *was* trading civil liberties for security. This is a substantive finding about El Salvador's case specifically, directly relevant to this project's motivating question, not a statistical artifact to explain away.
+This does not invalidate the violence–institutions hypothesis; it sharpens it. One dimension, in one country, during one historically unusual security transformation, moved against the other five — because that transformation's defining feature was trading civil liberties for security. It is a substantive finding about El Salvador's case, not a statistical artifact to explain away.
 
-## Synthetic Control: The Bukele Paradox as a Causal Case Study (October 2026)
+## Synthetic Control: The Bukele Paradox as a Quasi-Causal Case Study (October 2026)
 
-The LOCO check above is a robustness check, not a causal design — it shows El Salvador alone drives the anomalous sign, but not what `voice_accountability` would have looked like absent the 2021–2024 state-of-exception crackdown. [Module 09](econometric_pipeline/pipeline/09_synthetic_control.py) answers that narrower question with the Synthetic Control Method (Abadie, Diamond & Hainmueller, 2010): a "synthetic El Salvador" is built as a weighted combination of the other 10 countries, chosen to closely track El Salvador's own 2000–2020 pre-treatment path (matched on the full outcome path rather than covariates, to avoid overfitting with only 10 donors), then compared to the real post-2020 path.
+The LOCO check above is a robustness check, not a causal design: it shows El Salvador alone drives the anomalous sign, but not what `voice_accountability` would have looked like absent the post-2020 political-institutional shift. [Module 09](econometric_pipeline/pipeline/09_synthetic_control.py) answers that narrower question with the Synthetic Control Method (Abadie, Diamond & Hainmueller, 2010): a "synthetic El Salvador" is built as a weighted combination of the other 17 countries, chosen to track El Salvador's own 2000–2020 path (matched on the full outcome path rather than on covariates, to avoid overfitting with a modest donor pool), then compared with the real post-2020 path.
 
-**Donor weights:** Peru (0.325), Dominican Republic (0.320), Colombia (0.247), Nicaragua (0.108) — the rest at zero. Pre-treatment fit is tight (RMSPE = 0.79 points, 2000–2020).
+**What "treatment" means here.** The onset year is 2021, but the formal state of exception was decreed in March 2022, and in May 2021 the governing party's supermajority had already dismissed the Constitutional Chamber and the attorney general (Meléndez-Sánchez, 2021). The estimated gap therefore measures the **post-2020 political-institutional shift as a whole**, of which the exception regime is the defining security policy — not the exception regime in isolation.
+
+**Donor weights:** Peru 0.371, Dominican Republic 0.235, Colombia 0.138, Haiti 0.109, Nicaragua 0.089, Costa Rica 0.059; the other eleven countries receive none. Pre-treatment fit is tight (RMSPE = 0.76 points over 2000–2020).
 
 | | Actual | Synthetic | Gap |
 |---|---|---|---|
-| 2024 `voice_accountability` | 45.0 | 56.9 | **−11.9 points** |
+| 2024 `voice_accountability` | 45.0 | 55.3 | **−10.3 points** |
 
-**Placebo-in-space inference** (Abadie et al., 2010): the identical procedure is re-run treating each of the other 10 countries as if they were the treated unit, and El Salvador's post/pre-treatment RMSPE ratio is ranked against this placebo distribution.
-
-| Rank | Country | Post/Pre RMSPE ratio |
-|---|---|---|
-| **1** | **El Salvador (actual case)** | **11.63** |
-| 2 | Dominican Republic | 5.64 |
-| 3 | Nicaragua | 3.48 |
-| 4 | Honduras | 3.46 |
-| 5–11 | Colombia, Ecuador, Guatemala, Costa Rica, Panama, Mexico, Peru | 0.33–2.33 |
-
-El Salvador ranks #1 of 11 — the exact randomization p-value is **0.091** (the minimum attainable with 11 units). Restricting the comparison to the 5 countries whose own pre-treatment fit is at least as good as El Salvador's, it still ranks first (p = 0.200).
+**Placebo-in-space inference** (Abadie et al., 2010): the same procedure is re-run treating each of the other 17 countries as the treated unit, and El Salvador's post/pre RMSPE ratio is ranked against that distribution. El Salvador ranks **1st of 18** (ratio 10.36; next: Dominican Republic 6.73, Honduras 5.58, Nicaragua 3.48, Ecuador 3.43, Paraguay 3.15). The exact randomization p-value is **0.056**, the minimum attainable with 18 units. Restricting the comparison to the 10 countries whose own pre-treatment fit is at least as good as El Salvador's, it still ranks first (p = 0.100).
 
 ![Synthetic Control: El Salvador](econometric_pipeline/pipeline/figures/15_synthetic_control_bukele.png)
 
-*Left: El Salvador's actual `voice_accountability` vs. its synthetic counterfactual, 2000–2024. Right: El Salvador's gap (actual − synthetic, red) against the 10 placebo gaps (gray), state-of-exception period shaded.*
+*Left: El Salvador's actual `voice_accountability` vs. its synthetic counterfactual, 2000–2024. Right: El Salvador's gap (actual − synthetic, red) against the 17 placebo gaps (gray).*
 
-This upgrades the Bukele paradox from "El Salvador is the only country whose exclusion flips the sign" (a robustness statement) to "El Salvador's `voice_accountability` decline is, by a wide margin, the most extreme in the region relative to its own counterfactual trajectory" (a quasi-causal case-study statement). With only 10 donor countries this should be read as illustrative rather than a precisely estimated causal effect, but it is a materially stronger claim than the LOCO check alone.
+**Robustness** (all in Module 09's JSON export):
 
-**A natural follow-up — does this panel show volatility clustering worth modeling with GARCH/MS-GARCH?** No: [Module 10](econometric_pipeline/pipeline/10_arch_lm_test.py) runs Engle's ARCH-LM test (per country, Fisher-combined, since the panel cannot be pooled into one time series without creating spurious jumps at country boundaries). The two headline economic links (EQ2, EQ3 residuals) show no evidence of conditional heteroskedasticity (p=0.292, p=0.215). EQ1 residuals and the homicide-rate series do show some signal — concentrated in a handful of countries (Ecuador, Mexico, Peru for homicide-rate changes; most countries for EQ1, consistent with a common time-varying noise level in the WGI index rather than country-specific regime-switching) — but with T~20–24 annual observations per country, there is nowhere near enough data to fit even a standard GARCH(1,1) reliably, let alone a Markov-Switching GARCH. This is reported as a diagnostic, not acted on: the panel's existing clustered/Driscoll-Kraay standard errors already account for the kind of error heteroskedasticity detected here.
+| Check | Result |
+|---|---|
+| Drop each positively-weighted donor in turn | 2024 gap between −13.6 and −8.6 points |
+| Drop Nicaragua (its own democratic deterioration would pull the counterfactual down) | 2024 gap −11.9 — larger, so the headline is conservative on this count |
+| Placebo-in-time: fake onsets 2008 / 2012 / 2016 | average post gaps +2.4 / +1.4 / −0.8, versus −7.6 for the real onset |
+| Onset 2022 (formal decree) | average post gap −6.0; 2024 gap −7.0 |
+| First stage: synthetic control on the homicide rate | not informative: El Salvador's 2015–16 peak (~100 per 100k) lies outside what any combination of donors can reproduce (pre-RMSPE 21.2 per 100k) |
+
+![Synthetic control robustness](econometric_pipeline/pipeline/figures/15b_synthetic_control_robustness.png)
+
+One caution on the placebo-in-time exercise: the fake-onset *gaps* are small and mostly of the opposite sign, but their post/pre ratios (5.4 for 2008) are not negligible because the short pre-periods make the denominator small, so the ratio alone should not be read as a clean falsification test. Venezuela, whose own voice-and-accountability score deteriorated, is not in the panel (WDI lacks its inflation series).
+
+This upgrades the Bukele paradox from "El Salvador is the only country whose exclusion flips the sign" (a robustness statement) to "El Salvador's decline is, by a wide margin, the most extreme in the region relative to its own counterfactual" (a quasi-causal case-study statement). With 17 donors this is still illustrative rather than a precisely estimated causal effect, and the p-value floor of 0.056 reflects the size of the pool, not weak evidence.
+
+## Conditional Heteroskedasticity: Is a GARCH / MS-GARCH Model Warranted? (October 2026)
+
+[Module 10](econometric_pipeline/pipeline/10_arch_lm_test.py) runs Engle's ARCH-LM test per country (the only valid unit for a time-series test), combining p-values with Fisher's method. On the 18-country panel there **is** evidence of conditional heteroskedasticity: in EQ1 residuals (combined p < 0.001; 11 of 18 countries individually significant), EQ2 residuals (p=0.003; 4 of 18), raw GDP growth (p=0.006; 4 of 18), the homicide rate in levels (16 of 18, though that series is I(1) so this is partly a trend artifact) and first-differenced homicides (p=0.016; 4 of 18); EQ3 residuals are borderline (p=0.082). This favors the heteroskedasticity-robust inference already used (clustered, Driscoll–Kraay and wild-bootstrap standard errors). It does **not** make a Markov-Switching GARCH model feasible: with T≈24 annual observations per country there is nowhere near enough data to estimate even a GARCH(1,1) reliably, let alone state-dependent variances and transition probabilities. A monthly series (for example El Salvador's homicide counts) would be the way to make that model viable.
 
 ## Repository Cleanup Notes
 
@@ -301,8 +388,9 @@ The reproducible workflow is centered on the pipeline under [econometric_pipelin
 | [econometric_pipeline/pipeline/06_ml_triangulation.py](econometric_pipeline/pipeline/06_ml_triangulation.py) | Trains random forest and gradient boosting models for exploratory ML triangulation and feature importance, using leave-one-country-out cross-validation with a leakage-free (fold-safe) institution index. | Panel with predictions → ML results JSON and plots. | ML / Visualization | Core |
 | [econometric_pipeline/pipeline/07_cointegration.py](econometric_pipeline/pipeline/07_cointegration.py) | Tests whether the non-stationary variable pairs identified in Module 05 (homicide rate, institutions, GDP per capita) are cointegrated (two-step Engle-Granger/Kao residual-based test) and, where they are, estimates a panel error-correction model separating short-run dynamics from the long-run speed of adjustment. | Panel with predictions → cointegration JSON and residual plots. | Econometrics | Core |
 | [econometric_pipeline/pipeline/08_growth_ceiling_risk.py](econometric_pipeline/pipeline/08_growth_ceiling_risk.py) | Re-estimates the exploratory "growth-ceiling" quantile pattern with a hierarchical Bayesian quantile regression (ALD likelihood, MCMC via PyMC, partial pooling across countries), benchmarked against the frequentist LSDV quantile regression, plus a Growth-Ceiling-at-Risk scenario (posterior growth ceiling under low vs. high violence). | Panel with predictions → Bayesian quantile-regression JSON, LaTeX table, and figures. | Bayesian Econometrics | Core |
-| [econometric_pipeline/pipeline/09_synthetic_control.py](econometric_pipeline/pipeline/09_synthetic_control.py) | Builds a "synthetic El Salvador" from a weighted combination of the other 10 countries to estimate the counterfactual `voice_accountability` path absent the 2021-2024 state-of-exception crackdown, with placebo-in-space inference (Abadie, Diamond & Hainmueller, 2010). | Enriched panel → synthetic-control JSON and figure. | Econometrics (Causal) | Core |
+| [econometric_pipeline/pipeline/09_synthetic_control.py](econometric_pipeline/pipeline/09_synthetic_control.py) | Builds a "synthetic El Salvador" from a weighted combination of the other countries to estimate the counterfactual `voice_accountability` path absent the post-2020 political-institutional shift, with placebo-in-space inference (Abadie, Diamond & Hainmueller, 2010) and robustness checks: leave-one-donor-out, placebo-in-time, dropping donors with their own democratic deterioration, a 2022 onset, and a homicide first stage. | Enriched panel → synthetic-control JSON and two figures. | Econometrics (Causal) | Core |
 | [econometric_pipeline/pipeline/10_arch_lm_test.py](econometric_pipeline/pipeline/10_arch_lm_test.py) | Engle's ARCH-LM test (per country, Fisher-combined) for conditional heteroskedasticity in the FE residuals and raw series, to check whether a GARCH/MS-GARCH volatility model would have anything to estimate. | Enriched panel + FE residuals → ARCH-LM JSON and a subsection of the PDF report. | Diagnostics | Core |
+| [econometric_pipeline/pipeline/11_spec_curve.py](econometric_pipeline/pipeline/11_spec_curve.py) | Specification curve for the institution index: re-estimates EQ1 and EQ2 for every one of the 63 subsets of the six WGI dimensions, with clustered and Driscoll–Kraay standard errors. | Enriched panel → spec-curve JSON and figure. | Econometrics / Robustness | Core |
 | [econometric_pipeline/pipeline/utils.py](econometric_pipeline/pipeline/utils.py) | Shared helpers for plotting, directory creation, output handling, formatting, and normalizing FE-result JSON lookups across equations (`get_fe_key_stats`). | None → reusable utility functions. | Utility | Core |
 | [econometric_pipeline/pipeline/research_report.py](econometric_pipeline/pipeline/research_report.py) | Builds the structured research report used by the pipeline runner. | Text/JSON sections → report objects and PDF-ready content. | Utility | Core |
 | [archive/legacy_scripts/01clean_panel.py](archive/legacy_scripts/01clean_panel.py) | Early script for cleaning and preparing a panel-ready dataset from a broader research file. | Raw research dataset → panel-ready CSV. | ETL | Archived (auxiliary) |

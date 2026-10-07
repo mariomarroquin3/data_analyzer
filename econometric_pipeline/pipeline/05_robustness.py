@@ -457,7 +457,7 @@ print("""
   instead of higher. El Salvador's 2021-2024 data shows exactly this:
   homicides collapsed (17.3 -> 1.9 per 100k) while voice_accountability
   ALSO fell sharply (53.5 -> 45.0), the documented civil-liberties cost of
-  the state-of-exception security crackdown. This LOCO check tests
+  the post-2020 security crackdown (formal state of exception from March 2022). This LOCO check tests
   whether that single case is driving the anomaly, or whether it reflects
   a broader pattern across the panel.
 """)
@@ -742,6 +742,36 @@ all_robustness["panel_unit_root"] = unit_root_results
 # ════════════════════════════════════════════════════════════════════════
 # FIGURE: Coefficient stability plots
 # ════════════════════════════════════════════════════════════════════════
+section("ROBUSTNESS 9 — Panel Composition (original 11 countries + each added country)")
+print("  Bias addressed: results that depend on WHICH countries are in the panel.\n")
+
+ORIGINAL_11 = ["COL", "CRI", "DOM", "ECU", "GTM", "HND", "MEX", "NIC", "PAN", "PER", "SLV"]
+ADDED = [c for c in COUNTRIES if c not in ORIGINAL_11]
+
+
+def _fit_chain(codes, label):
+    out = {"label": label, "n_countries": len(codes)}
+    sub = df[df[ENTITY_COL].isin(codes)].copy()
+    for eq_label, spec in specs.items():
+        key_var = [c for c in spec["exog"] if c in df.columns][0]
+        r = run_twoway_fe(sub, spec["dep"], spec["exog"], key_var, label)
+        out[eq_label] = {"coef": r["coef"], "pval": r["pval"], "n_obs": r["n_obs"]}
+    return out
+
+
+composition = [_fit_chain(ORIGINAL_11, "Original 11")]
+for c in ADDED:
+    composition.append(_fit_chain(ORIGINAL_11 + [c], f"Original 11 + {c}"))
+composition.append(_fit_chain(COUNTRIES, "All countries"))
+for c in ADDED:
+    composition.append(_fit_chain([x for x in COUNTRIES if x != c], f"All excl. {c}"))
+
+print(f"  {'Panel':<26} {'EQ1 coef (p)':>20} {'EQ2 coef (p)':>20} {'EQ3 coef (p)':>20}")
+for row in composition:
+    cells = [f"{row[e]['coef']:+.3f} ({row[e]['pval']:.3f})" for e in ("eq1", "eq2", "eq3")]
+    print(f"  {row['label']:<26} {cells[0]:>20} {cells[1]:>20} {cells[2]:>20}")
+all_robustness["sample_composition"] = composition
+
 section("05-G — FIGURES")
 
 fig = plt.figure(figsize=(16, 14))
@@ -862,7 +892,7 @@ if va_loco_data:
     axR2.tick_params(axis="y", labelcolor=BLUE)
 
     axR.axvspan(2021, 2024, color=AMBER, alpha=0.12)
-    axR.text(2022.5, axR.get_ylim()[1] * 0.95, "State of\nexception",
+    axR.text(2022.5, axR.get_ylim()[1] * 0.95, "Post-2020\nperiod",
              ha="center", va="top", fontsize=7.5, color=AMBER)
     axR.set_title("El Salvador: Security Gains and\nCivil-Liberties Costs, Together", fontsize=9)
 

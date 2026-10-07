@@ -11,7 +11,7 @@ B.  Two-Way Fixed Effects (entity + time) — PRIMARY ESTIMATOR.
     Covariance: Driscoll-Kraay (kernel) HAC + clustered by entity.
     Note on CR2: linearmodels v7 does not natively support
     Bell-McCaffrey CR2. CR2 is implemented in Module 04 via
-    wild cluster bootstrap which provides correct inference for G=11.
+    wild cluster bootstrap which provides correct inference for G=18.
 C.  Hausman-type comparison: within vs between coefficients to
     support FE choice.
 
@@ -124,7 +124,7 @@ def fit_twoway_fe(
     Fit Two-Way Fixed Effects (entity + time) via linearmodels.PanelOLS.
 
     Returns a dict with:
-      'clustered'  — clustered by entity (conventional, undersized for G=11)
+      'clustered'  — clustered by entity (conventional, undersized for G=18)
       'driscoll'   — Driscoll-Kraay HAC (robust to cross-sectional dep.)
       'params'     — coefficient estimates (same for both)
       'result_cl'  — full linearmodels result object (clustered)
@@ -201,7 +201,7 @@ def print_fe_results(fit_dict: dict, label: str, key_vars: list) -> None:
             f"{se_dk:>10.4f} {p_dk:>8.3f} "
             f"{sig_stars(p_dk):>6}"
         )
-    print("  Note: Wild cluster bootstrap p-values in Module 04 (preferred for G=11).")
+    print("  Note: Wild cluster bootstrap p-values in Module 04 (preferred for G=18).")
 
 
 # ════════════════════════════════════════════════════════════════════════
@@ -241,7 +241,7 @@ for eq_label, dep, exog in [
 section("02-C — PRIMARY: TWO-WAY FIXED EFFECTS")
 
 print("  Estimator: PanelOLS(entity_effects=True, time_effects=True)")
-print("  SE reported: (1) Clustered by entity [conventional, G=11 caution]")
+print("  SE reported: (1) Clustered by entity [conventional, G=18 caution]")
 print("               (2) Driscoll-Kraay HAC [robust to cross-sect. dep.]")
 print("  Preferred inference: Wild Cluster Bootstrap — see Module 04.\n")
 

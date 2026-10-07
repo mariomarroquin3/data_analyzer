@@ -37,7 +37,7 @@ A full Pedroni (1999) panel cointegration test computes 7 separate
 statistics (4 "panel" + 3 "group-mean") with country-specific long-run
 variance corrections — substantial additional machinery beyond this
 project's scope and, per Module 05's own caveat, of doubtful extra value
-with only G=11 cross-sections. This module instead implements the
+with only G=18 cross-sections. This module instead implements the
 simpler, well-established two-step residual-based approach (Engle &
 Granger 1987, extended to panels by Kao 1999 and McCoskey & Kao 1998):
 
@@ -65,7 +65,7 @@ conceptually distinct from beta, the long-run effect estimated in step 1.
 Caveats (consistent with every other small-sample warning in this
 pipeline)
 -------------------------------------------------------
-- G=11 countries, T~25 years is small even for the classic single-series
+- G=18 countries, T~25 years is small even for the classic single-series
   Engle-Granger test; the panel extension does not fix a fundamentally
   small sample. Treat every result here as exploratory.
 - The Fisher-ADF residual test inherits Module 05's low-power caveat.

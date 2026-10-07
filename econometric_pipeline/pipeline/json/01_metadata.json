@@ -1,16 +1,23 @@
 {
   "countries": [
+    "BHS",
+    "BLZ",
+    "BRA",
+    "CHL",
     "COL",
     "CRI",
     "DOM",
     "ECU",
     "GTM",
     "HND",
+    "HTI",
     "MEX",
     "NIC",
     "PAN",
     "PER",
-    "SLV"
+    "PRY",
+    "SLV",
+    "URY"
   ],
   "years": [
     2000,
@@ -39,11 +46,11 @@
     2023,
     2024
   ],
-  "N": 11,
+  "N": 18,
   "T_distinct": 25,
-  "N_obs": 274,
+  "N_obs": 447,
   "is_balanced": false,
-  "time_mean": 2012.0401459854015,
+  "time_mean": 2012.0738255033557,
   "inst_vars": [
     "rule_of_law",
     "control_corruption",
@@ -59,27 +66,27 @@
     "population_log",
     "unemployment"
   ],
-  "pca_var_exp_pc1": 0.729038623265389,
+  "pca_var_exp_pc1": 0.8473694827262848,
   "pca_loadings": {
-    "rule_of_law": 0.4575454187375039,
-    "control_corruption": 0.42613518822521956,
-    "political_stability": 0.3127640837130129,
-    "voice_accountability": 0.449850860478978,
-    "government_effectiveness": 0.38046249456385084,
-    "regulatory_quality": 0.40511987441288694
+    "rule_of_law": 0.43254252963229345,
+    "control_corruption": 0.4191261058692358,
+    "political_stability": 0.3681168370668045,
+    "voice_accountability": 0.42050928955498523,
+    "government_effectiveness": 0.4108839049139454,
+    "regulatory_quality": 0.39506533103620717
   },
-  "cronbach_alpha": 0.922104806591747,
-  "kmo": 0.8633496212859196,
-  "bartlett_chi2": 1450.938020488076,
+  "cronbach_alpha": 0.9633749404695648,
+  "kmo": 0.8633032093337722,
+  "bartlett_chi2": 3552.306943411644,
   "bartlett_df": 15,
   "bartlett_p": 0.0,
-  "corr_indices": 0.999233378277083,
+  "corr_indices": 0.9999445732722835,
   "within_pct": {
-    "homicide_rate_log": 58.48018004432676,
-    "inst_avg": 33.4112054776926,
-    "inst_pca": 33.10270364459656,
-    "fdi_percent_gdp": 70.56617643949427,
-    "gdp_growth": 95.931140634487,
-    "gdp_per_capita_log": 58.07314832150223
+    "homicide_rate_log": 51.19277354505552,
+    "inst_avg": 24.848259367423456,
+    "inst_pca": 24.715835581765393,
+    "fdi_percent_gdp": 75.09583240856549,
+    "gdp_growth": 95.70021065241875,
+    "gdp_per_capita_log": 47.350524561855416
   }
 }

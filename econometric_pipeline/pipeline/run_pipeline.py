@@ -60,6 +60,7 @@ for stream in (sys.stdout, sys.stderr):
         pass
 
 SEPARATOR = "=" * 70
+NC = 11   # number of countries; refreshed from json/01_metadata.json in main()
 
 MODULES = [
     ("01", "01_data_preparation.py",    "Data Preparation & Institution Index"),
@@ -72,6 +73,7 @@ MODULES = [
     ("08", "08_growth_ceiling_risk.py", "Growth-Ceiling-at-Risk (Bayesian MCMC)"),
     ("09", "09_synthetic_control.py",   "Synthetic Control (Bukele Paradox)"),
     ("10", "10_arch_lm_test.py",        "ARCH-LM Test (Conditional Heteroskedasticity)"),
+    ("11", "11_spec_curve.py",          "Specification Curve (Institution Index)"),
 ]
 
 
@@ -150,14 +152,40 @@ def _load_json(path: Path) -> Dict[str, Any]:
 # SECTION BUILDERS
 # ──────────────────────────────────────────────────────────────────────────────
 
+def _n_sig(*pvals, alpha: float = 0.05) -> int:
+    return sum(1 for x in pvals if x is not None and x == x and x < alpha)
+
+
+def _verdict(k: int, total: int) -> str:
+    if k == 0:
+        return f"no significativo bajo ninguno de los {total} estimadores"
+    if k == total:
+        return f"significativo al 5% bajo los {total} estimadores"
+    return f"significativo al 5% bajo {k} de {total} estimadores"
+
+
+def _eq_p_summary(fe: Dict, boot: Dict, eq: str, key: str = "") -> Dict[str, Any]:
+    """Coefficient and the three p-values (clustered, Driscoll-Kraay, wild bootstrap)."""
+    d = fe.get(eq, {})
+    if eq == "EQ3":
+        coef = d.get("params_cl", {}).get(key)
+        p_cl, p_dk = d.get("pvals_cl", {}).get(key), d.get("pvals_dk", {}).get(key)
+    else:
+        coef, p_cl, p_dk = d.get("coef_key_cl"), d.get("pval_key_cl"), d.get("pval_key_dk")
+    p_bt = boot.get(eq.lower(), {}).get("p_boot")
+    return {"coef": coef, "p_cl": p_cl, "p_dk": p_dk, "p_boot": p_bt,
+            "k": _n_sig(p_cl, p_dk, p_bt)}
+
+
 def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> None:
     report.add_section_h1("1. Resumen Ejecutivo")
     report.add_body_text(
         "Este informe presenta los resultados del pipeline econométrico que estima "
-        "el efecto causal de la violencia (medida por la tasa de homicidios) sobre "
+        "la asociación condicional entre la violencia (medida por la tasa de homicidios) y "
         "las instituciones, la inversión extranjera directa y el crecimiento económico "
-        "en un panel de países de Centroamérica, Colombia y República Dominicana para "
-        "el período 2000–2024. La estimación principal emplea efectos fijos bidireccionales "
+        f"en un panel de {meta.get('N', NC)} países de América Latina y el Caribe para "
+        "el período 2000–2024 (no se trata de estimaciones causales en sentido de diseño). "
+        "La estimación principal emplea efectos fijos bidireccionales "
         "(país × año) con errores estándar clusterizados a nivel de país."
     )
 
@@ -188,18 +216,28 @@ def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> Non
         ["EQ3: p-valor FDI (CL)", _fmt(eq3.get("pvals_cl", {}).get("fdi_percent_gdp"), 4)],
     ]
     report.add_table(summary_data, col_widths=[4.0, 3.2])
+    _boot = _load_json(Path(__file__).parent / "json" / "04_bootstrap.json")
+    _med = _load_json(Path(__file__).parent / "json" / "04_mediation.json")
+    s1 = _eq_p_summary(fe, _boot, "EQ1")
+    s2 = _eq_p_summary(fe, _boot, "EQ2")
+    s3 = _eq_p_summary(fe, _boot, "EQ3", "fdi_percent_gdp")
+    def _line(name, s):
+        return (f"{name}: β={_fmt(s['coef'], 3)}; p clusterizado={_fmt(s['p_cl'], 3)}, "
+                f"Driscoll-Kraay={_fmt(s['p_dk'], 3)}, bootstrap={_fmt(s['p_boot'], 3)} "
+                f"({_verdict(s['k'], 3)}).")
     report.add_interpretation_box(
         "Lectura de resultados",
-        "El coeficiente de EQ1 es negativo, indicando que mayor violencia se asocia con "
-        "instituciones más débiles, aunque el p-valor sugiere que no se rechaza H₀ con los "
-        "umbrales convencionales bajo este esquema de inferencia. EQ2 (instituciones → FDI) "
-        "es significativo al 5% bajo tres de los cuatro estimadores de varianza: p≈0.007 "
-        "(clusterizado), p≈0.085 (Driscoll-Kraay) y p≈0.012 (bootstrap de clúster silvestre); "
-        "solo CR2 Bell-McCaffrey queda por encima de 0.10 (p≈0.126) — ver Sección 11 y "
-        "tables/se_comparison.tex para la tabla completa. El mecanismo completo (violencia → "
-        "inst. → FDI → crecimiento) no está probado como cadena conjunta: el bootstrap del "
-        "efecto indirecto (Sección 11) no rechaza H₀ de que el producto de los tres "
-        "coeficientes sea cero, ya que EQ1 y EQ3 individualmente no son significativos.",
+        _line("EQ1 (violencia → instituciones)", s1) + " "
+        + _line("EQ2 (instituciones → IED)", s2) + " "
+        + _line("EQ3 (IED → crecimiento)", s3) + " "
+        "Los errores estándar clusterizados convencionales son anticonservadores con pocos "
+        "clústeres, por lo que la significancia solo bajo ese estimador no debe citarse como "
+        "evidencia de robustez (ver Sección 11 y tables/se_comparison.tex). El mecanismo "
+        "completo no está probado como cadena conjunta: el bootstrap del efecto indirecto "
+        f"da {_fmt(_med.get('indirect_full'), 4)} (IC 95% [{_fmt(_med.get('ci_lo'), 3)}, "
+        f"{_fmt(_med.get('ci_hi'), 3)}], p={_fmt(_med.get('p_boot'), 3)}). Los resultados "
+        "dependen de la composición de la muestra y de la construcción del índice "
+        "institucional (Secciones 12-14).",
         style="info",
     )
 
@@ -207,18 +245,19 @@ def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> Non
 def build_dataset_section(report: ResearchReport, meta: Dict) -> None:
     report.add_section_h1("2. Información del Dataset")
     report.add_body_text(
-        "El panel cubre 11 países: Centroamérica, Colombia, República Dominicana, México, Ecuador y Perú. "
+        f"El panel cubre {NC} países de América Latina y el Caribe (ver tabla). "
         "Los datos provienen del Banco Mundial (WDI, WGI) y fuentes nacionales de estadísticas de crimen."
     )
 
     countries = meta.get("countries", [])
     country_data = [["Código", "País"]]
-    names = {
-        "COL": "Colombia", "CRI": "Costa Rica", "DOM": "Rep. Dominicana",
-        "ECU": "Ecuador", "GTM": "Guatemala", "HND": "Honduras",
-        "MEX": "México", "NIC": "Nicaragua", "PAN": "Panamá",
-        "PER": "Perú", "SLV": "El Salvador",
-    }
+    names = {}
+    try:
+        import pandas as pd
+        _pn = pd.read_csv(Path(__file__).parent / "panel_enriched.csv", usecols=["country_code", "country_name"])
+        names = dict(_pn.drop_duplicates().itertuples(index=False, name=None))
+    except Exception:
+        pass
     for c in countries:
         country_data.append([c, names.get(c, c)])
     report.add_table(country_data, col_widths=[1.2, 3.0])
@@ -436,7 +475,7 @@ def build_model_sections(report: ResearchReport, fe: Dict, base_dir: Path) -> No
                 "El coeficiente negativo sobre homicide_rate_log_lag1 indica que mayor violencia "
                 "se asocia con instituciones más débiles, consistente con la hipótesis teórica. "
                 "La magnitud y significancia estadística deben evaluarse conjuntamente con los "
-                "resultados bootstrap (Sección 11) dado el bajo número de clústeres (G=11)."
+                f"resultados bootstrap (Sección 11) dado el bajo número de clústeres (G={NC})."
             ),
         },
         "EQ2": {
@@ -474,6 +513,43 @@ def build_model_sections(report: ResearchReport, fe: Dict, base_dir: Path) -> No
             ),
         },
     }
+
+    # Interpretations are computed from the estimates so they cannot go stale
+    _boot = _load_json(Path(__file__).parent / "json" / "04_bootstrap.json")
+    q1 = _eq_p_summary(fe, _boot, "EQ1")
+    q2 = _eq_p_summary(fe, _boot, "EQ2")
+    q3 = _eq_p_summary(fe, _boot, "EQ3", "fdi_percent_gdp")
+
+    def _pstr(q):
+        return (f"p clusterizado {_fmt(q['p_cl'], 3)}, Driscoll-Kraay {_fmt(q['p_dk'], 3)}, "
+                f"bootstrap {_fmt(q['p_boot'], 3)}")
+
+    c1 = q1["coef"] if q1["coef"] is not None else 0.0
+    eq_meta["EQ1"]["interpretation"] = (
+        f"El coeficiente sobre homicide_rate_log_lag1 es {'negativo' if c1 < 0 else 'positivo'} "
+        f"(β={_fmt(q1['coef'], 3)}), {'consistente con' if c1 < 0 else 'contrario a'} la "
+        "hipótesis de que mayor violencia se asocia con instituciones más débiles; es "
+        f"{_verdict(q1['k'], 3)} ({_pstr(q1)}). Con G={NC} clústeres el p clusterizado "
+        "convencional es anticonservador y el resultado depende de la composición de la "
+        "muestra y de la construcción del índice (Secciones 12 y 14)."
+    )
+    c2 = q2["coef"] if q2["coef"] is not None else 0.0
+    eq_meta["EQ2"]["interpretation"] = (
+        f"El coeficiente sobre inst_avg es {'positivo' if c2 > 0 else 'negativo'} "
+        f"(β={_fmt(q2['coef'], 3)}), {'consistente con' if c2 > 0 else 'contrario a'} el canal "
+        "institucional (mejores instituciones reducen los riesgos de apropiación y atraen "
+        f"más IED); es {_verdict(q2['k'], 3)} ({_pstr(q2)}). Ver tables/se_comparison.tex "
+        "para la comparación completa de errores estándar, incluido CR2 Bell-McCaffrey."
+    )
+    _eq3 = fe.get("EQ3", {})
+    _infl_p = _eq3.get("pvals_cl", {}).get("inflation")
+    _inst_p = _eq3.get("pvals_cl", {}).get("inst_avg")
+    eq_meta["EQ3"]["interpretation"] = (
+        f"El coeficiente de FDI es {_verdict(q3['k'], 3)} (β={_fmt(q3['coef'], 3)}; "
+        f"{_pstr(q3)}). El efecto directo de inst_avg tiene p clusterizado={_fmt(_inst_p, 3)}. "
+        f"La inflación tiene p clusterizado={_fmt(_infl_p, 3)}. Con G={NC} clústeres y poca "
+        "variación within del índice institucional, la inferencia es de poder limitado."
+    )
 
     for eq_key, info in eq_meta.items():
         eq = fe.get(eq_key, {})
@@ -665,16 +741,20 @@ def build_arch_subsection(report: ResearchReport, arch: Dict) -> None:
             f"{res.get('n_significant_at_05', 0)} de {res.get('n_countries', '')}",
         ])
     report.add_table(rows, col_widths=[3.0, 0.7, 0.9, 1.0, 1.3])
+    flagged = [lab.split(" ")[0] for lab, res in arch.items()
+               if "error" not in res and res.get("p_combined", 1) < 0.05]
+    clean = [lab.split(" ")[0] for lab, res in arch.items()
+             if "error" not in res and res.get("p_combined", 1) >= 0.05]
     report.add_interpretation_box(
         "Lectura y límites",
-        "Los residuos de EQ2 y EQ3 no muestran evidencia de heterocedasticidad condicional. "
-        "Los residuos de EQ1 y la serie de homicidios sí muestran señal, concentrada en "
-        "varios países, compatible con ruido de medición variable en el índice WGI más que "
-        "con regímenes de volatilidad propios de cada país. Con T~20-24 observaciones "
-        "anuales por país el test tiene poco poder y no hay datos suficientes para ajustar "
-        "ni un GARCH(1,1) de forma confiable, mucho menos un Markov-Switching GARCH. Los "
-        "errores estándar clusterizados y de Driscoll-Kraay ya usados son la corrección "
-        "apropiada para esta heterocedasticidad.",
+        "Series con evidencia de heterocedasticidad condicional (p combinado < 0.05): "
+        + (", ".join(flagged) if flagged else "ninguna") + ". Sin evidencia: "
+        + (", ".join(clean) if clean else "ninguna") + ". Que haya señal no basta para "
+        "justificar un modelo de volatilidad: con T~20-24 observaciones anuales por país el "
+        "test tiene poco poder y no hay datos suficientes para ajustar de forma confiable ni "
+        "un GARCH(1,1), mucho menos un Markov-Switching GARCH. Los errores estándar "
+        "clusterizados y de Driscoll-Kraay ya usados son la corrección apropiada para "
+        "esta heterocedasticidad.",
         style="neutral",
     )
 
@@ -682,7 +762,7 @@ def build_arch_subsection(report: ResearchReport, arch: Dict) -> None:
 def build_bootstrap_section(report: ResearchReport, boot: Dict, med: Dict, base_dir: Path) -> None:
     report.add_section_h1("11. Inferencia Bootstrap (Wild Cluster)")
     report.add_body_text(
-        "Con solo G=11 clústeres, los errores estándar clusterizados convencionales "
+        f"Con solo G={NC} clústeres, los errores estándar clusterizados convencionales "
         "son conocidamente imprecisos (MacKinnon & Webb, 2017). Se aplica el wild cluster "
         "bootstrap con pesos de Webb (2023) usando B=999 réplicas. "
         "El p-valor bootstrap es exacto por construcción bajo H₀."
@@ -873,7 +953,7 @@ def build_robustness_section(report: ResearchReport, rob: Dict, base_dir: Path) 
             "con MENOR voz y rendición de cuentas). Los datos de El Salvador 2021-2024 "
             "muestran exactamente este patrón: los homicidios colapsaron (17.3 → 1.9 por "
             "100 mil) mientras voice_accountability también cayó (53.5 → 45.0) -- el costo "
-            "en libertades civiles, documentado, del régimen de excepción. Este chequeo "
+            "en libertades civiles que acompañó al giro político-institucional posterior a 2020 (régimen de excepción desde marzo de 2022). Este chequeo "
             "Leave-One-Country-Out prueba si El Salvador es el único responsable del signo "
             "anómalo en la muestra completa, o si es un patrón regional más amplio."
         )
@@ -953,32 +1033,40 @@ def build_synthetic_control_section(report: ResearchReport, sc: Dict, base_dir: 
     if not sc:
         return
     report.add_section_h1('13. Control Sintético: La "Paradoja Bukele" como Estudio de Caso')
+    n = sc.get("n_countries", "")
     report.add_body_text(
         "El chequeo Leave-One-Country-Out de la Sección 12 estableció que El Salvador es "
         "el único país cuya exclusión invierte el signo del coeficiente agregado de "
         "voice_accountability -- un chequeo de robustez, no un diseño causal. Esta sección "
-        "responde una pregunta más estrecha y mejor identificada con el Método de Control "
-        "Sintético (Abadie, Diamond y Hainmueller, 2010): ¿qué habría pasado con "
-        "voice_accountability en El Salvador si no hubiera ocurrido el régimen de excepción "
-        "de 2021-2024? Se construye un 'El Salvador sintético' como combinación ponderada "
-        "de los otros 10 países de la muestra, ajustada para replicar la trayectoria real "
-        "de El Salvador en el período previo (2000-2020), y se compara con la trayectoria "
-        "observada después."
+        "responde una pregunta más estrecha con el Método de Control Sintético (Abadie, "
+        "Diamond y Hainmueller, 2010): ¿qué habría pasado con voice_accountability en El "
+        "Salvador sin el cambio político-institucional posterior a 2020? Se construye un "
+        "'El Salvador sintético' como combinación ponderada de los demás países de la "
+        "muestra, ajustada para replicar la trayectoria real de El Salvador en 2000-2020, y "
+        "se compara con la trayectoria observada después. IMPORTANTE: el año de inicio "
+        "(2021) sigue la convención del resto del proyecto, pero el decreto formal del "
+        "régimen de excepción es de marzo de 2022, y en mayo de 2021 la Asamblea ya había "
+        "destituido a la Sala de lo Constitucional y al Fiscal General (Meléndez-Sánchez, "
+        "2021). La brecha estimada mide por tanto el conjunto del cambio posterior a 2020 "
+        "(del cual el régimen de excepción es la política de seguridad definitoria), no el "
+        "régimen de excepción de forma aislada."
     )
 
-    names = {
-        "COL": "Colombia", "CRI": "Costa Rica", "DOM": "Rep. Dominicana",
-        "ECU": "Ecuador", "GTM": "Guatemala", "HND": "Honduras", "MEX": "México",
-        "NIC": "Nicaragua", "PAN": "Panamá", "PER": "Perú", "SLV": "El Salvador",
-    }
+    names = {}
+    try:
+        import pandas as pd
+        _pn = pd.read_csv(Path(__file__).parent / "panel_enriched.csv", usecols=["country_code", "country_name"])
+        names = dict(_pn.drop_duplicates().itertuples(index=False, name=None))
+    except Exception:
+        pass
 
     slv = sc.get("el_salvador", {})
     weights = slv.get("weights", {})
     if weights:
         report.add_body_text(
-            "El Salvador sintético se construye como la combinación ponderada que mejor "
-            "replica su propia trayectoria pre-tratamiento (sin usar covariables adicionales, "
-            "para evitar sobreajuste con solo 10 países donantes):"
+            f"El Salvador sintético usa {slv.get('n_donors', '')} países donantes y se "
+            "construye como la combinación ponderada que mejor replica su propia trayectoria "
+            "pre-tratamiento (sin covariables adicionales, para evitar sobreajuste):"
         )
         w_rows = [["País donante", "Peso"]]
         for code, w in sorted(weights.items(), key=lambda kv: -kv[1]):
@@ -986,12 +1074,10 @@ def build_synthetic_control_section(report: ResearchReport, sc: Dict, base_dir: 
         report.add_table(w_rows, col_widths=[2.4, 1.0])
 
     report.add_body_text(
-        f"El ajuste pre-tratamiento es muy bueno (RMSPE = {_fmt(slv.get('pre_rmspe'), 2)} "
-        f"puntos, 2000-2020). En 2024, el valor observado de voice_accountability es "
-        f"{_fmt(slv.get('actual_2024'), 1)}, frente a {_fmt(slv.get('synthetic_2024'), 1)} "
-        f"en la contrafactual sintética -- una brecha de {_fmt(slv.get('gap_2024'), 1)} "
-        "puntos que el modelo atribuye al régimen de excepción y no a una tendencia "
-        "preexistente."
+        f"El ajuste pre-tratamiento (RMSPE = {_fmt(slv.get('pre_rmspe'), 2)} puntos, "
+        f"2000-2020) y el resultado en 2024: voice_accountability observada "
+        f"{_fmt(slv.get('actual_2024'), 1)} frente a {_fmt(slv.get('synthetic_2024'), 1)} en "
+        f"la contrafactual sintética, una brecha de {_fmt(slv.get('gap_2024'), 1)} puntos."
     )
 
     fig_sc = base_dir / "figures" / "15_synthetic_control_bukele.png"
@@ -1002,51 +1088,142 @@ def build_synthetic_control_section(report: ResearchReport, sc: Dict, base_dir: 
             caption=(
                 "Izquierda: voice_accountability real de El Salvador vs. su contrafactual "
                 "sintética, 2000-2024. Derecha: brecha (real - sintética) de El Salvador "
-                "(línea roja) frente a las brechas placebo de los otros 10 países "
-                "(líneas grises), con el régimen de excepción sombreado."
+                "(línea roja) frente a las brechas placebo de los demás países (líneas "
+                "grises), con el período posterior a 2020 sombreado."
             ),
         )
 
     report.add_section_h2("Inferencia por placebo-en-el-espacio")
     report.add_body_text(
         "Siguiendo a Abadie et al. (2010), se repite el procedimiento asignando el papel "
-        "de 'tratado' a cada uno de los otros 10 países (placebos), y se compara la razón "
+        "de 'tratado' a cada uno de los demás países (placebos), y se compara la razón "
         "RMSPE post/pre-tratamiento de El Salvador contra la distribución de razones "
         "placebo -- un test exacto de aleatorización, no un p-valor asintótico."
     )
     placebo_ratios = sc.get("placebo_ratios", {})
     if placebo_ratios:
         pr_rows = [["País", "Razón RMSPE post/pre"]]
-        for code, r in sorted(placebo_ratios.items(), key=lambda kv: -kv[1]):
+        for code, r in sorted(placebo_ratios.items(), key=lambda kv: -kv[1])[:10]:
             marker = " (caso real)" if code == sc.get("treated_unit") else ""
             pr_rows.append([names.get(code, code) + marker, _fmt(r, 2)])
-        report.add_table(pr_rows, col_widths=[2.6, 1.4])
+        report.add_table(pr_rows, col_widths=[2.6, 1.4],
+                         note=f"Se muestran los 10 valores más altos de {n} países.")
 
     p_val = sc.get("p_value")
-    rank  = sc.get("rank_of_slv")
-    n     = sc.get("n_countries")
+    rank = sc.get("rank_of_slv")
     p_val_wf = sc.get("p_value_well_fitting_only")
-    n_wf     = sc.get("n_well_fitting")
+    n_wf = sc.get("n_well_fitting")
     report.add_interpretation_box(
         "De chequeo de robustez a estudio de caso cuasi-causal",
-        f"El Salvador tiene la razón RMSPE post/pre más alta de los {n} países "
-        f"(rank {rank}/{n}), lo que da un p-valor exacto de aleatorización de "
-        f"{_fmt(p_val, 3)} -- el valor mínimo posible con {n} unidades. Restringiendo la "
-        f"comparación a los {n_wf} países cuyo propio ajuste pre-tratamiento es al menos "
-        f"tan bueno como el de El Salvador, sigue ocupando el primer lugar "
-        f"(p = {_fmt(p_val_wf, 3)}). Esto no es solo 'El Salvador es el único país cuya "
-        "exclusión invierte el signo' (Sección 12) -- es que la caída observada en "
-        "voice_accountability es, en sí misma, la más extrema de la región frente a su "
-        "propia trayectoria contrafactual. Con solo 10 países donantes, este resultado "
-        "debe leerse como ilustrativo y no como una estimación causal precisa (el p-valor "
-        "mínimo atribuible es 1/11 = 0.091), pero eleva la 'paradoja Bukele' de un patrón "
-        "correlacional a un caso con diseño cuasi-experimental explícito.",
+        f"El Salvador ocupa el puesto {rank} de {n} por la razón RMSPE post/pre (p exacto de "
+        f"aleatorización = {_fmt(p_val, 3)}; el mínimo posible con {n} unidades es "
+        f"{_fmt(1 / n if isinstance(n, int) and n else None, 3)}). Restringiendo la comparación a "
+        f"los {n_wf} países con un ajuste pre-tratamiento al menos tan bueno como el de El "
+        f"Salvador, el p es {_fmt(p_val_wf, 3)}. La caída observada en voice_accountability "
+        "es la más extrema de la región frente a su propia trayectoria contrafactual. Aun "
+        "así, debe leerse como evidencia ilustrativa y no como una estimación causal precisa.",
         style="info",
+    )
+
+    rb = sc.get("robustness", {})
+    if rb:
+        report.add_section_h2("Robustez del control sintético")
+        rows = [["Chequeo", "Resultado"]]
+        loo_rng = rb.get("leave_one_donor_out_gap_range")
+        if loo_rng:
+            rows.append(["Excluir cada donante con peso positivo (leave-one-donor-out)",
+                         f"brecha 2024 entre {_fmt(loo_rng[0], 1)} y {_fmt(loo_rng[1], 1)} puntos"])
+        for fake, v in (rb.get("placebo_in_time") or {}).items():
+            rows.append([f"Placebo en el tiempo: inicio falso {fake}",
+                         f"brecha promedio post {_fmt(v.get('post_gap_avg'), 2)} puntos"])
+        nd = rb.get("excluding_drift_donors")
+        if nd:
+            rows.append([f"Excluir donantes con deterioro democrático propio ({', '.join(nd.get('excluded', []))})",
+                         f"brecha 2024 = {_fmt(nd.get('gap_2024'), 1)} puntos"])
+        o22 = rb.get("onset_2022")
+        if o22:
+            rows.append(["Inicio en 2022 (decreto formal del régimen de excepción)",
+                         f"brecha 2024 = {_fmt(o22.get('gap_2024'), 1)} puntos"])
+        fs = rb.get("first_stage_homicide") or {}
+        if fs and "error" not in fs:
+            rows.append(["Primera etapa: control sintético sobre la tasa de homicidios",
+                         f"ajuste pre-tratamiento pobre (RMSPE {_fmt(fs.get('pre_rmspe'), 1)} por 100 mil): "
+                         "el pico de 2015-16 queda fuera de lo que cualquier combinación convexa reproduce"])
+        report.add_table(rows, col_widths=[3.4, 3.6])
+        fig_rb = base_dir / "figures" / "15b_synthetic_control_robustness.png"
+        if fig_rb.exists():
+            report.add_image(
+                fig_rb,
+                label="Figura 15b — Robustez del control sintético",
+                caption=(
+                    "Izquierda: trayectorias sintéticas al excluir cada donante con peso "
+                    "positivo. Derecha: brecha promedio posterior para inicios falsos "
+                    "(placebo en el tiempo) frente al inicio real."
+                ),
+            )
+        report.add_body_text(
+            "El donante Nicaragua tiene su propio deterioro democrático reciente; si se "
+            "excluye (junto con Venezuela, cuando está en la muestra) la contrafactual no "
+            "sube de forma que anule la brecha, de modo que la inclusión de esos donantes "
+            "no explica el resultado."
+        )
+
+
+def build_spec_curve_section(report: ResearchReport, sp: Dict, base_dir: Path) -> None:
+    if not sp:
+        return
+    report.add_section_h1("14. Curva de Especificaciones del Índice Institucional")
+    s1, s2 = sp["summary"]["EQ1"], sp["summary"]["EQ2"]
+    report.add_body_text(
+        "Las secciones previas comparan solo dos construcciones del índice institucional "
+        "(3 vs. 6 dimensiones WGI). Aquí se estiman todas: cada subconjunto de dos o más de "
+        f"las seis dimensiones y cada dimensión individual ({s1['n_specs']} índices en total), "
+        "con la misma especificación de efectos fijos bidireccionales (Simonsohn, Simmons y "
+        "Nelson, 2020). El resultado es la distribución completa de estimaciones que se "
+        "podrían haber reportado con estos datos según una elección arbitraria de índice."
+    )
+    rows = [["", "EQ1: violencia → instituciones", "EQ2: instituciones → IED"]]
+    rows.append(["Coeficiente (mín / mediana / máx)",
+                 f"{_fmt(s1['coef_min'], 3)} / {_fmt(s1['coef_median'], 3)} / {_fmt(s1['coef_max'], 3)}",
+                 f"{_fmt(s2['coef_min'], 3)} / {_fmt(s2['coef_median'], 3)} / {_fmt(s2['coef_max'], 3)}"])
+    rows.append(["Con el signo teórico esperado",
+                 f"{s1['share_expected_sign']:.0%}", f"{s2['share_expected_sign']:.0%}"])
+    rows.append(["Significativo al 5% (clusterizado)",
+                 f"{s1['share_sig_clustered_05']:.0%}", f"{s2['share_sig_clustered_05']:.0%}"])
+    rows.append(["Significativo al 5% (Driscoll-Kraay)",
+                 f"{s1['share_sig_dk_05']:.0%}", f"{s2['share_sig_dk_05']:.0%}"])
+    rows.append(["Significativo bajo ambos",
+                 f"{s1['share_sig_both_05']:.0%}", f"{s2['share_sig_both_05']:.0%}"])
+    rows.append(["Índice de 6 dimensiones (principal): coef / p",
+                 f"{_fmt(s1['primary_6dim']['coef'], 3)} / {_fmt(s1['primary_6dim']['p_cl'], 3)}",
+                 f"{_fmt(s2['primary_6dim']['coef'], 3)} / {_fmt(s2['primary_6dim']['p_cl'], 3)}"])
+    rows.append(["Índice de 3 dimensiones (original): coef / p",
+                 f"{_fmt(s1['original_3dim']['coef'], 3)} / {_fmt(s1['original_3dim']['p_cl'], 3)}",
+                 f"{_fmt(s2['original_3dim']['coef'], 3)} / {_fmt(s2['original_3dim']['p_cl'], 3)}"])
+    report.add_table(rows, col_widths=[2.9, 2.1, 2.1])
+    fig = base_dir / "figures" / "16_spec_curve.png"
+    if fig.exists():
+        report.add_image(
+            fig, label="Figura 16 — Curva de especificaciones",
+            caption=("Coeficiente de EQ1 y EQ2 para cada definición del índice institucional, "
+                     "ordenadas por magnitud; la matriz inferior indica qué dimensiones WGI "
+                     "incluye cada índice (RL: Estado de Derecho, CC: control de la corrupción, "
+                     "PS: estabilidad política, VA: voz y rendición de cuentas, GE: efectividad "
+                     "gubernamental, RQ: calidad regulatoria)."),
+        )
+    report.add_interpretation_box(
+        "Lectura",
+        "La significancia de los eslabones que dependen del índice varía mucho con la "
+        "definición del índice, y los errores estándar clusterizados convencionales son "
+        "anticonservadores con pocos clústeres, por lo que los porcentajes de significancia "
+        "son una cota optimista. Ningún resultado de una sola especificación debe citarse "
+        "sin mostrar esta distribución.",
+        style="warning",
     )
 
 
 def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: Path) -> None:
-    report.add_section_h1("14. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
+    report.add_section_h1("15. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
     report.add_body_text(
         "El test de raíz unitaria de panel (Sección 12) encontró que homicide_rate_log, "
         "inst_avg y gdp_per_capita_log no rechazan raíz unitaria (son I(1)), mientras que "
@@ -1115,7 +1292,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
             "este pipeline- no pueden distinguirse de una regresión de panel espuria con "
             "los datos disponibles. En particular para T1 (Homicidios ↔ Instituciones, la "
             "base de EQ1), esto ofrece una explicación formal adicional -más allá del bajo "
-            "poder estadístico por G=11- de por qué ese eslabón es el más inestable de los "
+            f"poder estadístico por G={NC}- de por qué ese eslabón es el más inestable de los "
             "tres en todas las pruebas de este pipeline.",
             style="warning",
         )
@@ -1134,7 +1311,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
         )
 
     report.add_body_text(
-        "Advertencias: G=11, T~25 es una muestra pequeña incluso para el test de "
+        f"Advertencias: G={NC}, T~25 es una muestra pequeña incluso para el test de "
         "Engle-Granger de series individuales; la extensión a panel no corrige un tamaño "
         "muestral fundamentalmente pequeño. Este es un estimador de dos pasos "
         "simplificado, no un sistema de cointegración/ECM totalmente eficiente (sin "
@@ -1144,7 +1321,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
 
 
 def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: Path) -> None:
-    report.add_section_h1("15. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
+    report.add_section_h1("16. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
     report.add_body_text(
         "Un análisis exploratorio de regresión cuantílica frecuentista (ver README, sección "
         "'Exploratory Finding') encontró que la violencia rezagada no tiene efecto cerca de la "
@@ -1153,7 +1330,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
         "Growth-at-Risk clásico (Adrian, Boyarchenko y Giannone, 2019), que estudia la cola "
         "inferior. Este módulo re-estima ese patrón con un modelo bayesiano jerárquico en vez de "
         "variables dummy por país (LSDV): un prior de partial pooling regulariza los interceptos "
-        "de cada país -algo que LSDV no puede hacer con G=11- y la incertidumbre se reporta como "
+        f"de cada país -algo que LSDV no puede hacer con G={NC}- y la incertidumbre se reporta como "
         "una distribución posterior completa (intervalo de credibilidad, P(beta<0|datos)) en vez "
         "de un p-valor asintótico, ya señalado como poco confiable a este tamaño muestral en "
         "otras secciones de este pipeline."
@@ -1239,7 +1416,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
 
     report.add_body_text(
         "Advertencias: este es un hallazgo exploratorio, no una hipótesis pre-registrada -- "
-        "tratar todo resultado como sugestivo. G=11 sigue siendo pequeño incluso para un modelo "
+        f"tratar todo resultado como sugestivo. G={NC} sigue siendo pequeño incluso para un modelo "
         "jerárquico: el partial pooling regulariza pero no puede generar información que los "
         "datos no contienen. Los priors son débilmente informativos, no planos, y el modelo "
         "ALD estima cada cuantil por separado -- no garantiza cuantiles monótonos en tau (de "
@@ -1249,7 +1426,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
 
 
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("16. Triangulación Machine Learning")
+    report.add_section_h1("17. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -1329,7 +1506,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("17. Conclusiones")
+    report.add_section_h1("18. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1342,48 +1519,53 @@ def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot
     boot_eq2 = boot.get("eq2", {})
     boot_eq3 = boot.get("eq3", {})
 
+    c1 = _eq_p_summary(fe, boot, "EQ1")
+    c2 = _eq_p_summary(fe, boot, "EQ2")
+    c3 = _eq_p_summary(fe, boot, "EQ3", "fdi_percent_gdp")
+    infl_p = eq3.get("pvals_cl", {}).get("inflation")
     conclusions = [
         ["#", "Hallazgo", "Evidencia"],
         [
             "1",
-            "Violencia → Instituciones (EQ1): coeficiente negativo, no significativo",
-            f"β = {_fmt(eq1.get('coef_key_cl'), 4)}, p-CL = {_fmt(eq1.get('pval_key_cl'), 4)}, "
-            f"p-boot = {_fmt(boot_eq1.get('p_boot'), 4)}",
+            f"Violencia → Instituciones (EQ1): coeficiente negativo, {_verdict(c1['k'], 3)}",
+            f"β = {_fmt(c1['coef'], 4)}, p-CL = {_fmt(c1['p_cl'], 4)}, "
+            f"p-DK = {_fmt(c1['p_dk'], 4)}, p-boot = {_fmt(c1['p_boot'], 4)}",
         ],
         [
             "2",
-            "Instituciones → FDI (EQ2): coeficiente positivo, significativo (robusto a 3 de 4 SE)",
-            f"β = {_fmt(eq2.get('coef_key_cl'), 4)}, p-CL = {_fmt(eq2.get('pval_key_cl'), 4)}, "
-            f"p-boot = {_fmt(boot_eq2.get('p_boot'), 4)}",
+            f"Instituciones → FDI (EQ2): coeficiente positivo, {_verdict(c2['k'], 3)}",
+            f"β = {_fmt(c2['coef'], 4)}, p-CL = {_fmt(c2['p_cl'], 4)}, "
+            f"p-DK = {_fmt(c2['p_dk'], 4)}, p-boot = {_fmt(c2['p_boot'], 4)}",
         ],
         [
             "3",
-            "FDI → Crecimiento (EQ3): coeficiente positivo, no significativo",
-            f"β = {_fmt(eq3.get('params_cl', {}).get('fdi_percent_gdp'), 4)}, "
-            f"p-CL = {_fmt(eq3.get('pvals_cl', {}).get('fdi_percent_gdp'), 4)}, "
-            f"p-boot = {_fmt(boot_eq3.get('p_boot'), 4)}",
+            f"FDI → Crecimiento (EQ3): coeficiente positivo, {_verdict(c3['k'], 3)}",
+            f"β = {_fmt(c3['coef'], 4)}, p-CL = {_fmt(c3['p_cl'], 4)}, "
+            f"p-DK = {_fmt(c3['p_dk'], 4)}, p-boot = {_fmt(c3['p_boot'], 4)}",
         ],
         [
             "4",
-            "Inflación → Crecimiento: el único efecto estadísticamente robusto en EQ3",
+            "Inflación → Crecimiento (control de EQ3), p clusterizado "
+            + ("< 0.05" if (infl_p is not None and infl_p < 0.05) else ">= 0.05"),
             f"β = {_fmt(eq3.get('params_cl', {}).get('inflation'), 4)}, "
-            f"p-CL = {_fmt(eq3.get('pvals_cl', {}).get('inflation'), 4)}",
+            f"p-CL = {_fmt(infl_p, 4)}",
         ],
         [
             "5",
-            "Bajo número de clústeres (G=11) limita el poder estadístico",
-            "Bootstrap confirma amplios intervalos de confianza para todos los coeficientes clave",
+            f"Bajo número de clústeres (G={NC}) limita el poder estadístico",
+            "Los resultados cambiaron de forma importante al ampliar el panel de 11 a 18 países",
         ],
     ]
     report.add_table(conclusions, col_widths=[0.3, 3.2, 3.7])
 
     report.add_interpretation_box(
         "Limitaciones metodológicas",
-        "Con G=11 clústeres, el poder de los tests convencionales es reducido. "
+        f"Con G={NC} clústeres, el poder de los tests convencionales es reducido. "
         "La no significancia estadística no implica ausencia de efecto económico — "
         "los intervalos de confianza bootstrap son amplios y compatibles tanto con efectos "
-        "nulos como con efectos moderados. Se recomienda ampliar la muestra geográfica "
-        "para obtener inferencia más precisa.",
+        "nulos como con efectos moderados. Como el paso de 11 a 18 países cambió la "
+        "significancia de varios eslabones, las conclusiones deben considerarse "
+        "sensibles a la composición de la muestra.",
         style="warning",
     )
 
@@ -1437,7 +1619,7 @@ def main():
 
     report = ResearchReport(
         title="Violence, Institutions, and Economic Growth",
-        subtitle="Evidencia de Panel para Centroamérica, Colombia y República Dominicana",
+        subtitle="Evidencia de Panel para América Latina y el Caribe",
         author="Pipeline Econométrico — Auto-generado",
         script_name="run_pipeline.py",
         observations=meta_pre.get("N_obs"),
@@ -1494,6 +1676,8 @@ def main():
 
     # ── Reload JSON after modules ran ─────────────────────────────────────
     meta  = _load_json(json_dir / "01_metadata.json")
+    global NC
+    NC = len(meta.get("countries", [])) or NC
     fe    = _load_json(json_dir / "02_fe_results.json")
     diag  = _load_json(json_dir / "03_diagnostics.json")
     boot  = _load_json(json_dir / "04_bootstrap.json")
@@ -1504,6 +1688,7 @@ def main():
     gcar  = _load_json(json_dir / "08_growth_ceiling_risk.json")
     sc    = _load_json(json_dir / "09_synthetic_control.json")
     arch  = _load_json(json_dir / "10_arch_lm_test.json")
+    spec  = _load_json(json_dir / "11_spec_curve.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1538,6 +1723,9 @@ def main():
     report.add_page_break()
 
     build_synthetic_control_section(report, sc, base_dir)
+    report.add_page_break()
+
+    build_spec_curve_section(report, spec, base_dir)
     report.add_page_break()
 
     build_cointegration_section(report, coint, base_dir)

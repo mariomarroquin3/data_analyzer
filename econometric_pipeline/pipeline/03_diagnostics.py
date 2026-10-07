@@ -34,7 +34,7 @@ Explicit limitations
   LM version requires homoscedastic OLS residuals; Modified Wald is more
   appropriate for panels.
 • Arellano-Bond AR(2) test requires full GMM estimation — excluded here
-  (see Module 02 for explicit statement on AB-GMM infeasibility with N=11).
+  (see Module 02 for explicit statement on AB-GMM infeasibility with N=18).
 
 Literature
 ----------
@@ -223,7 +223,7 @@ print("""
   T_ij is the number of common time periods.
   Under H0 (no CD): CD → N(0,1) as N,T → ∞.
 
-  Note: with N=11, the asymptotic distribution is approximate.
+  Note: with N=18, the asymptotic distribution is approximate.
 """)
 
 pesaran_results = {}

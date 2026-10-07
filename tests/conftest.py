@@ -8,7 +8,6 @@ ROOT = Path(__file__).resolve().parent.parent
 PIPE = ROOT / "econometric_pipeline" / "pipeline"
 JSON_DIR = PIPE / "json"
 
-EXPECTED_COUNTRIES = {"COL", "CRI", "DOM", "ECU", "GTM", "HND", "MEX", "NIC", "PAN", "PER", "SLV"}
 WGI_COLS = [
     "rule_of_law", "control_corruption", "political_stability",
     "voice_accountability", "government_effectiveness", "regulatory_quality",
@@ -26,3 +25,8 @@ def load_json():
         with open(JSON_DIR / name, encoding="utf-8") as f:
             return json.load(f)
     return _load
+
+
+@pytest.fixture(scope="session")
+def meta(load_json) -> dict:
+    return load_json("01_metadata.json")
