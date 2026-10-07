@@ -269,7 +269,7 @@ for i, var in enumerate(INST_VARS):
 
 # Bartlett's test of sphericity
 # H0: correlation matrix is identity (no correlations) → reject = PCA meaningful
-# Reference: Bartlett (1954) Annals of Mathematical Statistics 25(3), 604–607.
+# Reference: Bartlett (1954) J. Royal Statistical Society B 16(2), 296–298.
 n_obs_pca = z_matrix.shape[0]
 corr_mat  = np.corrcoef(z_matrix, rowvar=False)
 chi2_stat = -(n_obs_pca - 1 - (2 * k + 5) / 6) * np.log(np.linalg.det(corr_mat))
@@ -511,6 +511,9 @@ meta = {
     "pca_loadings":      dict(zip(INST_VARS, pca.components_[0].tolist())),
     "cronbach_alpha":    float(cronbach_alpha),
     "kmo":               float(kmo_val),
+    "bartlett_chi2":     float(chi2_stat),
+    "bartlett_df":       int(chi2_df),
+    "bartlett_p":        float(chi2_pval),
     "corr_indices":      float(corr_indices),
     "within_pct":        {k: float(v["within_pct"]) for k, v in decomp_results.items()},
 }

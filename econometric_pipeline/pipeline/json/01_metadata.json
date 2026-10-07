@@ -70,6 +70,9 @@
   },
   "cronbach_alpha": 0.922104806591747,
   "kmo": 0.8633496212859196,
+  "bartlett_chi2": 1450.938020488076,
+  "bartlett_df": 15,
+  "bartlett_p": 0.0,
   "corr_indices": 0.999233378277083,
   "within_pct": {
     "homicide_rate_log": 58.48018004432676,

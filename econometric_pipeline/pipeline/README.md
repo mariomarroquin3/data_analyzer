@@ -104,7 +104,7 @@ common time shocks (global financial crisis, COVID-19).
 
 ### Standard errors
 - **Primary**: Wild Cluster Bootstrap with Webb (2023) 6-point weights, B=999.
-  Rationale: with G=8 clusters, conventional clustered SE are severely
+  Rationale: with G=11 clusters, conventional clustered SE are severely
   undersized (Cameron & Miller 2015). Webb weights control size better
   than Rademacher weights for small G.
 - **Secondary**: CR2 Bell-McCaffrey bias-corrected clustered SE.
@@ -136,7 +136,7 @@ common time shocks (global financial crisis, COVID-19).
    in the current dataset. Without valid instruments, endogeneity of violence
    cannot be fully resolved.
 
-3. **Arellano-Bond GMM**: With N=8 and T≈24, full AB-GMM would suffer severe
+3. **Arellano-Bond GMM**: With N=11 and T≈24, full AB-GMM would suffer severe
    instrument proliferation. Module 04 explicitly states this and does NOT
    fake AB-GMM with first-difference OLS.
 
@@ -144,7 +144,7 @@ common time shocks (global financial crisis, COVID-19).
    The implementation follows Wooldridge (2002) p.282-283 manually and
    flags this limitation explicitly.
 
-5. **N=8 clusters**: All inference warnings about small cluster count are
+5. **N=11 clusters**: All inference warnings about small cluster count are
    printed prominently. Wild bootstrap is the recommended inference procedure.
 
 ---

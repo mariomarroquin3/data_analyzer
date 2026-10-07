@@ -14,7 +14,7 @@ that the linear FE model may miss.
 
 Cross-Validation Strategy
 ───────────────────────────
-With N=8 countries, ordinary K-Fold leaks country information
+With N=11 countries, ordinary K-Fold leaks country information
 (training on part of a country, predicting on another period of the
 same country). This produces optimistically biased performance estimates.
 
@@ -23,7 +23,7 @@ For each fold, train on all countries EXCEPT one, predict on the
 held-out country. This measures true out-of-sample (out-of-country)
 predictive power.
 
-Important: G=8 LOCO folds means that all CV performance metrics have
+Important: G=11 LOCO folds means that all CV performance metrics have
 very wide uncertainty (SD across folds is as informative as the mean).
 Do not over-interpret absolute values of LOCO R².
 
@@ -44,7 +44,7 @@ Methods
 6.  Convergence table: FE coefficient / p-value / significance vs
     ML importance rank.
 7.  Wilcoxon signed-rank test comparing RF and GB LOCO fold R².
-    Note: with G=8 paired observations, this test has very low power
+    Note: with G=11 paired observations, this test has very low power
     and results should be treated as purely descriptive.
 
 Targets modelled separately
@@ -203,7 +203,7 @@ def loco_cv(
 
     Returns dict with per-fold and aggregate metrics.
 
-    Note: with G=8 folds, confidence intervals on CV metrics are wide.
+    Note: with G=11 folds, confidence intervals on CV metrics are wide.
     Report mean ± SD across folds rather than a single estimate.
 
     Note on SHAP under LOCO: SHAP is NOT computed per fold here.
@@ -307,7 +307,7 @@ def shap_cluster_bootstrap_ranks(
     all time periods for selected countries. This preserves within-country
     serial structure and reflects the actual unit of independent variation.
 
-    Limitation: with G=8 clusters, there are only 8^8 ≈ 16M possible
+    Limitation: with G=11 clusters, there are only 11^11 ≈ 2.9e11 possible
     bootstrap samples. The bootstrap distribution is discrete and coarse.
     Rank SDs and hit-rate estimates should therefore be treated as
     approximate lower bounds on true uncertainty.
@@ -454,8 +454,8 @@ def compare_rf_gb_loco(rf_cv: dict, gb_cv: dict) -> dict:
     """
     Wilcoxon signed-rank test on paired LOCO fold R² values.
 
-    WARNING: with G=8 folds the test has very low power (the minimum
-    achievable two-sided p-value with 8 non-zero differences is 0.0078).
+    WARNING: with G=11 folds the test has very low power (the minimum
+    achievable two-sided p-value with 11 non-zero differences is 0.00098).
     Results are reported for completeness but should be treated as
     purely descriptive, not as formal evidence for one model over the other.
     """
@@ -796,7 +796,7 @@ section("06-D — FIGURES")
 fig_cv, axes_cv = plt.subplots(1, len(TASKS), figsize=(14, 5))
 fig_cv.suptitle(
     "Leave-One-Country-Out Cross-Validation (LOCO-CV)\n"
-    "Random Forest & Gradient Boosting  |  Note: G=8 folds → wide uncertainty",
+    "Random Forest & Gradient Boosting  |  Note: G=11 folds → wide uncertainty",
     fontsize=11, fontweight="bold"
 )
 
@@ -1042,7 +1042,7 @@ print(f"""
   ║  Values reflect in-sample feature associations and may not      ║
   ║  generalise to held-out countries.                              ║
   ║                                                                 ║
-  ║  Bootstrap stability limitation: G=8 clusters → discrete        ║
+  ║  Bootstrap stability limitation: G=11 clusters → discrete       ║
   ║  bootstrap distribution. Treat rank SDs and hit rates as        ║
   ║  approximate lower bounds on true uncertainty.                  ║
   ╚══════════════════════════════════════════════════════════════════╝

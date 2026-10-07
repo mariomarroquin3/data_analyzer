@@ -251,13 +251,23 @@ final_dataset = merged[final_columns].sort_values(['country_code', 'year']).rese
 # scattered gaps) is a genuine reporting gap that also existed in the
 # original project dataset -- left as NaN, same as always.
 #
-# These two specific values (2.24 and 1.90 homicides per 100,000) are not a
-# guess: they matched the previously committed panel_ready_for_modeling.csv
-# used throughout this project's earlier analysis, and are consistent with
-# public reporting on El Salvador's post-2022 security statistics. Filling
-# them here (rather than leaving El Salvador's most dramatic and most
-# recent observations blank) is a documented, auditable exception, not a
-# silent one -- remove this block if a future WDI vintage mirrors them.
+# PROVENANCE (checked 2026-10): these two values were inherited from the
+# previously committed panel_ready_for_modeling.csv, where they had no
+# recorded source. Official figures found in press reports of the Fiscalia
+# General de la Republica (FGR):
+#   2023: 154 homicides, 2.4 per 100,000  (6.6M inhabitants; 495 / 7.8 in 2022)
+#         https://www.tvn-2.com/mundo/salvador-tuvo-2023-tasa-homicidios_1_2100083.html
+#   2024: 114 homicides, 1.9 per 100,000
+#         https://diario.elmundo.sv/nacionales/ano-2024-cierra-con-114-homicidios-intencionales-en-el-salvador-segun-fiscalia
+# The 2024 value (1.90) matches the official figure. The 2023 value (2.24)
+# does NOT match the official 2.4 and has no traceable source; sensitivity
+# check: using 2.4 changes the EQ1 coefficient from -0.0836 to -0.0848
+# (clustered p 0.462 -> 0.458), i.e. no substantive change. Note also that
+# the official series is a government count and excludes some deaths that
+# earlier governments counted (e.g. gang members killed in confrontations
+# with police), so it is not strictly comparable with the pre-2022 UNODC
+# series. This is a documented, auditable exception, not a silent one --
+# remove this block if a future WDI vintage mirrors the values.
 EL_SALVADOR_HOMICIDE_PATCH = {2023: 2.24, 2024: 1.90}
 for patch_year, patch_value in EL_SALVADOR_HOMICIDE_PATCH.items():
     mask = (final_dataset['country_code'] == 'SLV') & (final_dataset['year'] == patch_year)

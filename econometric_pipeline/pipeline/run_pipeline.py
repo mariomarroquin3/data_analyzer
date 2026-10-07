@@ -1,7 +1,7 @@
 """
 run_pipeline.py
 ════════════════════════════════════════════════════════════════════════
-Master runner — executes all eight modules in sequence and assembles a
+Master runner — executes all ten modules in sequence and assembles a
 professional PDF report from structured JSON outputs + pipeline figures.
 
 Usage
@@ -71,6 +71,7 @@ MODULES = [
     ("07", "07_cointegration.py",       "Panel Cointegration & ECM"),
     ("08", "08_growth_ceiling_risk.py", "Growth-Ceiling-at-Risk (Bayesian MCMC)"),
     ("09", "09_synthetic_control.py",   "Synthetic Control (Bukele Paradox)"),
+    ("10", "10_arch_lm_test.py",        "ARCH-LM Test (Conditional Heteroskedasticity)"),
 ]
 
 
@@ -206,7 +207,7 @@ def build_executive_summary(report: ResearchReport, meta: Dict, fe: Dict) -> Non
 def build_dataset_section(report: ResearchReport, meta: Dict) -> None:
     report.add_section_h1("2. Información del Dataset")
     report.add_body_text(
-        "El panel cubre 8 países de América Central, Colombia y República Dominicana. "
+        "El panel cubre 11 países: Centroamérica, Colombia, República Dominicana, México, Ecuador y Perú. "
         "Los datos provienen del Banco Mundial (WDI, WGI) y fuentes nacionales de estadísticas de crimen."
     )
 
@@ -214,8 +215,9 @@ def build_dataset_section(report: ResearchReport, meta: Dict) -> None:
     country_data = [["Código", "País"]]
     names = {
         "COL": "Colombia", "CRI": "Costa Rica", "DOM": "Rep. Dominicana",
-        "GTM": "Guatemala", "HND": "Honduras", "NIC": "Nicaragua",
-        "PAN": "Panamá", "SLV": "El Salvador",
+        "ECU": "Ecuador", "GTM": "Guatemala", "HND": "Honduras",
+        "MEX": "México", "NIC": "Nicaragua", "PAN": "Panamá",
+        "PER": "Perú", "SLV": "El Salvador",
     }
     for c in countries:
         country_data.append([c, names.get(c, c)])
@@ -434,7 +436,7 @@ def build_model_sections(report: ResearchReport, fe: Dict, base_dir: Path) -> No
                 "El coeficiente negativo sobre homicide_rate_log_lag1 indica que mayor violencia "
                 "se asocia con instituciones más débiles, consistente con la hipótesis teórica. "
                 "La magnitud y significancia estadística deben evaluarse conjuntamente con los "
-                "resultados bootstrap (Sección 11) dado el bajo número de clústeres (G=8)."
+                "resultados bootstrap (Sección 11) dado el bajo número de clústeres (G=11)."
             ),
         },
         "EQ2": {
@@ -641,10 +643,46 @@ def build_diagnostics_section(report: ResearchReport, diag: Dict, base_dir: Path
         )
 
 
+def build_arch_subsection(report: ResearchReport, arch: Dict) -> None:
+    if not arch:
+        return
+    report.add_section_h2("Heterocedasticidad condicional (test ARCH-LM de Engle)")
+    report.add_body_text(
+        "Antes de considerar un modelo de volatilidad tipo GARCH (o Markov-Switching GARCH) "
+        "conviene comprobar si existe heterocedasticidad condicional que modelar. Se aplica "
+        "el test ARCH-LM de Engle (1982) país por país -el único nivel en que una serie "
+        "temporal es válida- y se combinan los p-valores con el método de Fisher "
+        "(H0: ningún país presenta efectos ARCH). Se evalúan los residuos de EQ1-EQ3 y las "
+        "series originales de crecimiento y homicidios."
+    )
+    rows = [["Serie", "Países", "χ² Fisher", "p combinado", "Países sig. al 5%"]]
+    for label, res in arch.items():
+        if "error" in res:
+            continue
+        rows.append([
+            label, str(res.get("n_countries", "")), _fmt(res.get("fisher_stat"), 1),
+            "<0.001" if res.get("p_combined", 1) < 0.001 else _fmt(res.get("p_combined"), 3),
+            f"{res.get('n_significant_at_05', 0)} de {res.get('n_countries', '')}",
+        ])
+    report.add_table(rows, col_widths=[3.0, 0.7, 0.9, 1.0, 1.3])
+    report.add_interpretation_box(
+        "Lectura y límites",
+        "Los residuos de EQ2 y EQ3 no muestran evidencia de heterocedasticidad condicional. "
+        "Los residuos de EQ1 y la serie de homicidios sí muestran señal, concentrada en "
+        "varios países, compatible con ruido de medición variable en el índice WGI más que "
+        "con regímenes de volatilidad propios de cada país. Con T~20-24 observaciones "
+        "anuales por país el test tiene poco poder y no hay datos suficientes para ajustar "
+        "ni un GARCH(1,1) de forma confiable, mucho menos un Markov-Switching GARCH. Los "
+        "errores estándar clusterizados y de Driscoll-Kraay ya usados son la corrección "
+        "apropiada para esta heterocedasticidad.",
+        style="neutral",
+    )
+
+
 def build_bootstrap_section(report: ResearchReport, boot: Dict, med: Dict, base_dir: Path) -> None:
     report.add_section_h1("11. Inferencia Bootstrap (Wild Cluster)")
     report.add_body_text(
-        "Con solo G=8 clústeres, los errores estándar clusterizados convencionales "
+        "Con solo G=11 clústeres, los errores estándar clusterizados convencionales "
         "son conocidamente imprecisos (MacKinnon & Webb, 2017). Se aplica el wild cluster "
         "bootstrap con pesos de Webb (2023) usando B=999 réplicas. "
         "El p-valor bootstrap es exacto por construcción bajo H₀."
@@ -1077,7 +1115,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
             "este pipeline- no pueden distinguirse de una regresión de panel espuria con "
             "los datos disponibles. En particular para T1 (Homicidios ↔ Instituciones, la "
             "base de EQ1), esto ofrece una explicación formal adicional -más allá del bajo "
-            "poder estadístico por G=8- de por qué ese eslabón es el más inestable de los "
+            "poder estadístico por G=11- de por qué ese eslabón es el más inestable de los "
             "tres en todas las pruebas de este pipeline.",
             style="warning",
         )
@@ -1096,7 +1134,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
         )
 
     report.add_body_text(
-        "Advertencias: G=8, T~25 es una muestra pequeña incluso para el test de "
+        "Advertencias: G=11, T~25 es una muestra pequeña incluso para el test de "
         "Engle-Granger de series individuales; la extensión a panel no corrige un tamaño "
         "muestral fundamentalmente pequeño. Este es un estimador de dos pasos "
         "simplificado, no un sistema de cointegración/ECM totalmente eficiente (sin "
@@ -1333,7 +1371,7 @@ def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot
         ],
         [
             "5",
-            "Bajo número de clústeres (G=8) limita el poder estadístico",
+            "Bajo número de clústeres (G=11) limita el poder estadístico",
             "Bootstrap confirma amplios intervalos de confianza para todos los coeficientes clave",
         ],
     ]
@@ -1341,7 +1379,7 @@ def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot
 
     report.add_interpretation_box(
         "Limitaciones metodológicas",
-        "Con G=8 clústeres, el poder de los tests convencionales es reducido. "
+        "Con G=11 clústeres, el poder de los tests convencionales es reducido. "
         "La no significancia estadística no implica ausencia de efecto económico — "
         "los intervalos de confianza bootstrap son amplios y compatibles tanto con efectos "
         "nulos como con efectos moderados. Se recomienda ampliar la muestra geográfica "
@@ -1363,6 +1401,7 @@ def main():
     parser.add_argument("--quiet", action="store_true",
                         help="Suppress banner output.")
     args = parser.parse_args()
+    args.skip = [s.zfill(2) for s in args.skip]   # accept both '4' and '04'
 
     base_dir = Path(__file__).parent
     json_dir  = base_dir / "json"
@@ -1464,6 +1503,7 @@ def main():
     coint = _load_json(json_dir / "07_cointegration.json")
     gcar  = _load_json(json_dir / "08_growth_ceiling_risk.json")
     sc    = _load_json(json_dir / "09_synthetic_control.json")
+    arch  = _load_json(json_dir / "10_arch_lm_test.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1488,6 +1528,7 @@ def main():
     report.add_page_break()
 
     build_diagnostics_section(report, diag, base_dir)
+    build_arch_subsection(report, arch)
     report.add_page_break()
 
     build_bootstrap_section(report, boot, med, base_dir)
