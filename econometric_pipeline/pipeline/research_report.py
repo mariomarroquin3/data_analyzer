@@ -619,6 +619,9 @@ class ResearchReport:
         n_cols = max(len(r) for r in data)
         if col_widths:
             widths = [w * inch for w in col_widths]
+            max_w = 7.2 * inch                      # usable page width
+            if sum(widths) > max_w:
+                widths = [w * max_w / sum(widths) for w in widths]
         else:
             total = 7.2
             widths = [total / n_cols * inch] * n_cols

@@ -10,7 +10,7 @@ Este repositorio implementa un flujo de trabajo empírico para estudiar cómo el
 
 El proyecto utiliza un diseño de panel longitudinal con efectos fijos por país y año. La especificación de referencia es un MCO agrupado, seguido de modelos de efectos fijos bidireccionales que absorben la heterogeneidad invariante en el tiempo por país y los choques comunes. La inferencia se informa con errores estándar agrupados convencionales y con alternativas más conservadoras, incluyendo errores estándar de Driscoll-Kraay para considerar la dependencia transversal, un estimador CR2 (Bell-McCaffrey) con grados de libertad de Satterthwaite, e inferencia de bootstrap de grupo silvestre (wild cluster bootstrap) para paneles con pocos grupos. Dado que la cadena de tres ecuaciones (violencia → instituciones → IED → crecimiento) se estima como modelos independientes para evitar un problema de regresores generados, el mecanismo hipotetizado se pone a prueba adicionalmente como sistema: un bootstrap por clúster de país del producto de los tres coeficientes de la cadena ofrece una prueba formal del efecto indirecto, en lugar de apoyarse solo en la significancia de cada eslabón por separado. Las comprobaciones de robustez incluyen exclusión de cada país (Leave-One-Country-Out), estructuras de rezago alternativas para los tres eslabones (no solo violencia→instituciones), una verificación de control post-tratamiento, tendencias lineales específicas por país y una prueba de raíz unitaria de panel (Fisher-ADF). Además, se utiliza un análisis de componentes principales (PCA) para construir un índice institucional de robustez a partir de los Indicadores de Gobernanza Mundial (WGI), y se emplean métodos de aprendizaje automático como una capa de triangulación exploratoria en lugar de un sustituto para la estimación causal, con una reconstrucción del índice institucional libre de fuga de datos (fold-safe) bajo validación cruzada Leave-One-Country-Out. Finalmente, un hallazgo exploratorio de regresión cuantílica —que la violencia limita la cola superior del crecimiento del PIB sin desplazar su mediana— se re-estima como un modelo bayesiano jerárquico (MCMC, verosimilitud Asimétrica de Laplace) con partial pooling entre países, reportado con incertidumbre posterior completa en vez de errores estándar asintóticos de regresión cuantílica.
 
-El flujo de trabajo se ejecuta en doce etapas:
+El flujo de trabajo se ejecuta en catorce etapas:
 1.  **Carga de datos**: lee un conjunto de datos de panel limpio que contiene observaciones país-año.
 2.  **Limpieza y ETL**: valida los datos, evalúa los valores perdidos y estandariza y combina las variables institucionales en un índice.
 3.  **Ingeniería de características**: enriquece el panel con tendencias temporales, variables de violencia rezagadas y medidas institucionales derivadas.
@@ -23,6 +23,8 @@ El flujo de trabajo se ejecuta en doce etapas:
 10. **Control sintético**: un "El Salvador sintético" construido con los demás países estima la trayectoria contrafactual de voz y rendición de cuentas sin el giro político-institucional posterior a 2020, con inferencia por placebo-en-el-espacio y chequeos de robustez (excluir cada donante, placebo en el tiempo, inicio en 2022).
 11. **Diagnóstico de heterocedasticidad condicional**: test ARCH-LM de Engle por país, para comprobar si un modelo de volatilidad tipo GARCH tendría algo que estimar.
 12. **Curva de especificaciones**: EQ1 y EQ2 se re-estiman para cada uno de los 63 subconjuntos de las seis dimensiones WGI usado como índice institucional, mostrando cuánto dependen las conclusiones de esa elección.
+13. **Dependencia espacial**: CD de Pesaran e I de Moran por permutación sobre los residuos, modelos de contagio (SLX) con matrices de pesos espaciales, y verificación de que los donantes del control sintético no están contaminados por los vecinos de El Salvador.
+14. **Barrido de eslabones causales**: los 72 eslabones ordenados entre nueve variables del panel, rezagados y con el rezago de la dependiente como control, con control de falsos descubrimientos y calibración por placebo, para ver qué eslabones y cadenas distintos de los del artículo tienen evidencia.
 
 ## Revisión Metodológica (Septiembre 2026)
 
@@ -101,7 +103,7 @@ Dado el diseño del proyecto, los resultados se interpretan como asociaciones su
 
 La lectura honesta es que **ningún eslabón de la cadena hipotetizada es robustamente significativo en este panel**, y que la significancia que mostraban con 11 países los eslabones instituciones → IED e IED → crecimiento no sobrevivió a una muestra más grande y definida de antemano. Lo que sí se sostiene:
 
-1. **Un patrón de techo de crecimiento** (Módulo 08): la violencia reduce la cola *superior* alcanzable del crecimiento (q=0.90: −1.36, HDI 94% [−2.39, −0.39]; q=0.95: −1.84, [−2.84, −0.89]), sin un efecto comparable para las instituciones.
+1. **Un patrón de techo de crecimiento** (Módulo 08): la violencia reduce la cola *superior* alcanzable del crecimiento (q=0.90: −1.39, HDI 94% [−2.53, −0.43]; q=0.95: −1.83, [−2.80, −0.98]), sin un efecto comparable para las instituciones.
 2. **El Salvador es el único país que rompe la relación violencia-instituciones**: es la única exclusión que invierte el signo del coeficiente de voz y rendición de cuentas y la única que hace significativo el EQ1 compuesto bajo clusterización. Un control sintético ubica su puntaje de voz y rendición de cuentas de 2024 10.3 puntos por debajo de su contrafactual, la brecha más extrema de los 18 países (p=0.056, el mínimo alcanzable).
 3. **Un equilibrio de largo plazo entre homicidios e ingreso per cápita** (Módulo 07; Fisher-ADF p=0.0465, velocidad de corrección −0.098, p<0.001 clusterizado / 0.004 Driscoll-Kraay), aunque más estrecho que con 11 países.
 4. **El hallazgo del índice institucional**: la significancia de los eslabones que dependen del índice varía mucho según qué dimensiones WGI se promedien (63 definiciones evaluadas).
@@ -136,24 +138,24 @@ El patrón exploratorio anterior se re-estimó como [Módulo 08](econometric_pip
 
 | Cuantil | Coef. frecuentista (LSDV) | Media posterior bayesiana | HDI 94% | P(β<0 \| datos) |
 |---|---|---|---|---|
-| 0.05 | +2.21 (p=0.029) | +1.14 | [−0.001, 2.27] | 0.032 |
-| 0.10 | −0.30 (p=0.688) | −0.08 | [−0.94, 0.82] | 0.561 |
-| 0.25 | −0.29 (p=0.499) | −0.15 | [−0.85, 0.52] | 0.661 |
-| 0.50 (mediana) | −0.41 (p=0.290) | −0.41 | [−0.93, 0.12] | 0.938 |
-| 0.75 | −0.44 (p=0.247) | −0.65 | [−1.23, −0.05] | 0.984 |
-| 0.90 | −2.90 (p<0.001) | **−1.36** | **[−2.39, −0.39]** | **0.995** |
-| 0.95 | −2.29 (p=0.001) | **−1.84** | **[−2.84, −0.89]** | **1.000** |
+| 0.05 | +2.21 (p=0.029) | +1.13 | [0.13, 2.25] | 0.029 |
+| 0.10 | −0.30 (p=0.688) | −0.10 | [−0.98, 0.85] | 0.583 |
+| 0.25 | −0.29 (p=0.499) | −0.15 | [−0.77, 0.55] | 0.661 |
+| 0.50 (mediana) | −0.41 (p=0.290) | −0.41 | [−0.90, 0.11] | 0.938 |
+| 0.75 | −0.44 (p=0.247) | −0.67 | [−1.22, −0.03] | 0.985 |
+| 0.90 | −2.90 (p<0.001) | **−1.39** | **[−2.53, −0.43]** | **0.996** |
+| 0.95 | −2.29 (p<0.001) | **−1.83** | **[−2.80, −0.98]** | **0.999** |
 
-Los diagnósticos de MCMC son limpios en cada cuantil (R-hat ≤ 1.009, tamaño de muestra efectivo > 670, cero divergencias en 4 cadenas × 1,000 muestras post-calentamiento). Un chequeo secundario con `inst_avg` en lugar de violencia en q=0.90/0.95 no encuentra efecto de techo (P(β<0|datos) = 0.269 y 0.636 —prácticamente un volado—), así que el patrón es específico a la violencia.
+Los diagnósticos de MCMC son limpios en cada cuantil (R-hat ≤ 1.008, tamaño de muestra efectivo > 760, cero divergencias en 4 cadenas × 1,000 muestras post-calentamiento). Un chequeo secundario con `inst_avg` en lugar de violencia en q=0.90/0.95 no encuentra efecto de techo (P(β<0|datos) = 0.298 y 0.692 —prácticamente un volado—), así que el patrón es específico a la violencia.
 
 **Escenario Growth-Ceiling-at-Risk.** Manteniendo país y año en su nivel promedio, la posterior responde la pregunta aplicada: ¿cuánto baja el techo de crecimiento alcanzable cuando la violencia rezagada pasa de su percentil 10 al percentil 90 empírico?
 
 | Cuantil | Techo, violencia baja (p10) | Techo, violencia alta (p90) | Caída | HDI 94% (caída) | P(caída>0 \| datos) |
 |---|---|---|---|---|---|
-| 0.90 | 8.16 pts | 5.70 pts | 2.46 pts | [0.70, 4.30] | 0.995 |
-| 0.95 | 10.29 pts | 6.98 pts | 3.31 pts | [1.60, 5.11] | 1.000 |
+| 0.90 | 8.20 pts | 5.69 pts | 2.51 pts | [0.77, 4.56] | 0.996 |
+| 0.95 | 10.30 pts | 7.00 pts | 3.29 pts | [1.78, 5.06] | 0.999 |
 
-**Qué cambió de 11 a 18 países.** Con 11 países las medias posteriores eran −1.76 (q=0.90) y −2.08 (q=0.95), con una caída del techo de 3.27 y 3.86 puntos; el efecto es algo menor en el panel más grande pero claramente intacto. También está menos confinado a la cola superior extrema de lo que sugería el resultado con 11 países: la posterior en q=0.75 ahora excluye el cero (P=0.984) y la mediana es marginal (P=0.938), por lo que el patrón se describe mejor como un *gradiente que se intensifica hacia lo alto de la distribución* que como un efecto estrictamente "nulo en la mediana".
+**Qué cambió de 11 a 18 países.** Con 11 países las medias posteriores eran −1.76 (q=0.90) y −2.08 (q=0.95), con una caída del techo de 3.27 y 3.86 puntos; el efecto es algo menor en el panel más grande pero claramente intacto. También está menos confinado a la cola superior extrema de lo que sugería el resultado con 11 países: la posterior en q=0.75 ahora excluye el cero (P=0.985) y la mediana es marginal (P=0.938), por lo que el patrón se describe mejor como un *gradiente que se intensifica hacia lo alto de la distribución* que como un efecto estrictamente "nulo en la mediana".
 
 Advertencias: esto sigue siendo exploratorio —motivado por un hallazgo de revisión rápida, no una hipótesis pre-registrada—. G=18 sigue siendo pequeño incluso para un modelo jerárquico; el partial pooling regulariza pero no puede fabricar información que los datos no contienen, y las priors son débilmente informativas, no planas. La verosimilitud Asimétrica de Laplace apunta a un cuantil a la vez y no garantiza por sí misma cuantiles monótonos en tau.
 
@@ -334,6 +336,8 @@ data_analyzer/
 │       ├── 09_synthetic_control.py
 │       ├── 10_arch_lm_test.py
 │       ├── 11_spec_curve.py
+│       ├── 12_spatial_diagnostics.py
+│       ├── 13_causal_link_scan.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -346,6 +350,33 @@ data_analyzer/
 ├── foundational_datasets/
 └── requirements.txt
 ```
+
+## Dependencia entre Países y Efectos de Contagio (Octubre 2026)
+
+Todos los módulos anteriores tratan a los 18 países como independientes una vez removidos los efectos fijos. Ese supuesto importa para la inferencia por clústeres/bootstrap y para el control sintético (los donantes no deben verse afectados por el tratamiento), y es dudoso para la violencia, que cruza fronteras. El [Módulo 12](econometric_pipeline/pipeline/12_spatial_diagnostics.py) lo contrasta con matrices de pesos espaciales (fronteras terrestres; distancia inversa entre capitales; cuatro vecinos más cercanos), con inferencia por permutación y bootstrap wild cluster porque N=18 es demasiado pequeño para tests espaciales asintóticos. Es el análogo de bajo N de dejar fluir información entre nodos vecinos en una red neuronal de grafos; un GNN como tal no es estimable con 18 nodos sin sobreajuste.
+
+- **Dependencia residual.** Los residuos de EQ1 no muestran ninguna (CD de Pesaran ajustado por el artefacto −1/(N−1) que induce quitar efectos de año: p=0.867); EQ2 está en el límite (p=0.050); EQ3 no muestra dependencia en el test CD (p=0.593), pero sus residuos se parecen más entre vecinos que entre no vecinos (I de Moran: p de permutación entre 0.012 y 0.036 según la matriz W; test de correlación entre pares vecinos: p=0.049 con fronteras terrestres, 0.026 cuando alguno de los dos países está entre los cuatro vecinos más cercanos del otro, 0.122 con capitales a menos de 1,500 km). Esto apunta a choques regionales de crecimiento y debilita la inferencia por clústeres de EQ3 en particular. 3 de 9 tests de Moran y 2 de 9 tests de pares vecinos son significativos al 5%, todos en EQ3.
+- **No hay contagio de la violencia.** La tasa de homicidios de un país no responde a la de sus vecinos rezagada (distancia inversa: θ=-0.010, p=0.93; contigüidad: θ=+0.015, p=0.81).
+- **Los coeficientes de contagio no son robustos.** 2 de 10 coeficientes son significativos al 5% (se esperarían 0.5 por azar): el crecimiento rezagado de los vecinos predice el propio crecimiento con distancia inversa (θ=+0.57, p=0.032) pero no con contigüidad (p=0.20); la violencia de los vecinos se asocia con puntajes institucionales *más altos* solo con distancia inversa (θ=+0.32, p=0.047; contigüidad p=0.40), lo opuesto al contagio.
+- **Control sintético.** Los vecinos terrestres de El Salvador en el panel (GTM, HND) reciben peso 0.000 en el contrafactual; los donantes a menos de 1,500 km reciben 0.147. La contaminación directa del resultado de la paradoja Bukele por donantes vecinos es por tanto limitada.
+
+**Advertencias.** Con 18 países estos tests tienen poca potencia, así que "no significativo" no es "ausente": el mapa de calor de correlaciones residuales muestra bloques regionales visibles (Centroamérica; el grupo andino–Cono Sur) incluso donde los tests de permutación no rechazan. Las coordenadas de las capitales son aproximadas, y los pesos basados en comercio (la opción natural, usada en la literatura de GNN para comercio) requerirían una base bilateral externa (CEPII). No se estimaron modelos autorregresivos espaciales (SAR): el ML con efectos fijos en un panel desbalanceado de 18 no es confiable, y los diagnósticos no muestran un caso fuerte para ellos.
+
+![Dependencia espacial](econometric_pipeline/pipeline/figures/17_spatial_dependence.png)
+
+## Barrido Disciplinado de Otros Eslabones y Cadenas Causales (Octubre 2026)
+
+El [Módulo 13](econometric_pipeline/pipeline/13_causal_link_scan.py) pregunta qué eslabones entre nueve variables del panel (violencia, instituciones, IED, crecimiento, inflación, desempleo, exportaciones, turismo, remesas) tienen evidencia estadística y si alguno compone una cadena. Para limitar falsos positivos la familia se fija de antemano (72 pares ordenados), la causa entra rezagada un año, el rezago de la variable de resultado es control (un eslabón debe predecir *cambios*, no niveles persistentes), la inferencia es wild cluster bootstrap con efectos fijos de país y año, y se controla la multiplicidad (Benjamini–Hochberg q=0.1; Holm). Un barrido placebo, repetido 20 veces barajando cada causa entre años dentro de cada país, mide la tasa de falsos positivos del propio procedimiento.
+
+- 10 de 72 eslabones son significativos al 5% sin corregir, frente a unos 3.6 esperados por azar; **1 sobrevive** al control de falsos descubrimientos y 0 al de Holm. En los barridos placebo la tasa de falsos positivos al 5% fue 0.053 en promedio (máximo 0.111) y el número medio de sobrevivientes al FDR fue 0.00.
+- El único sobreviviente es **exports → unemployment** (coeficiente -0.037, p wild-bootstrap≤0.001; se mantiene sin el rezago de la dependiente y la dirección inversa no es significativa): más exportaciones (% del PIB) preceden a menos desempleo al año siguiente.
+- Siguientes en fuerza, ninguno sobrevive a la corrección: unemployment → inflation (p=0.005); remittances → exports (p=0.006); tourism → growth (p=0.013); institutions → exports (p=0.026); inflation → exports (p=0.032).
+- **Ningún par de eslabones sobrevivientes compone una cadena**, así que no se reporta ninguna cadena alternativa.
+- **Bajo esta especificación más estricta los eslabones del propio artículo tampoco sobreviven**: violencia → instituciones p=0.50, instituciones → IED p=0.34, IED → crecimiento p=0.044 (signo negativo). Las instituciones son muy persistentes, así que el rezago de la dependiente absorbe casi toda su variación. Es coherente con la lectura de "cadena de transmisión frágil" y la refuerza.
+
+Son asociaciones observacionales rezagadas, no efectos causales identificados; sobrevivir a los filtros significa solo que la asociación no se explica por efectos de país/año ni por la persistencia del resultado.
+
+![Mapa de eslabones](econometric_pipeline/pipeline/figures/18_causal_link_map.png)
 
 ## Notas para el Usuario
 

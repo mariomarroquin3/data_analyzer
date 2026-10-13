@@ -74,6 +74,8 @@ MODULES = [
     ("09", "09_synthetic_control.py",   "Synthetic Control (Bukele Paradox)"),
     ("10", "10_arch_lm_test.py",        "ARCH-LM Test (Conditional Heteroskedasticity)"),
     ("11", "11_spec_curve.py",          "Specification Curve (Institution Index)"),
+    ("12", "12_spatial_diagnostics.py", "Spatial Dependence & Spillovers"),
+    ("13", "13_causal_link_scan.py",    "Causal Link Scan (FDR-controlled)"),
 ]
 
 
@@ -1222,8 +1224,126 @@ def build_spec_curve_section(report: ResearchReport, sp: Dict, base_dir: Path) -
     )
 
 
+def build_spatial_section(report: ResearchReport, sp: Dict, base_dir: Path) -> None:
+    if not sp:
+        return
+    report.add_section_h1("15. Dependencia entre Países y Efectos de Contagio")
+    s = sp["summary"]
+    report.add_body_text(
+        "Los módulos anteriores tratan a los países como unidades independientes una vez "
+        "removidos los efectos fijos. Ese supuesto afecta a la inferencia (los clústeres deben "
+        "ser independientes) y al control sintético (los donantes no deben verse afectados por "
+        "el tratamiento). Aquí se contrasta con una matriz de pesos espaciales W construida "
+        "con fronteras terrestres, distancia inversa entre capitales y los cuatro vecinos más "
+        "cercanos. Con 18 países se usa inferencia por permutación y bootstrap wild, no "
+        "aproximaciones asintóticas."
+    )
+    rows = [["Diagnóstico", "Resultado"]]
+    for eq in ("EQ1", "EQ2", "EQ3"):
+        c = sp["pesaran_cd"][f"{eq}_two_way"]
+        rows.append([f"Pesaran CD, residuos {eq} (corregido por -1/(N-1))",
+                     f"CD = {_fmt(c['cd_adjusted'], 2)} (p = {_fmt(c['p_adjusted'], 3)})"])
+    rows.append(["I de Moran sobre residuos, p<0.05 (de 9 combinaciones ecuación × W)", f"{s['n_moran_significant_05']} de {s['n_moran']}"])
+    rows.append(["Vecinos vs. no vecinos: correlación residual, p<0.05", f"{s['n_gap_significant_05']} de {s['n_gap']}"])
+    rows.append(["Coeficientes de contagio (SLX), p_wild<0.05", f"{s['n_slx_significant_05']} de {s['n_slx']} (azar esperado: {0.05 * s['n_slx']:.1f})"])
+    report.add_table(rows, col_widths=[4.6, 2.5])
+    fig = base_dir / "figures" / "17_spatial_dependence.png"
+    if fig.exists():
+        report.add_image(
+            fig, label="Figura 17 — Dependencia residual y geografía",
+            caption=("Izquierda: correlaciones entre residuos de EQ1 por pares de países "
+                     "(marco negro = frontera terrestre). Derecha: diferencia entre la correlación "
+                     "residual de pares vecinos y no vecinos, con p-valor de permutación."),
+        )
+    sc = sp["synthetic_control_contamination"]
+    report.add_body_text(
+        f"Control sintético: los vecinos terrestres de El Salvador en el panel ({', '.join(sc['land_neighbours'])}) "
+        f"reciben un peso de {sc['weight_on_land_neighbours']:.3f} en el contrafactual; los donantes a menos de "
+        f"1,500 km reciben {sc['weight_within_1500km']:.3f}. La contaminación por contagio directo es por tanto limitada."
+    )
+    eq_dep = [eq for eq in ("EQ1", "EQ2", "EQ3")
+              if any(v["p_perm"] < 0.05 for k, v in {**sp["morans_i"], **sp["neighbour_pair_gap"]}.items() if k.startswith(eq + "_"))]
+    viol = [v for v in sp["slx"].values() if v["label"].startswith("EQ0")]
+    contagion = any(v["p_wild"] < 0.05 for v in viol)
+    by_label = {}
+    for v in sp["slx"].values():
+        by_label.setdefault(v["label"], []).append(v["p_wild"] < 0.05)
+    n_robust = sum(all(flags) for flags in by_label.values())
+    dep_txt = (f"Hay dependencia residual entre vecinos significativa al 5% (permutación) en {', '.join(eq_dep)}"
+               if eq_dep else "No hay dependencia residual entre vecinos significativa al 5% en ninguna ecuación")
+    report.add_interpretation_box(
+        "Lectura",
+        f"{dep_txt}. "
+        + ("Hay evidencia de contagio de la violencia entre vecinos. " if contagion
+           else "No hay evidencia de contagio de la violencia entre vecinos. ")
+        + f"{s['n_slx_significant_05']} de {s['n_slx']} coeficientes de contagio son significativos al 5% "
+          f"(azar esperado: {0.05 * s['n_slx']:.1f}) y {n_robust} de {len(by_label)} relaciones lo son bajo ambas "
+          "matrices de pesos. Con 18 países la potencia es baja: la ausencia de significancia no equivale a "
+          "ausencia de dependencia (el mapa de calor muestra bloques regionales incluso donde los tests no rechazan).",
+        style="warning",
+    )
+
+
+def build_link_scan_section(report: ResearchReport, ls: Dict, base_dir: Path) -> None:
+    if not ls:
+        return
+    report.add_section_h1("16. Barrido Disciplinado de Eslabones y Cadenas Causales")
+    s = ls["summary"]
+    report.add_body_text(
+        f"Se prueban los {ls['n_links']} eslabones ordenados entre nueve variables del panel (violencia, "
+        "instituciones, IED, crecimiento, inflación, desempleo, exportaciones, turismo y remesas), con la "
+        "causa rezagada un año, efectos fijos de país y año, el rezago de la variable de resultado como "
+        "control (especificación tipo Granger: un eslabón debe predecir cambios, no solo niveles persistentes) "
+        "y p-valores bootstrap wild. La familia de pruebas se fijó de antemano; la multiplicidad se controla con "
+        f"Benjamini-Hochberg (q = {s['fdr_q']}) y Holm, y el procedimiento se calibra con {s['n_placebo_scans']} "
+        "barridos placebo en los que la causa se baraja entre años dentro de cada país."
+    )
+    ranked = sorted(ls["links"].items(), key=lambda kv: kv[1]["primary"]["p_wild"])[:10]
+    rows = [["Eslabón (causa -> efecto)", "Coef.", "p (wild)", "p sin rezago Y", "p inverso", "FDR"]]
+    for k, L in ranked:
+        pr, alt = L["primary"], L["no_lagged_outcome"]
+        floor = 1.0 / (s["n_bootstrap"] + 1)
+        rows.append([k.replace("->", " -> "), _fmt(pr["coef"], 3),
+                     ("<=" if pr["p_wild"] <= floor + 1e-12 else "") + _fmt(pr["p_wild"], 3),
+                     _fmt(alt["p_wild"], 3) if alt else "N/D", _fmt(L["reverse_p_wild"], 3),
+                     "sí" if L["bh_survives"] else "no"])
+    report.add_table(rows, col_widths=[2.3, 0.8, 0.8, 1.1, 0.9, 0.6])
+    report.add_body_text(
+        f"{s['n_raw_sig_05']} de {ls['n_links']} eslabones son significativos al 5% sin corregir "
+        f"(por azar se esperarían {s['expected_by_chance']:.1f}); {s['n_bh_survivors']} sobrevive al control de "
+        f"falsos descubrimientos y {s['n_holm_survivors']} al de Holm. En los barridos placebo la tasa de falsos "
+        f"positivos al 5% fue {s['placebo_false_positive_rate_mean']:.3f} en promedio (máx. "
+        f"{s['placebo_false_positive_rate_max']:.3f}) y el número medio de sobrevivientes al FDR fue "
+        f"{s['placebo_bh_survivors_mean']:.2f}."
+    )
+    fig = base_dir / "figures" / "18_causal_link_map.png"
+    if fig.exists():
+        report.add_image(
+            fig, label="Figura 18 — Mapa de eslabones",
+            caption=("Signo del coeficiente por -log10(p) para cada par causa -> efecto; ** sobrevive al "
+                     "control FDR, * solo significativo sin corregir."),
+        )
+    surv = [k for k, L in ls["links"].items() if L["bh_survives"]]
+    paper_keys = ("violence->institutions", "institutions->FDI", "FDI->growth")
+    paper_surv = [k.replace("->", " -> ") for k in paper_keys if ls["links"].get(k, {}).get("bh_survives")]
+    paper_not = [k.replace("->", " -> ") for k in paper_keys if k in ls["links"] and not ls["links"][k]["bh_survives"]]
+    n_ch = len(ls["chains"])
+    report.add_interpretation_box(
+        "Lectura",
+        "Los eslabones listados son asociaciones rezagadas observacionales, no efectos identificados. "
+        + (f"Sobreviven al control de falsos descubrimientos: {', '.join(k.replace('->', ' -> ') for k in surv)}. " if surv
+           else "Ningún eslabón sobrevive al control de falsos descubrimientos. ")
+        + (f"Se evaluaron {n_ch} cadenas formadas por pares de eslabones sobrevivientes. " if n_ch
+           else "Ninguna pareja de eslabones sobrevivientes compone una cadena, por lo que no se reporta ninguna cadena alternativa. ")
+        + (f"Eslabones del artículo que NO sobreviven bajo esta especificación más exigente: {', '.join(paper_not)}. " if paper_not else "")
+        + (f"Eslabones del artículo que sobreviven: {', '.join(paper_surv)}. " if paper_surv else "")
+        + "Las instituciones son muy persistentes, así que el rezago de la variable de resultado absorbe gran parte de su variación.",
+        style="warning",
+    )
+
+
 def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: Path) -> None:
-    report.add_section_h1("15. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
+    report.add_section_h1("17. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
     report.add_body_text(
         "El test de raíz unitaria de panel (Sección 12) encontró que homicide_rate_log, "
         "inst_avg y gdp_per_capita_log no rechazan raíz unitaria (son I(1)), mientras que "
@@ -1321,7 +1441,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
 
 
 def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: Path) -> None:
-    report.add_section_h1("16. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
+    report.add_section_h1("18. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
     report.add_body_text(
         "Un análisis exploratorio de regresión cuantílica frecuentista (ver README, sección "
         "'Exploratory Finding') encontró que la violencia rezagada no tiene efecto cerca de la "
@@ -1331,7 +1451,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
         "inferior. Este módulo re-estima ese patrón con un modelo bayesiano jerárquico en vez de "
         "variables dummy por país (LSDV): un prior de partial pooling regulariza los interceptos "
         f"de cada país -algo que LSDV no puede hacer con G={NC}- y la incertidumbre se reporta como "
-        "una distribución posterior completa (intervalo de credibilidad, P(beta<0|datos)) en vez "
+        "una distribución posterior completa (intervalo de credibilidad, P(coeficiente negativo | datos)) en vez "
         "de un p-valor asintótico, ya señalado como poco confiable a este tamaño muestral en "
         "otras secciones de este pipeline."
     )
@@ -1426,7 +1546,7 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
 
 
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("17. Triangulación Machine Learning")
+    report.add_section_h1("19. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -1506,7 +1626,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("18. Conclusiones")
+    report.add_section_h1("20. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1689,6 +1809,8 @@ def main():
     sc    = _load_json(json_dir / "09_synthetic_control.json")
     arch  = _load_json(json_dir / "10_arch_lm_test.json")
     spec  = _load_json(json_dir / "11_spec_curve.json")
+    spat  = _load_json(json_dir / "12_spatial_diagnostics.json")
+    lscan = _load_json(json_dir / "13_causal_link_scan.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1726,6 +1848,12 @@ def main():
     report.add_page_break()
 
     build_spec_curve_section(report, spec, base_dir)
+    report.add_page_break()
+
+    build_spatial_section(report, spat, base_dir)
+    report.add_page_break()
+
+    build_link_scan_section(report, lscan, base_dir)
     report.add_page_break()
 
     build_cointegration_section(report, coint, base_dir)

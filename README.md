@@ -16,7 +16,7 @@ The project uses a longitudinal panel-data design with country and year effects.
 
 The main entry point of the repository is the econometric pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). This is the core reproducible system. All steps below are executed through the master runner in [econometric_pipeline/pipeline/run_pipeline.py](econometric_pipeline/pipeline/run_pipeline.py).
 
-The workflow proceeds in twelve stages:
+The workflow proceeds in fourteen stages:
 
 1. Data loading: the pipeline reads a clean panel dataset containing country-year observations.
 2. Cleaning and ETL: the data are validated, missingness is assessed, and institutional variables are standardized and combined into an index.
@@ -30,6 +30,8 @@ The workflow proceeds in twelve stages:
 10. Synthetic control: a "synthetic El Salvador" built from the other countries estimates the counterfactual voice-and-accountability path absent the post-2020 political-institutional shift, with placebo-in-space inference and robustness checks (leave-one-donor-out, placebo-in-time, a 2022 onset).
 11. Conditional-heteroskedasticity diagnostic: Engle's ARCH-LM test per country, to check whether a GARCH-type volatility model would have anything to estimate.
 12. Specification curve: EQ1 and EQ2 are re-estimated for every one of the 63 subsets of the six WGI dimensions used as the institution index, showing how much the conclusions depend on that choice.
+13. Spatial dependence: Pesaran CD and permutation-based Moran's I on the residuals, spillover (SLX) models with spatial weights matrices, and a check that the synthetic-control donors are not contaminated by El Salvador's neighbours.
+14. Causal-link scan: all 72 ordered links among nine panel variables, lagged and with the outcome's own lag as control, under false-discovery control and a placebo calibration, to see which links and chains other than the paper's carry evidence.
 
 ## Repository Structure
 
@@ -48,6 +50,8 @@ data_analyzer/
 │       ├── 09_synthetic_control.py
 │       ├── 10_arch_lm_test.py
 │       ├── 11_spec_curve.py
+│       ├── 12_spatial_diagnostics.py
+│       ├── 13_causal_link_scan.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -197,7 +201,7 @@ The study tests a sequential mechanism from violence to institutions to investme
 
 The honest summary is that **no link of the hypothesized chain is robustly significant on this panel**, and that the earlier 11-country significance of institutions → FDI and FDI → growth did not survive a larger, pre-specified sample. What does hold up:
 
-1. **A growth-ceiling pattern** (Module 08): violence lowers the achievable *upper* tail of growth (q=0.90: −1.36, 94% HDI [−2.39, −0.39]; q=0.95: −1.84, [−2.84, −0.89]), with no comparable effect for institutions.
+1. **A growth-ceiling pattern** (Module 08): violence lowers the achievable *upper* tail of growth (q=0.90: −1.39, 94% HDI [−2.53, −0.43]; q=0.95: −1.83, [−2.80, −0.98]), with no comparable effect for institutions.
 2. **El Salvador is the single country that breaks the violence–institutions relationship**: it is the only exclusion that flips the sign of the voice-and-accountability coefficient and the only one that makes the composite EQ1 coefficient significant under clustering. A synthetic-control exercise puts its 2024 voice-and-accountability score 10.3 points below its counterfactual, the most extreme gap of the 18 countries (p=0.056, the minimum attainable).
 3. **A long-run equilibrium between homicides and income per capita** (Module 07; Fisher-ADF p=0.0465, error-correction speed −0.098, p<0.001 clustered / 0.004 Driscoll–Kraay), though narrower than at 11 countries.
 4. **The institution-index finding**: significance of the index-dependent links varies widely with which WGI dimensions are averaged (63 definitions tested).
@@ -232,24 +236,24 @@ The exploratory pattern above was re-estimated as [Module 08](econometric_pipeli
 
 | Quantile | Frequentist coef. (LSDV) | Bayesian posterior mean | 94% HDI | P(β<0 \| data) |
 |---|---|---|---|---|
-| 0.05 | +2.21 (p=0.029) | +1.14 | [−0.001, 2.27] | 0.032 |
-| 0.10 | −0.30 (p=0.688) | −0.08 | [−0.94, 0.82] | 0.561 |
-| 0.25 | −0.29 (p=0.499) | −0.15 | [−0.85, 0.52] | 0.661 |
-| 0.50 (median) | −0.41 (p=0.290) | −0.41 | [−0.93, 0.12] | 0.938 |
-| 0.75 | −0.44 (p=0.247) | −0.65 | [−1.23, −0.05] | 0.984 |
-| 0.90 | −2.90 (p<0.001) | **−1.36** | **[−2.39, −0.39]** | **0.995** |
-| 0.95 | −2.29 (p=0.001) | **−1.84** | **[−2.84, −0.89]** | **1.000** |
+| 0.05 | +2.21 (p=0.029) | +1.13 | [0.13, 2.25] | 0.029 |
+| 0.10 | −0.30 (p=0.688) | −0.10 | [−0.98, 0.85] | 0.583 |
+| 0.25 | −0.29 (p=0.499) | −0.15 | [−0.77, 0.55] | 0.661 |
+| 0.50 (median) | −0.41 (p=0.290) | −0.41 | [−0.90, 0.11] | 0.938 |
+| 0.75 | −0.44 (p=0.247) | −0.67 | [−1.22, −0.03] | 0.985 |
+| 0.90 | −2.90 (p<0.001) | **−1.39** | **[−2.53, −0.43]** | **0.996** |
+| 0.95 | −2.29 (p<0.001) | **−1.83** | **[−2.80, −0.98]** | **0.999** |
 
-MCMC diagnostics are clean at every quantile (R-hat ≤ 1.009, effective sample size > 670, zero divergent transitions across 4 chains × 1,000 post-warmup draws). A secondary check repeating the model with `inst_avg` instead of violence at q=0.90/0.95 finds no ceiling effect (P(β<0|data) = 0.269 and 0.636 — essentially a coin flip), so the pattern is specific to violence.
+MCMC diagnostics are clean at every quantile (R-hat ≤ 1.008, effective sample size > 760, zero divergent transitions across 4 chains × 1,000 post-warmup draws). A secondary check repeating the model with `inst_avg` instead of violence at q=0.90/0.95 finds no ceiling effect (P(β<0|data) = 0.298 and 0.692 — essentially a coin flip), so the pattern is specific to violence.
 
 **Growth-Ceiling-at-Risk scenario.** Holding country and year at their average levels, the posterior answers the applied question: how much lower is the achievable growth ceiling when lagged violence moves from its empirical 10th to 90th percentile?
 
 | Quantile | Ceiling, low violence (p10) | Ceiling, high violence (p90) | Drop | 94% HDI (drop) | P(drop>0 \| data) |
 |---|---|---|---|---|---|
-| 0.90 | 8.16 pts | 5.70 pts | 2.46 pts | [0.70, 4.30] | 0.995 |
-| 0.95 | 10.29 pts | 6.98 pts | 3.31 pts | [1.60, 5.11] | 1.000 |
+| 0.90 | 8.20 pts | 5.69 pts | 2.51 pts | [0.77, 4.56] | 0.996 |
+| 0.95 | 10.30 pts | 7.00 pts | 3.29 pts | [1.78, 5.06] | 0.999 |
 
-**What changed from 11 to 18 countries.** At 11 countries the posterior means were −1.76 (q=0.90) and −2.08 (q=0.95), with a ceiling drop of 3.27 and 3.86 points; the effect is somewhat smaller on the larger panel but clearly intact. It is also less confined to the extreme upper tail than the 11-country result suggested: the posterior at q=0.75 now excludes zero (P=0.984) and the median is borderline (P=0.938), so the pattern is better described as a *gradient that strengthens toward the top of the distribution* than as a strictly "null at the median" effect.
+**What changed from 11 to 18 countries.** At 11 countries the posterior means were −1.76 (q=0.90) and −2.08 (q=0.95), with a ceiling drop of 3.27 and 3.86 points; the effect is somewhat smaller on the larger panel but clearly intact. It is also less confined to the extreme upper tail than the 11-country result suggested: the posterior at q=0.75 now excludes zero (P=0.985) and the median is borderline (P=0.938), so the pattern is better described as a *gradient that strengthens toward the top of the distribution* than as a strictly "null at the median" effect.
 
 Caveats: this remains exploratory — motivated by a scratch finding, not a pre-registered hypothesis. G=18 is small even for a hierarchical model; partial pooling regularizes but cannot manufacture information the data does not contain, and priors are weakly informative rather than flat. The Asymmetric Laplace likelihood targets one quantile at a time and does not itself guarantee monotonic quantiles in tau.
 
@@ -371,6 +375,33 @@ This upgrades the Bukele paradox from "El Salvador is the only country whose exc
 
 [Module 10](econometric_pipeline/pipeline/10_arch_lm_test.py) runs Engle's ARCH-LM test per country (the only valid unit for a time-series test), combining p-values with Fisher's method. On the 18-country panel there **is** evidence of conditional heteroskedasticity: in EQ1 residuals (combined p < 0.001; 11 of 18 countries individually significant), EQ2 residuals (p=0.003; 4 of 18), raw GDP growth (p=0.006; 4 of 18), the homicide rate in levels (16 of 18, though that series is I(1) so this is partly a trend artifact) and first-differenced homicides (p=0.016; 4 of 18); EQ3 residuals are borderline (p=0.082). This favors the heteroskedasticity-robust inference already used (clustered, Driscoll–Kraay and wild-bootstrap standard errors). It does **not** make a Markov-Switching GARCH model feasible: with T≈24 annual observations per country there is nowhere near enough data to estimate even a GARCH(1,1) reliably, let alone state-dependent variances and transition probabilities. A monthly series (for example El Salvador's homicide counts) would be the way to make that model viable.
 
+## Cross-Country Dependence and Spillovers (October 2026)
+
+Every earlier module treats the 18 countries as independent once fixed effects are removed. That assumption matters for the clustered/bootstrap inference and for the synthetic control (donors must not be affected by the treatment), and it is substantively doubtful for violence, which crosses borders. [Module 12](econometric_pipeline/pipeline/12_spatial_diagnostics.py) tests it with spatial weights matrices (land borders; inverse distance between capitals; four nearest neighbours), using permutation inference and a wild cluster bootstrap because N=18 is far too small for asymptotic spatial tests. It is the low-N analogue of letting information flow between neighbouring nodes in a graph neural network; a GNN itself is not estimable on 18 nodes without overfitting.
+
+- **Residual dependence.** EQ1 residuals show none (Pesaran CD adjusted for the −1/(N−1) artefact that removing year effects induces: p=0.867); EQ2 is borderline (p=0.050); EQ3 shows none on the CD test (p=0.593) but its residuals are more alike between neighbours than between non-neighbours (Moran's I: permutation p between 0.012 and 0.036 across the three weights matrices; neighbour-pair correlation test: p=0.049 for land borders, 0.026 when either country is among the other's four nearest capitals, 0.122 for capitals within 1,500 km). That points to regional growth shocks and weakens clustered inference for EQ3 specifically. 3 of 9 Moran tests and 2 of 9 neighbour-pair tests are significant at 5%, all in EQ3.
+- **No violence contagion.** A country's homicide rate does not respond to its neighbours' lagged homicide rate (inverse distance: θ=-0.010, p=0.93; contiguity: θ=+0.015, p=0.81).
+- **Spillover coefficients are not robust.** 2 of 10 spillover coefficients are significant at 5% (about 0.5 expected by chance): neighbours' lagged growth predicts own growth under inverse distance (θ=+0.57, p=0.032) but not under contiguity (p=0.20); neighbours' violence is associated with *higher* own institutional scores under inverse distance only (θ=+0.32, p=0.047; contiguity p=0.40), the opposite of contagion.
+- **Synthetic control.** El Salvador's land neighbours in the panel (GTM, HND) receive weight 0.000 in the synthetic counterfactual; donors within 1,500 km receive 0.147. Direct contamination of the Bukele-paradox result by neighbouring donors is therefore limited.
+
+**Caveats.** With 18 countries these tests have little power, so "not significant" is not "absent": the residual-correlation heat map shows visible regional blocks (Central America; the Andean–Southern Cone group) even where the permutation tests do not reject. Capital-city coordinates are approximate, and trade-based weights (the natural choice, used in the trade-GNN literature) would need an external bilateral data set (CEPII). Spatial-autoregressive (SAR) models were not estimated: fixed-effects ML on an unbalanced panel of 18 is not reliable, and the diagnostics above show no strong case for it.
+
+![Spatial dependence](econometric_pipeline/pipeline/figures/17_spatial_dependence.png)
+
+## A Disciplined Scan of Other Causal Links and Chains (October 2026)
+
+[Module 13](econometric_pipeline/pipeline/13_causal_link_scan.py) asks which links between nine panel variables (violence, institutions, FDI, growth, inflation, unemployment, exports, tourism, remittances) carry statistical evidence, and whether any compose into a chain. To limit false positives the family is fixed in advance (72 ordered pairs), the cause enters lagged one year, the outcome's own lag is a control (so a link must predict *changes*, not persistent levels), inference is by wild cluster bootstrap with country and year fixed effects, and multiplicity is controlled (Benjamini–Hochberg q=0.1; Holm). A placebo scan, repeated 20 times with each cause shuffled across years within country, measures the procedure's own false-positive rate.
+
+- 10 of 72 links are significant at 5% before correction, against about 3.6 expected by chance; **1 survives** false-discovery control and 0 survives Holm. In the placebo scans the false-positive rate at 5% was 0.053 on average (maximum 0.111) and the mean number of FDR survivors was 0.00.
+- The one survivor is **exports → unemployment** (coefficient -0.037, wild-bootstrap p≤0.001; it also holds without the lagged outcome and the reverse direction is not significant): higher exports (% of GDP) precede lower unemployment the following year.
+- Next strongest, none surviving correction: unemployment → inflation (p=0.005); remittances → exports (p=0.006); tourism → growth (p=0.013); institutions → exports (p=0.026); inflation → exports (p=0.032).
+- **No two surviving links compose a chain**, so no alternative chain is reported.
+- **Under this stricter specification the paper's own links do not survive either**: violence → institutions p=0.50, institutions → FDI p=0.34, FDI → growth p=0.044 (negative sign). Institutions are highly persistent, so the lagged outcome absorbs most of their variation. This is consistent with, and reinforces, the "fragile transmission chain" reading.
+
+These are lagged observational associations, not identified causal effects; surviving the filters means the association is not explained by country/year effects or by the outcome's persistence, nothing more.
+
+![Causal link map](econometric_pipeline/pipeline/figures/18_causal_link_map.png)
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).
@@ -391,6 +422,8 @@ The reproducible workflow is centered on the pipeline under [econometric_pipelin
 | [econometric_pipeline/pipeline/09_synthetic_control.py](econometric_pipeline/pipeline/09_synthetic_control.py) | Builds a "synthetic El Salvador" from a weighted combination of the other countries to estimate the counterfactual `voice_accountability` path absent the post-2020 political-institutional shift, with placebo-in-space inference (Abadie, Diamond & Hainmueller, 2010) and robustness checks: leave-one-donor-out, placebo-in-time, dropping donors with their own democratic deterioration, a 2022 onset, and a homicide first stage. | Enriched panel → synthetic-control JSON and two figures. | Econometrics (Causal) | Core |
 | [econometric_pipeline/pipeline/10_arch_lm_test.py](econometric_pipeline/pipeline/10_arch_lm_test.py) | Engle's ARCH-LM test (per country, Fisher-combined) for conditional heteroskedasticity in the FE residuals and raw series, to check whether a GARCH/MS-GARCH volatility model would have anything to estimate. | Enriched panel + FE residuals → ARCH-LM JSON and a subsection of the PDF report. | Diagnostics | Core |
 | [econometric_pipeline/pipeline/11_spec_curve.py](econometric_pipeline/pipeline/11_spec_curve.py) | Specification curve for the institution index: re-estimates EQ1 and EQ2 for every one of the 63 subsets of the six WGI dimensions, with clustered and Driscoll–Kraay standard errors. | Enriched panel → spec-curve JSON and figure. | Econometrics / Robustness | Core |
+| [econometric_pipeline/pipeline/12_spatial_diagnostics.py](econometric_pipeline/pipeline/12_spatial_diagnostics.py) | Cross-country dependence and spillovers: Pesaran CD, permutation Moran's I, neighbour-pair residual correlation, SLX spillover models (wild bootstrap), and a contamination check on the synthetic-control donors, with contiguity / inverse-distance / kNN weights matrices. | Enriched panel → spatial-diagnostics JSON and figure. | Econometrics / Robustness | Core |
+| [econometric_pipeline/pipeline/13_causal_link_scan.py](econometric_pipeline/pipeline/13_causal_link_scan.py) | Scan of all 72 ordered links among nine variables (lagged cause, lagged-outcome control, two-way FE, wild bootstrap) under Benjamini–Hochberg/Holm control and a within-country shuffle placebo; tests chains only when both links survive. | Enriched panel → link-scan JSON and link-map figure. | Econometrics / Exploration | Core |
 | [econometric_pipeline/pipeline/utils.py](econometric_pipeline/pipeline/utils.py) | Shared helpers for plotting, directory creation, output handling, formatting, and normalizing FE-result JSON lookups across equations (`get_fe_key_stats`). | None → reusable utility functions. | Utility | Core |
 | [econometric_pipeline/pipeline/research_report.py](econometric_pipeline/pipeline/research_report.py) | Builds the structured research report used by the pipeline runner. | Text/JSON sections → report objects and PDF-ready content. | Utility | Core |
 | [archive/legacy_scripts/01clean_panel.py](archive/legacy_scripts/01clean_panel.py) | Early script for cleaning and preparing a panel-ready dataset from a broader research file. | Raw research dataset → panel-ready CSV. | ETL | Archived (auxiliary) |

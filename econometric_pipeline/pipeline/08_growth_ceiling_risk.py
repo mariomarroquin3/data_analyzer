@@ -389,7 +389,7 @@ ax.axvspan(0.875, 0.975, color="#DC2626", alpha=0.06, label="Growth-ceiling regi
 ax.set_xlabel("Quantile of GDP growth (τ)")
 ax.set_ylabel(f"Coefficient on {KEY_X}")
 ax.set_title("Growth-Ceiling Effect of Violence: Frequentist vs. Bayesian Hierarchical\n"
-             "(11-country panel; partial pooling regularises country intercepts)",
+             f"({len(COUNTRIES)}-country panel; partial pooling regularises country intercepts)",
              fontsize=10.5, fontweight="bold")
 ax.legend(fontsize=8, loc="lower left")
 fig.tight_layout()

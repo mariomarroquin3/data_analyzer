@@ -1,0 +1,1758 @@
+{
+  "nodes": {
+    "violence": "homicide_rate_log",
+    "institutions": "inst_avg",
+    "FDI": "fdi_percent_gdp",
+    "growth": "gdp_growth",
+    "inflation": "inflation",
+    "unemployment": "unemployment",
+    "exports": "exports_percent_gdp",
+    "tourism": "tourist_arrivals_log",
+    "remittances": "remittances_percent_gdp"
+  },
+  "n_links": 72,
+  "links": {
+    "violence->institutions": {
+      "cause": "violence",
+      "effect": "institutions",
+      "primary": {
+        "coef": -0.011689478590825397,
+        "t": -0.7340961840763075,
+        "p_cl": 0.47289445457599233,
+        "p_wild": 0.504,
+        "n_obs": 364,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.13053556278009948,
+        "t": -1.4686243056295956,
+        "p_cl": 0.16019564853842716,
+        "p_wild": 0.142,
+        "n_obs": 379,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.362
+    },
+    "violence->FDI": {
+      "cause": "violence",
+      "effect": "FDI",
+      "primary": {
+        "coef": -0.5852074059801539,
+        "t": -2.0352083115890562,
+        "p_cl": 0.05772826077256448,
+        "p_wild": 0.036,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.7733966635527383,
+        "t": -2.3712899969116794,
+        "p_cl": 0.02980507184641383,
+        "p_wild": 0.007,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.277
+    },
+    "violence->growth": {
+      "cause": "violence",
+      "effect": "growth",
+      "primary": {
+        "coef": -0.4033050984289327,
+        "t": -1.296100272527258,
+        "p_cl": 0.21226162196210627,
+        "p_wild": 0.19,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.40184318884915393,
+        "t": -1.3130688530009242,
+        "p_cl": 0.20660877998874846,
+        "p_wild": 0.185,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.068
+    },
+    "violence->inflation": {
+      "cause": "violence",
+      "effect": "inflation",
+      "primary": {
+        "coef": 0.6716853528584804,
+        "t": 0.8833798944165889,
+        "p_cl": 0.3893529445731265,
+        "p_wild": 0.507,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 1.6102346281965805,
+        "t": 1.1240574084343358,
+        "p_cl": 0.276611149168065,
+        "p_wild": 0.302,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.892
+    },
+    "violence->unemployment": {
+      "cause": "violence",
+      "effect": "unemployment",
+      "primary": {
+        "coef": 0.1601288666101759,
+        "t": 1.1552073969592167,
+        "p_cl": 0.26398511111207706,
+        "p_wild": 0.233,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.7312257957749002,
+        "t": 1.83858397346308,
+        "p_cl": 0.08351283604620115,
+        "p_wild": 0.053,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.904
+    },
+    "violence->exports": {
+      "cause": "violence",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.5327529365269388,
+        "t": -1.0284183932421564,
+        "p_cl": 0.3181642565860291,
+        "p_wild": 0.312,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.4390546634612476,
+        "t": 0.3670648089958373,
+        "p_cl": 0.71809996838823,
+        "p_wild": 0.714,
+        "n_obs": 394,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.134
+    },
+    "violence->tourism": {
+      "cause": "violence",
+      "effect": "tourism",
+      "primary": {
+        "coef": -0.030765848726102243,
+        "t": -0.8494953935023718,
+        "p_cl": 0.4074102399012705,
+        "p_wild": 0.431,
+        "n_obs": 321,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.11533314674958743,
+        "t": -0.8580125720533082,
+        "p_cl": 0.4028208215077716,
+        "p_wild": 0.477,
+        "n_obs": 322,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.613
+    },
+    "violence->remittances": {
+      "cause": "violence",
+      "effect": "remittances",
+      "primary": {
+        "coef": -0.2772476812857533,
+        "t": -1.558267933731146,
+        "p_cl": 0.13759046976734265,
+        "p_wild": 0.095,
+        "n_obs": 369,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -1.058042576082209,
+        "t": -1.8841023400346735,
+        "p_cl": 0.07677013893442998,
+        "p_wild": 0.178,
+        "n_obs": 372,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.073
+    },
+    "institutions->violence": {
+      "cause": "institutions",
+      "effect": "violence",
+      "primary": {
+        "coef": 0.1767546097817616,
+        "t": 1.3700335092488738,
+        "p_cl": 0.1885002343375137,
+        "p_wild": 0.362,
+        "n_obs": 355,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.3462017305499137,
+        "t": -1.3714772129906092,
+        "p_cl": 0.18805838853341353,
+        "p_wild": 0.231,
+        "n_obs": 365,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.504
+    },
+    "institutions->FDI": {
+      "cause": "institutions",
+      "effect": "FDI",
+      "primary": {
+        "coef": 0.4841636107838275,
+        "t": 1.0037071014642982,
+        "p_cl": 0.3295934654540823,
+        "p_wild": 0.338,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.6802153400583285,
+        "t": 1.0822501408693181,
+        "p_cl": 0.29425441592789436,
+        "p_wild": 0.305,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.899
+    },
+    "institutions->growth": {
+      "cause": "institutions",
+      "effect": "growth",
+      "primary": {
+        "coef": -1.0908709081031807,
+        "t": -1.437266507857605,
+        "p_cl": 0.16879374170212832,
+        "p_wild": 0.164,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -1.0917857833750766,
+        "t": -1.4556204819138556,
+        "p_cl": 0.1637164656939842,
+        "p_wild": 0.159,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.579
+    },
+    "institutions->inflation": {
+      "cause": "institutions",
+      "effect": "inflation",
+      "primary": {
+        "coef": -0.0680752534225041,
+        "t": -0.06523869200074,
+        "p_cl": 0.9487450013770422,
+        "p_wild": 0.939,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.8456387782048468,
+        "t": -0.552537706575565,
+        "p_cl": 0.587772119436432,
+        "p_wild": 0.591,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.098
+    },
+    "institutions->unemployment": {
+      "cause": "institutions",
+      "effect": "unemployment",
+      "primary": {
+        "coef": 0.35375468535612076,
+        "t": 1.3716435826244338,
+        "p_cl": 0.18800752463577913,
+        "p_wild": 0.197,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.35808240083295856,
+        "t": 0.5950569527933901,
+        "p_cl": 0.5596436943463282,
+        "p_wild": 0.536,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.496
+    },
+    "institutions->exports": {
+      "cause": "institutions",
+      "effect": "exports",
+      "primary": {
+        "coef": 1.6849025906505113,
+        "t": 2.281701635241145,
+        "p_cl": 0.03566467627197649,
+        "p_wild": 0.026,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.035859660532631524,
+        "t": -0.010083555312474565,
+        "p_cl": 0.9920720128352676,
+        "p_wild": 0.993,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.428
+    },
+    "institutions->tourism": {
+      "cause": "institutions",
+      "effect": "tourism",
+      "primary": {
+        "coef": 0.0770635679491472,
+        "t": 1.6402611554296094,
+        "p_cl": 0.1193218121636069,
+        "p_wild": 0.117,
+        "n_obs": 327,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.288240449475151,
+        "t": 1.5383032897601134,
+        "p_cl": 0.14237919275318547,
+        "p_wild": 0.199,
+        "n_obs": 329,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.932
+    },
+    "institutions->remittances": {
+      "cause": "institutions",
+      "effect": "remittances",
+      "primary": {
+        "coef": -0.46366128730424166,
+        "t": -1.595139619830436,
+        "p_cl": 0.12910213788049638,
+        "p_wild": 0.061,
+        "n_obs": 389,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -2.598709238506859,
+        "t": -1.6996144150796824,
+        "p_cl": 0.10742601664789894,
+        "p_wild": 0.119,
+        "n_obs": 392,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.166
+    },
+    "FDI->violence": {
+      "cause": "FDI",
+      "effect": "violence",
+      "primary": {
+        "coef": 0.006966431819449441,
+        "t": 1.2475220955454676,
+        "p_cl": 0.22911845405216089,
+        "p_wild": 0.277,
+        "n_obs": 370,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.011829030254561633,
+        "t": -1.1096889405185262,
+        "p_cl": 0.2825842384339406,
+        "p_wild": 0.319,
+        "n_obs": 380,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.036
+    },
+    "FDI->institutions": {
+      "cause": "FDI",
+      "effect": "institutions",
+      "primary": {
+        "coef": 0.00022814147715955328,
+        "t": 0.13406590021629453,
+        "p_cl": 0.8949248421571564,
+        "p_wild": 0.899,
+        "n_obs": 399,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.005574228357834387,
+        "t": 0.8842909878317715,
+        "p_cl": 0.38887484504260866,
+        "p_wild": 0.37,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.338
+    },
+    "FDI->growth": {
+      "cause": "FDI",
+      "effect": "growth",
+      "primary": {
+        "coef": -0.05970048842899473,
+        "t": -2.085413385383493,
+        "p_cl": 0.05241731304038348,
+        "p_wild": 0.044,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.058906485049867424,
+        "t": -1.8687541380517827,
+        "p_cl": 0.07898772509606686,
+        "p_wild": 0.066,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.946
+    },
+    "FDI->inflation": {
+      "cause": "FDI",
+      "effect": "inflation",
+      "primary": {
+        "coef": -0.07452990792961306,
+        "t": -1.2189332697963564,
+        "p_cl": 0.23951417346149878,
+        "p_wild": 0.218,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.012571614815131209,
+        "t": -0.16907380244551934,
+        "p_cl": 0.8677340525083529,
+        "p_wild": 0.868,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.379
+    },
+    "FDI->unemployment": {
+      "cause": "FDI",
+      "effect": "unemployment",
+      "primary": {
+        "coef": 0.004774596470484767,
+        "t": 0.18685228869096623,
+        "p_cl": 0.8539882214918881,
+        "p_wild": 0.871,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.07209858801363359,
+        "t": -1.8292051859256706,
+        "p_cl": 0.0849654122420527,
+        "p_wild": 0.143,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.456
+    },
+    "FDI->exports": {
+      "cause": "FDI",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.030548492145180427,
+        "t": -0.40787988936329694,
+        "p_cl": 0.6884527433894692,
+        "p_wild": 0.682,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.29638856861083945,
+        "t": 1.2782402403280329,
+        "p_cl": 0.2183422434715873,
+        "p_wild": 0.259,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.04
+    },
+    "FDI->tourism": {
+      "cause": "FDI",
+      "effect": "tourism",
+      "primary": {
+        "coef": 0.0021059639430772406,
+        "t": 0.5461104266676506,
+        "p_cl": 0.5920854444939955,
+        "p_wild": 0.609,
+        "n_obs": 342,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.007357771814345144,
+        "t": 1.1733127164367925,
+        "p_cl": 0.25684820442886463,
+        "p_wild": 0.24,
+        "n_obs": 344,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.961
+    },
+    "FDI->remittances": {
+      "cause": "FDI",
+      "effect": "remittances",
+      "primary": {
+        "coef": 0.0035748026846614414,
+        "t": 0.2186290668511028,
+        "p_cl": 0.8295421352686794,
+        "p_wild": 0.845,
+        "n_obs": 403,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.15067122644765577,
+        "t": 2.0737244500204635,
+        "p_cl": 0.05361253721726774,
+        "p_wild": 0.062,
+        "n_obs": 406,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.416
+    },
+    "growth->violence": {
+      "cause": "growth",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.006378305747173155,
+        "t": -2.0333589226794877,
+        "p_cl": 0.057932902129752835,
+        "p_wild": 0.068,
+        "n_obs": 370,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.010718319437922653,
+        "t": -2.183789248653025,
+        "p_cl": 0.04328145763527605,
+        "p_wild": 0.042,
+        "n_obs": 380,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.19
+    },
+    "growth->institutions": {
+      "cause": "growth",
+      "effect": "institutions",
+      "primary": {
+        "coef": 0.0009199765682424908,
+        "t": 0.5891584506929074,
+        "p_cl": 0.5635030083588684,
+        "p_wild": 0.579,
+        "n_obs": 399,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -9.65687005222436e-05,
+        "t": -0.021826642089542013,
+        "p_cl": 0.9828403880286701,
+        "p_wild": 0.982,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.164
+    },
+    "growth->FDI": {
+      "cause": "growth",
+      "effect": "FDI",
+      "primary": {
+        "coef": -0.0018589867975749201,
+        "t": -0.07609856945097614,
+        "p_cl": 0.9402290797276849,
+        "p_wild": 0.946,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.009569084682945412,
+        "t": 0.40302081105849746,
+        "p_cl": 0.6919561900765601,
+        "p_wild": 0.689,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.044
+    },
+    "growth->inflation": {
+      "cause": "growth",
+      "effect": "inflation",
+      "primary": {
+        "coef": -0.14620808481583328,
+        "t": -1.4477476198063572,
+        "p_cl": 0.1658787840929772,
+        "p_wild": 0.207,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.24922599007103768,
+        "t": -1.7869079570944322,
+        "p_cl": 0.09179617350830932,
+        "p_wild": 0.097,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.935
+    },
+    "growth->unemployment": {
+      "cause": "growth",
+      "effect": "unemployment",
+      "primary": {
+        "coef": -0.0370018631435888,
+        "t": -1.5597535897331174,
+        "p_cl": 0.13723959111937176,
+        "p_wild": 0.126,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.09773408670788594,
+        "t": -2.372578227431952,
+        "p_cl": 0.029727784458026273,
+        "p_wild": 0.004,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.167
+    },
+    "growth->exports": {
+      "cause": "growth",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.02869694099979469,
+        "t": -0.4306352808079215,
+        "p_cl": 0.6721437813668857,
+        "p_wild": 0.673,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.15944728323877477,
+        "t": 1.4865017557928177,
+        "p_cl": 0.15545735596304386,
+        "p_wild": 0.176,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.72
+    },
+    "growth->tourism": {
+      "cause": "growth",
+      "effect": "tourism",
+      "primary": {
+        "coef": -0.0012629485231627495,
+        "t": -0.32400598975167105,
+        "p_cl": 0.7498857907644099,
+        "p_wild": 0.759,
+        "n_obs": 342,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.00617851735896872,
+        "t": -1.0005169943395529,
+        "p_cl": 0.3310898112549635,
+        "p_wild": 0.345,
+        "n_obs": 344,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.013
+    },
+    "growth->remittances": {
+      "cause": "growth",
+      "effect": "remittances",
+      "primary": {
+        "coef": 0.005751789388789496,
+        "t": 0.3650106599365538,
+        "p_cl": 0.7196048561090793,
+        "p_wild": 0.735,
+        "n_obs": 403,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.01887540714506855,
+        "t": 0.5707767315292297,
+        "p_cl": 0.5756189671180891,
+        "p_wild": 0.551,
+        "n_obs": 406,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.363
+    },
+    "inflation->violence": {
+      "cause": "inflation",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.0004733357555328432,
+        "t": -0.20982275984215223,
+        "p_cl": 0.8363000389198529,
+        "p_wild": 0.892,
+        "n_obs": 370,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.0066332224853072035,
+        "t": 1.0530153599364644,
+        "p_cl": 0.3070718212879819,
+        "p_wild": 0.254,
+        "n_obs": 380,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.507
+    },
+    "inflation->institutions": {
+      "cause": "inflation",
+      "effect": "institutions",
+      "primary": {
+        "coef": -0.002402037860331161,
+        "t": -2.1930902444140767,
+        "p_cl": 0.04249812302185763,
+        "p_wild": 0.098,
+        "n_obs": 399,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.007247885109445372,
+        "t": -3.6452589537566413,
+        "p_cl": 0.002002208828970549,
+        "p_wild": 0.064,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.939
+    },
+    "inflation->FDI": {
+      "cause": "inflation",
+      "effect": "FDI",
+      "primary": {
+        "coef": 0.02517426551881851,
+        "t": 1.8177080409678634,
+        "p_cl": 0.08677641169571476,
+        "p_wild": 0.379,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.03029537941683854,
+        "t": 2.158097636835508,
+        "p_cl": 0.04551474239839913,
+        "p_wild": 0.278,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.218
+    },
+    "inflation->growth": {
+      "cause": "inflation",
+      "effect": "growth",
+      "primary": {
+        "coef": 0.002975413222957587,
+        "t": 0.08395225784893476,
+        "p_cl": 0.9340750811699172,
+        "p_wild": 0.935,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.0009658370902014179,
+        "t": 0.02842335013741551,
+        "p_cl": 0.9776555124575589,
+        "p_wild": 0.978,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.207
+    },
+    "inflation->unemployment": {
+      "cause": "inflation",
+      "effect": "unemployment",
+      "primary": {
+        "coef": -0.0008248159229444542,
+        "t": -0.17534814620996234,
+        "p_cl": 0.8628776810116341,
+        "p_wild": 0.877,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.018620727381273107,
+        "t": -1.535238359938001,
+        "p_cl": 0.14312655967750826,
+        "p_wild": 0.061,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.005
+    },
+    "inflation->exports": {
+      "cause": "inflation",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.12570592797115945,
+        "t": -5.902577399200049,
+        "p_cl": 1.7385311136525066e-05,
+        "p_wild": 0.032,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.06042351773265142,
+        "t": -1.6070799549598282,
+        "p_cl": 0.1264500481711341,
+        "p_wild": 0.416,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.843
+    },
+    "inflation->tourism": {
+      "cause": "inflation",
+      "effect": "tourism",
+      "primary": {
+        "coef": -8.304782475062567e-05,
+        "t": -0.11367141852774251,
+        "p_cl": 0.9108299169947487,
+        "p_wild": 0.913,
+        "n_obs": 342,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.0006797871752470566,
+        "t": 0.4163875519021021,
+        "p_cl": 0.6823361864158111,
+        "p_wild": 0.695,
+        "n_obs": 344,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.373
+    },
+    "inflation->remittances": {
+      "cause": "inflation",
+      "effect": "remittances",
+      "primary": {
+        "coef": -0.03495796755582726,
+        "t": -2.072924609906523,
+        "p_cl": 0.053695222333636154,
+        "p_wild": 0.043,
+        "n_obs": 403,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.056494304148377035,
+        "t": 3.8148341487712947,
+        "p_cl": 0.0013855014174689378,
+        "p_wild": 0.064,
+        "n_obs": 406,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.304
+    },
+    "unemployment->violence": {
+      "cause": "unemployment",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.0009071603019708371,
+        "t": -0.1111457160891002,
+        "p_cl": 0.912802498622104,
+        "p_wild": 0.904,
+        "n_obs": 370,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.03370100465631135,
+        "t": 1.4575840778887217,
+        "p_cl": 0.1631807762949457,
+        "p_wild": 0.235,
+        "n_obs": 380,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.233
+    },
+    "unemployment->institutions": {
+      "cause": "unemployment",
+      "effect": "institutions",
+      "primary": {
+        "coef": 0.0032053408890663723,
+        "t": 0.6580419598066063,
+        "p_cl": 0.519323629468649,
+        "p_wild": 0.496,
+        "n_obs": 399,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.005794327603659415,
+        "t": 0.49197783738233797,
+        "p_cl": 0.629027523541134,
+        "p_wild": 0.635,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.197
+    },
+    "unemployment->FDI": {
+      "cause": "unemployment",
+      "effect": "FDI",
+      "primary": {
+        "coef": -0.0439110984602181,
+        "t": -0.757194987129305,
+        "p_cl": 0.4593001857338837,
+        "p_wild": 0.456,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.0957426440451836,
+        "t": -1.2141006981949278,
+        "p_cl": 0.24130674485551398,
+        "p_wild": 0.249,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.871
+    },
+    "unemployment->growth": {
+      "cause": "unemployment",
+      "effect": "growth",
+      "primary": {
+        "coef": 0.14097779007263042,
+        "t": 1.3625236395794615,
+        "p_cl": 0.19081210559744072,
+        "p_wild": 0.167,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.12857119463680014,
+        "t": 1.202101971599414,
+        "p_cl": 0.2458019829674748,
+        "p_wild": 0.233,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.126
+    },
+    "unemployment->inflation": {
+      "cause": "unemployment",
+      "effect": "inflation",
+      "primary": {
+        "coef": -0.3124644613320069,
+        "t": -3.148393676933076,
+        "p_cl": 0.00586317935109875,
+        "p_wild": 0.005,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.4485693320114945,
+        "t": -3.3448747217276047,
+        "p_cl": 0.0038392975790102453,
+        "p_wild": 0.003,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.877
+    },
+    "unemployment->exports": {
+      "cause": "unemployment",
+      "effect": "exports",
+      "primary": {
+        "coef": 0.04535861131547879,
+        "t": 0.5112964487045709,
+        "p_cl": 0.6157200745387785,
+        "p_wild": 0.63,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.5247574175609232,
+        "t": -2.0449390840148007,
+        "p_cl": 0.056662261566615135,
+        "p_wild": 0.051,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.001
+    },
+    "unemployment->tourism": {
+      "cause": "unemployment",
+      "effect": "tourism",
+      "primary": {
+        "coef": -0.007110687997994787,
+        "t": -1.2316336634838685,
+        "p_cl": 0.23485196221469243,
+        "p_wild": 0.285,
+        "n_obs": 342,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.022488482726244114,
+        "t": -1.3726609764659146,
+        "p_cl": 0.18769671925247902,
+        "p_wild": 0.21,
+        "n_obs": 344,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.23
+    },
+    "unemployment->remittances": {
+      "cause": "unemployment",
+      "effect": "remittances",
+      "primary": {
+        "coef": -0.04514958367746554,
+        "t": -1.2003720098106734,
+        "p_cl": 0.24645534828208585,
+        "p_wild": 0.284,
+        "n_obs": 403,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.10215238285882582,
+        "t": -0.8469459179753606,
+        "p_cl": 0.40879059170514476,
+        "p_wild": 0.429,
+        "n_obs": 406,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.307
+    },
+    "exports->violence": {
+      "cause": "exports",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.0038365116723200806,
+        "t": -1.6057136147829079,
+        "p_cl": 0.1267511685219856,
+        "p_wild": 0.134,
+        "n_obs": 370,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.00239816483040049,
+        "t": 0.34335702945221586,
+        "p_cl": 0.7355395376138525,
+        "p_wild": 0.748,
+        "n_obs": 380,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.312
+    },
+    "exports->institutions": {
+      "cause": "exports",
+      "effect": "institutions",
+      "primary": {
+        "coef": -0.001398966457212773,
+        "t": -1.022134071129653,
+        "p_cl": 0.3210436636331153,
+        "p_wild": 0.428,
+        "n_obs": 399,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.004446575113293926,
+        "t": -0.7193106644666605,
+        "p_cl": 0.4817215782377737,
+        "p_wild": 0.638,
+        "n_obs": 414,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.026
+    },
+    "exports->FDI": {
+      "cause": "exports",
+      "effect": "FDI",
+      "primary": {
+        "coef": 0.051031346102103324,
+        "t": 2.761473602338703,
+        "p_cl": 0.013343038278011284,
+        "p_wild": 0.04,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.07120581677579779,
+        "t": 2.9447679574593444,
+        "p_cl": 0.009059605832063507,
+        "p_wild": 0.039,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.682
+    },
+    "exports->growth": {
+      "cause": "exports",
+      "effect": "growth",
+      "primary": {
+        "coef": 0.013956466613800953,
+        "t": 0.4290098983597438,
+        "p_cl": 0.6733032646093885,
+        "p_wild": 0.72,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.015209806472944672,
+        "t": 0.4713886092087511,
+        "p_cl": 0.6433562017147738,
+        "p_wild": 0.693,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.673
+    },
+    "exports->inflation": {
+      "cause": "exports",
+      "effect": "inflation",
+      "primary": {
+        "coef": 0.010575730655203836,
+        "t": 0.21989408311688005,
+        "p_cl": 0.8285724849440728,
+        "p_wild": 0.843,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.057768768458080474,
+        "t": 0.809271295833471,
+        "p_cl": 0.4295409679129156,
+        "p_wild": 0.494,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.032
+    },
+    "exports->unemployment": {
+      "cause": "exports",
+      "effect": "unemployment",
+      "primary": {
+        "coef": -0.037209381435599036,
+        "t": -4.633218983422197,
+        "p_cl": 0.00023764302420823503,
+        "p_wild": 0.001,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.08712272339688606,
+        "t": -4.684167748279827,
+        "p_cl": 0.00021325314459182606,
+        "p_wild": 0.008,
+        "n_obs": 429,
+        "n_countries": 18
+      },
+      "bh_survives": true,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.63
+    },
+    "exports->tourism": {
+      "cause": "exports",
+      "effect": "tourism",
+      "primary": {
+        "coef": 0.0008360785131242368,
+        "t": 0.691668274362394,
+        "p_cl": 0.4984839189443132,
+        "p_wild": 0.525,
+        "n_obs": 342,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.0003067777427031409,
+        "t": -0.09038856621078444,
+        "p_cl": 0.929034897073871,
+        "p_wild": 0.934,
+        "n_obs": 344,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.796
+    },
+    "exports->remittances": {
+      "cause": "exports",
+      "effect": "remittances",
+      "primary": {
+        "coef": 0.027811484119046045,
+        "t": 1.536900540291615,
+        "p_cl": 0.14272083966308577,
+        "p_wild": 0.237,
+        "n_obs": 403,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.060107037020147386,
+        "t": 0.9170743202384566,
+        "p_cl": 0.3719313248721225,
+        "p_wild": 0.578,
+        "n_obs": 406,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.006
+    },
+    "tourism->violence": {
+      "cause": "tourism",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.029851298293839215,
+        "t": -0.5073646655167188,
+        "p_cl": 0.6184175124711411,
+        "p_wild": 0.613,
+        "n_obs": 331,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.17693034826397688,
+        "t": -0.797590110478137,
+        "p_cl": 0.436108128841789,
+        "p_wild": 0.479,
+        "n_obs": 339,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.431
+    },
+    "tourism->institutions": {
+      "cause": "tourism",
+      "effect": "institutions",
+      "primary": {
+        "coef": 0.0031272455282748217,
+        "t": 0.13480928896526986,
+        "p_cl": 0.894345920542942,
+        "p_wild": 0.932,
+        "n_obs": 330,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.21720622103165607,
+        "t": 1.6032862816673075,
+        "p_cl": 0.12728761542135386,
+        "p_wild": 0.223,
+        "n_obs": 345,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.117
+    },
+    "tourism->FDI": {
+      "cause": "tourism",
+      "effect": "FDI",
+      "primary": {
+        "coef": -0.016330352499502338,
+        "t": -0.04009142704445362,
+        "p_cl": 0.9684873161035399,
+        "p_wild": 0.961,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.21364501096814578,
+        "t": 0.4342604457606047,
+        "p_cl": 0.6695607975407384,
+        "p_wild": 0.673,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.609
+    },
+    "tourism->growth": {
+      "cause": "tourism",
+      "effect": "growth",
+      "primary": {
+        "coef": -2.2574097270989952,
+        "t": -3.1480909941716564,
+        "p_cl": 0.005866991361535963,
+        "p_wild": 0.013,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -2.2074986078546357,
+        "t": -3.082443620831133,
+        "p_cl": 0.006753793856219689,
+        "p_wild": 0.01,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.759
+    },
+    "tourism->inflation": {
+      "cause": "tourism",
+      "effect": "inflation",
+      "primary": {
+        "coef": 0.9022459457527362,
+        "t": 0.9505330351468425,
+        "p_cl": 0.3551606694016773,
+        "p_wild": 0.373,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 1.0486999141768973,
+        "t": 0.7788244794722378,
+        "p_cl": 0.446789415640374,
+        "p_wild": 0.46,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.913
+    },
+    "tourism->unemployment": {
+      "cause": "tourism",
+      "effect": "unemployment",
+      "primary": {
+        "coef": 0.41857918755336526,
+        "t": 1.3878825020141032,
+        "p_cl": 0.18309586569995198,
+        "p_wild": 0.23,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.5523591180124674,
+        "t": -1.4309163626158972,
+        "p_cl": 0.17058010295361495,
+        "p_wild": 0.209,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.285
+    },
+    "tourism->exports": {
+      "cause": "tourism",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.16855456741241617,
+        "t": -0.3085804292753511,
+        "p_cl": 0.7613900811071014,
+        "p_wild": 0.796,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.4062532146697528,
+        "t": -0.22026878468196134,
+        "p_cl": 0.8282853262378361,
+        "p_wild": 0.837,
+        "n_obs": 360,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.525
+    },
+    "tourism->remittances": {
+      "cause": "tourism",
+      "effect": "remittances",
+      "primary": {
+        "coef": -0.2628138452301474,
+        "t": -2.314402725573455,
+        "p_cl": 0.033411484041554536,
+        "p_wild": 0.064,
+        "n_obs": 338,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.04215656617847087,
+        "t": 0.058226911196524726,
+        "p_cl": 0.954246846038306,
+        "p_wild": 0.959,
+        "n_obs": 341,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.976
+    },
+    "remittances->violence": {
+      "cause": "remittances",
+      "effect": "violence",
+      "primary": {
+        "coef": -0.015004043731011708,
+        "t": -1.4808976293061424,
+        "p_cl": 0.15693006540862228,
+        "p_wild": 0.073,
+        "n_obs": 345,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.038222956289040606,
+        "t": -1.3161493722444337,
+        "p_cl": 0.20559543422071574,
+        "p_wild": 0.271,
+        "n_obs": 355,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.095
+    },
+    "remittances->institutions": {
+      "cause": "remittances",
+      "effect": "institutions",
+      "primary": {
+        "coef": -0.00520526750502534,
+        "t": -1.5393435079054203,
+        "p_cl": 0.14212628429599436,
+        "p_wild": 0.166,
+        "n_obs": 377,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.02620646572654901,
+        "t": -1.9768221189506414,
+        "p_cl": 0.06451405446517518,
+        "p_wild": 0.085,
+        "n_obs": 391,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.061
+    },
+    "remittances->FDI": {
+      "cause": "remittances",
+      "effect": "FDI",
+      "primary": {
+        "coef": 0.04884032686647141,
+        "t": 0.8947317999218306,
+        "p_cl": 0.38342382830217303,
+        "p_wild": 0.416,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.09284607745119793,
+        "t": 1.190778523179017,
+        "p_cl": 0.25010266852603114,
+        "p_wild": 0.291,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.845
+    },
+    "remittances->growth": {
+      "cause": "remittances",
+      "effect": "growth",
+      "primary": {
+        "coef": 0.0662507314742062,
+        "t": 0.9132130075419861,
+        "p_cl": 0.37390070279716725,
+        "p_wild": 0.363,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.06517926119313464,
+        "t": 0.8918627736338612,
+        "p_cl": 0.3849166069394696,
+        "p_wild": 0.378,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.735
+    },
+    "remittances->inflation": {
+      "cause": "remittances",
+      "effect": "inflation",
+      "primary": {
+        "coef": 0.14943186405538664,
+        "t": 1.0655636707996885,
+        "p_cl": 0.3015216317652086,
+        "p_wild": 0.304,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": 0.49951759835158066,
+        "t": 1.7411611998037897,
+        "p_cl": 0.09972057849388871,
+        "p_wild": 0.079,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": true,
+      "reverse_p_wild": 0.043
+    },
+    "remittances->unemployment": {
+      "cause": "remittances",
+      "effect": "unemployment",
+      "primary": {
+        "coef": -0.024555035195679073,
+        "t": -1.2332536571426251,
+        "p_cl": 0.2342623447538525,
+        "p_wild": 0.307,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.050640573139105964,
+        "t": -1.0433809175097337,
+        "p_cl": 0.3113829766481287,
+        "p_wild": 0.284,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.284
+    },
+    "remittances->exports": {
+      "cause": "remittances",
+      "effect": "exports",
+      "primary": {
+        "coef": -0.23050501953347113,
+        "t": -3.642349326754098,
+        "p_cl": 0.002014896442941534,
+        "p_wild": 0.006,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "no_lagged_outcome": {
+        "coef": -0.07593158234714054,
+        "t": -0.21997000500325053,
+        "p_cl": 0.8285142989385234,
+        "p_wild": 0.841,
+        "n_obs": 404,
+        "n_countries": 18
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.237
+    },
+    "remittances->tourism": {
+      "cause": "remittances",
+      "effect": "tourism",
+      "primary": {
+        "coef": 0.00015359640112445422,
+        "t": 0.024633170865239525,
+        "p_cl": 0.9806521699812605,
+        "p_wild": 0.976,
+        "n_obs": 320,
+        "n_countries": 17
+      },
+      "no_lagged_outcome": {
+        "coef": 0.0056547098959844385,
+        "t": 0.351515417947474,
+        "p_cl": 0.729788131521112,
+        "p_wild": 0.751,
+        "n_obs": 321,
+        "n_countries": 17
+      },
+      "bh_survives": false,
+      "holm_survives": false,
+      "alt_agrees": false,
+      "reverse_p_wild": 0.064
+    }
+  },
+  "summary": {
+    "n_raw_sig_05": 10,
+    "expected_by_chance": 3.6,
+    "n_bh_survivors": 1,
+    "n_holm_survivors": 0,
+    "fdr_q": 0.1,
+    "placebo_false_positive_rate_mean": 0.05277777777777777,
+    "placebo_false_positive_rate_max": 0.1111111111111111,
+    "placebo_bh_survivors_mean": 0.0,
+    "placebo_bh_survivors_max": 0,
+    "n_placebo_scans": 20,
+    "n_bootstrap": 999
+  },
+  "chains": []
+}

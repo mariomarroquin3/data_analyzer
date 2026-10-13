@@ -347,6 +347,145 @@ over Rademacher weights when G (number of clusters) is small (G < 20).
 """
 
 
+# ── Fast two-way FE regression with wild cluster bootstrap (FWL) ─────────
+def fe_wild_test(
+    work: pd.DataFrame,
+    dep: str,
+    key: str,
+    exog: List[str],
+    B: int = 999,
+    seed: int = 42,
+    entity_effects: bool = True,
+    time_effects: bool = True,
+) -> Dict[str, float]:
+    """
+    Coefficient on `key` in a fixed-effects regression of `dep` on `exog`
+    (`key` must be in `exog`), with cluster-robust (by country) and
+    restricted wild cluster bootstrap p-values (Webb weights, null imposed;
+    Cameron, Gelbach & Miller, 2008; Webb, 2023).
+
+    `work` must have a (country_code, year) MultiIndex and no missing values
+    in dep/exog. Frisch-Waugh-Lovell makes each bootstrap draw O(n):
+    with Q the residual-maker of {other regressors, entity dummies, time
+    dummies} and x~ = Q x_key, the restricted residual e_r = Q y satisfies
+    Q y* = w * e_r for y* = fitted_r + w * e_r, so beta* = x~'(w*e_r) / x~'x~.
+
+    The point estimate equals PanelOLS(entity_effects, time_effects); the
+    clustered t uses the CR1 factor G/(G-1) * (n-1)/(n-k), where k counts
+    the regressors only, so its standard error is a few percent smaller than
+    PanelOLS's. p_wild is (#{|t*| >= |t|} + 1) / (B + 1): it can never be
+    below 1/(B+1), so a value equal to that floor means "p <= 1/(B+1)".
+    Module 04 reports #{|t*| >= |t|} / B with PanelOLS standard errors, so
+    the two agree only up to Monte-Carlo error and these conventions
+    (tests/test_pipeline_outputs.py checks the gap stays small).
+    """
+    ent = work.index.get_level_values(0)
+    yr = work.index.get_level_values(1)
+    n = len(work)
+    y = work[dep].to_numpy(float)
+    xk = work[key].to_numpy(float)
+    others = [c for c in exog if c != key]
+    cols = []
+    if others:
+        cols.append(work[others].to_numpy(float))
+    if entity_effects:
+        cols.append(pd.get_dummies(ent).to_numpy(float))
+    if time_effects:
+        d = pd.get_dummies(yr).to_numpy(float)
+        cols.append(d[:, 1:] if entity_effects else d)
+    if not cols:
+        cols.append(np.ones((n, 1)))
+    Z = np.hstack(cols)
+    Q = np.eye(n) - Z @ np.linalg.pinv(Z)
+    xt = Q @ xk
+    sxx = float(xt @ xt)
+    if sxx < 1e-12:
+        return {"coef": np.nan, "se_cl": np.nan, "t": np.nan, "p_cl": np.nan, "p_wild": np.nan, "n_obs": n}
+    codes, uniq = pd.factorize(ent)
+    G = len(uniq)
+    k = len(exog)
+    cr1 = G / (G - 1) * (n - 1) / max(n - k, 1)
+
+    def _se(e):
+        s = np.bincount(codes, weights=xt * e, minlength=G)
+        se = np.sqrt(cr1 * float(s @ s)) / sxx
+        return se
+
+    e_u = Q @ y
+    beta = float(xt @ e_u) / sxx
+    e_full = e_u - beta * xt
+    se = _se(e_full)
+    t_obs = beta / se
+    p_cl = float(2 * stats.t.sf(abs(t_obs), df=G - 1))
+
+    rng = np.random.default_rng(seed)
+    W = WEBB_WEIGHTS[rng.integers(0, 6, size=(G, B))][codes]          # n x B
+    ystar = W * e_u[:, None]                                           # = Q y*
+    beta_b = (xt @ ystar) / sxx
+    resid_b = ystar - beta_b[None, :] * xt[:, None]
+    s_b = np.zeros((G, B))
+    np.add.at(s_b, codes, xt[:, None] * resid_b)
+    se_b = np.sqrt(cr1 * (s_b ** 2).sum(axis=0)) / sxx
+    t_b = beta_b / se_b
+    p_wild = float((np.sum(np.abs(t_b) >= abs(t_obs)) + 1) / (B + 1))
+    return {"coef": beta, "se_cl": se, "t": float(t_obs), "p_cl": p_cl, "p_wild": p_wild, "n_obs": n}
+
+
+# ── Regression design for a lagged link x -> y (Module 13) ────────────────
+def link_design(
+    x_col: str,
+    y_col: str,
+    controls: List[str],
+    lag_y: bool = True,
+    cause_suffix: str = "__lag1",
+) -> Tuple[str, str, List[str]]:
+    """
+    Dependent column, cause column and regressor list for the lagged link x -> y.
+
+    The cause is `<x_col><cause_suffix>` (the lagged series, or its shuffled
+    placebo copy). The lagged-outcome control is ALWAYS the real `<y_col>__lag1`,
+    so a placebo that only replaces the cause keeps the persistence control intact.
+    """
+    ctrl = [c for c in controls if c not in (x_col, y_col)]
+    key = f"{x_col}{cause_suffix}"
+    exog = [key] + ([f"{y_col}__lag1"] if lag_y else []) + ctrl
+    return y_col, key, exog
+
+
+# ── Country-cluster bootstrap (resample whole countries) ──────────────────
+def country_cluster_bootstrap(
+    flat: pd.DataFrame,
+    stat_fn,
+    B: int = 499,
+    seed: int = 11,
+    entity_col: str = ENTITY_COL,
+) -> np.ndarray:
+    """
+    Resample countries with replacement (all of a country's rows together),
+    relabel duplicated draws so each copy is its own entity, and evaluate
+    `stat_fn(panel)` on each (country, year)-indexed bootstrap panel.
+
+    `flat` is the un-indexed panel (entity and year as columns). Draws for
+    which `stat_fn` returns None / a non-finite value are dropped, so the
+    returned array can be shorter than B.
+    """
+    rng = np.random.default_rng(seed)
+    groups = {c: g for c, g in flat.groupby(entity_col)}
+    names = np.array(sorted(groups))
+    out = []
+    for _ in range(B):
+        pick = rng.choice(names, size=len(names), replace=True)
+        parts = []
+        for j, c in enumerate(pick):
+            g = groups[c].copy()
+            g[entity_col] = f"{c}_{j}"
+            parts.append(g)
+        v = stat_fn(build_multiindex(pd.concat(parts)))
+        if v is not None and np.isfinite(v):
+            out.append(v)
+    return np.asarray(out, dtype=float)
+
+
 # ── Output directories ────────────────────────────────────────────────────
 def make_output_dirs(base: Union[str, Path] = ".") -> Dict[str, Path]:
     """Create standard output directory tree."""

@@ -1,0 +1,326 @@
+{
+  "n_countries": 18,
+  "weights": {
+    "land_borders": 19,
+    "isolated_contiguity": [
+      "BHS"
+    ],
+    "adjacent_pairs": {
+      "contiguity": 19,
+      "knn4": 47,
+      "within_1500km": 40
+    },
+    "band_km": 1500.0,
+    "capital_coordinates_approximate": true,
+    "trade_weights": "not used (needs external bilateral data)"
+  },
+  "pesaran_cd": {
+    "EQ1_two_way": {
+      "cd": -3.0085649946605035,
+      "p": 0.0026248465069855,
+      "cd_adjusted": 0.16791838683611315,
+      "p_adjusted": 0.8666474849124469,
+      "mean_rho": -0.05774943606229074,
+      "mean_abs_rho": 0.4568736363867498,
+      "n_pairs": 153
+    },
+    "EQ1_entity_only": {
+      "cd": 0.6265202127627756,
+      "p": 0.5309737833431867,
+      "cd_adjusted": 3.803003594259391,
+      "p_adjusted": 0.0001429522807984687,
+      "mean_rho": 0.008056164126059457,
+      "mean_abs_rho": 0.4398116019842884,
+      "n_pairs": 153
+    },
+    "EQ2_two_way": {
+      "cd": -1.6049318277994424,
+      "p": 0.10850880823503588,
+      "cd_adjusted": 1.9595993269165854,
+      "p_adjusted": 0.05004264011553948,
+      "mean_rho": -0.02648532176567802,
+      "mean_abs_rho": 0.23457749522170557,
+      "n_pairs": 153
+    },
+    "EQ2_entity_only": {
+      "cd": 3.9463870812031403,
+      "p": 7.933931259472679e-05,
+      "cd_adjusted": 7.510918235919168,
+      "p_adjusted": 5.871405721497943e-14,
+      "mean_rho": 0.06512509120146966,
+      "mean_abs_rho": 0.22058344745358924,
+      "n_pairs": 153
+    },
+    "EQ3_two_way": {
+      "cd": -3.030006840935564,
+      "p": 0.0024454819955786887,
+      "cd_adjusted": 0.5345243137804635,
+      "p_adjusted": 0.5929788322954047,
+      "mean_rho": -0.050002563812581065,
+      "mean_abs_rho": 0.23649179632745393,
+      "n_pairs": 153
+    },
+    "EQ3_entity_only": {
+      "cd": 30.705776200540296,
+      "p": 4.765813512352425e-207,
+      "cd_adjusted": 34.27030735525633,
+      "p_adjusted": 2.173775409471173e-257,
+      "mean_rho": 0.5067208143359436,
+      "mean_abs_rho": 0.5269815296440865,
+      "n_pairs": 153
+    }
+  },
+  "morans_i": {
+    "EQ1_contiguity": {
+      "I": 0.03251955619989031,
+      "p_perm": 0.2212,
+      "I_null_mean": -0.0654755871096308
+    },
+    "EQ1_inverse_distance": {
+      "I": -0.01690203625252823,
+      "p_perm": 0.1038,
+      "I_null_mean": -0.06535854144769322
+    },
+    "EQ1_knn4": {
+      "I": 0.016623692462622405,
+      "p_perm": 0.1406,
+      "I_null_mean": -0.06569306459986778
+    },
+    "EQ2_contiguity": {
+      "I": -0.03245303542442216,
+      "p_perm": 0.304,
+      "I_null_mean": -0.05872005263452111
+    },
+    "EQ2_inverse_distance": {
+      "I": -0.04471263567098418,
+      "p_perm": 0.1708,
+      "I_null_mean": -0.058948966705041746
+    },
+    "EQ2_knn4": {
+      "I": -0.03243341654638203,
+      "p_perm": 0.1826,
+      "I_null_mean": -0.05888427916459533
+    },
+    "EQ3_contiguity": {
+      "I": 0.046654908012469104,
+      "p_perm": 0.0298,
+      "I_null_mean": -0.05605334075254995
+    },
+    "EQ3_inverse_distance": {
+      "I": -0.029332921161991075,
+      "p_perm": 0.0356,
+      "I_null_mean": -0.05818679080335726
+    },
+    "EQ3_knn4": {
+      "I": 0.01815514597642148,
+      "p_perm": 0.0122,
+      "I_null_mean": -0.057508282052731924
+    }
+  },
+  "neighbour_pair_gap": {
+    "EQ1_contiguity": {
+      "gap": 0.11353812115835896,
+      "p_perm": 0.1896,
+      "n_adjacent_pairs": 19
+    },
+    "EQ1_knn4": {
+      "gap": 0.1492650120593882,
+      "p_perm": 0.0688,
+      "n_adjacent_pairs": 47
+    },
+    "EQ1_within_1500km": {
+      "gap": 0.11949608270983757,
+      "p_perm": 0.089,
+      "n_adjacent_pairs": 40
+    },
+    "EQ2_contiguity": {
+      "gap": 0.036313963263331105,
+      "p_perm": 0.305,
+      "n_adjacent_pairs": 19
+    },
+    "EQ2_knn4": {
+      "gap": 0.017132228129579756,
+      "p_perm": 0.3456,
+      "n_adjacent_pairs": 47
+    },
+    "EQ2_within_1500km": {
+      "gap": 0.025872681161521176,
+      "p_perm": 0.2914,
+      "n_adjacent_pairs": 40
+    },
+    "EQ3_contiguity": {
+      "gap": 0.11934515933910173,
+      "p_perm": 0.0492,
+      "n_adjacent_pairs": 19
+    },
+    "EQ3_knn4": {
+      "gap": 0.10938074888583657,
+      "p_perm": 0.0262,
+      "n_adjacent_pairs": 47
+    },
+    "EQ3_within_1500km": {
+      "gap": 0.05710879950428051,
+      "p_perm": 0.1216,
+      "n_adjacent_pairs": 40
+    }
+  },
+  "slx": {
+    "EQ0 violence contagion|inverse_distance": {
+      "label": "EQ0 violence contagion",
+      "weights": "inverse_distance",
+      "dep": "homicide_rate_log",
+      "neighbour_var": "homicide_rate_log_lag1",
+      "theta": -0.010328194907395252,
+      "p_cl": 0.9255198466551391,
+      "p_wild": 0.926,
+      "own_coef": 1.0135469241196209,
+      "own_p_wild": 0.001,
+      "n_obs": 370
+    },
+    "EQ0 violence contagion|contiguity": {
+      "label": "EQ0 violence contagion",
+      "weights": "contiguity",
+      "dep": "homicide_rate_log",
+      "neighbour_var": "homicide_rate_log_lag1",
+      "theta": 0.014994633289153264,
+      "p_cl": 0.7980439112447366,
+      "p_wild": 0.808,
+      "own_coef": 1.0311285527386926,
+      "own_p_wild": 0.001,
+      "n_obs": 331
+    },
+    "EQ1 neighbours' violence \u2192 own institutions|inverse_distance": {
+      "label": "EQ1 neighbours' violence \u2192 own institutions",
+      "weights": "inverse_distance",
+      "dep": "inst_avg",
+      "neighbour_var": "homicide_rate_log_lag1",
+      "theta": 0.3225803291284419,
+      "p_cl": 0.040281495072451635,
+      "p_wild": 0.047,
+      "own_coef": -0.10885989683760593,
+      "own_p_wild": 0.247,
+      "n_obs": 379
+    },
+    "EQ1 neighbours' violence \u2192 own institutions|contiguity": {
+      "label": "EQ1 neighbours' violence \u2192 own institutions",
+      "weights": "contiguity",
+      "dep": "inst_avg",
+      "neighbour_var": "homicide_rate_log_lag1",
+      "theta": 0.1140388237171914,
+      "p_cl": 0.26986950750349126,
+      "p_wild": 0.397,
+      "own_coef": -0.10665217301195525,
+      "own_p_wild": 0.227,
+      "n_obs": 339
+    },
+    "EQ2 neighbours' institutions \u2192 own FDI|inverse_distance": {
+      "label": "EQ2 neighbours' institutions \u2192 own FDI",
+      "weights": "inverse_distance",
+      "dep": "fdi_percent_gdp",
+      "neighbour_var": "inst_avg",
+      "theta": 2.6620167849823,
+      "p_cl": 0.24118490863701625,
+      "p_wild": 0.245,
+      "own_coef": 0.8298439019503634,
+      "own_p_wild": 0.112,
+      "n_obs": 432
+    },
+    "EQ2 neighbours' institutions \u2192 own FDI|contiguity": {
+      "label": "EQ2 neighbours' institutions \u2192 own FDI",
+      "weights": "contiguity",
+      "dep": "fdi_percent_gdp",
+      "neighbour_var": "inst_avg",
+      "theta": 0.5222431508390605,
+      "p_cl": 0.5585776774350285,
+      "p_wild": 0.536,
+      "own_coef": 0.6649974149938802,
+      "own_p_wild": 0.152,
+      "n_obs": 408
+    },
+    "EQ3 neighbours' FDI \u2192 own growth|inverse_distance": {
+      "label": "EQ3 neighbours' FDI \u2192 own growth",
+      "weights": "inverse_distance",
+      "dep": "gdp_growth",
+      "neighbour_var": "fdi_percent_gdp",
+      "theta": -0.8063296646654925,
+      "p_cl": 0.08277641498196485,
+      "p_wild": 0.117,
+      "own_coef": -0.008971406666468363,
+      "own_p_wild": 0.923,
+      "n_obs": 432
+    },
+    "EQ3 neighbours' FDI \u2192 own growth|contiguity": {
+      "label": "EQ3 neighbours' FDI \u2192 own growth",
+      "weights": "contiguity",
+      "dep": "gdp_growth",
+      "neighbour_var": "fdi_percent_gdp",
+      "theta": -0.16443201959162168,
+      "p_cl": 0.257152080918798,
+      "p_wild": 0.278,
+      "own_coef": 0.07514341537214342,
+      "own_p_wild": 0.361,
+      "n_obs": 408
+    },
+    "EQ3b neighbours' growth \u2192 own growth|inverse_distance": {
+      "label": "EQ3b neighbours' growth \u2192 own growth",
+      "weights": "inverse_distance",
+      "dep": "gdp_growth",
+      "neighbour_var": "gdp_growth_lag1",
+      "theta": 0.5675761342846386,
+      "p_cl": 0.00912528498249016,
+      "p_wild": 0.032,
+      "own_coef": 0.027611721664659444,
+      "own_p_wild": 0.706,
+      "n_obs": 429
+    },
+    "EQ3b neighbours' growth \u2192 own growth|contiguity": {
+      "label": "EQ3b neighbours' growth \u2192 own growth",
+      "weights": "contiguity",
+      "dep": "gdp_growth",
+      "neighbour_var": "gdp_growth_lag1",
+      "theta": 0.12227346075571581,
+      "p_cl": 0.12425919016632497,
+      "p_wild": 0.201,
+      "own_coef": 0.003600751326851424,
+      "own_p_wild": 0.974,
+      "n_obs": 404
+    }
+  },
+  "summary": {
+    "n_cd_two_way_significant_05": 0,
+    "n_cd_two_way": 3,
+    "n_moran_significant_05": 3,
+    "n_moran": 9,
+    "n_gap_significant_05": 2,
+    "n_gap": 9,
+    "n_slx_significant_05": 2,
+    "n_slx": 10,
+    "n_permutations": 4999,
+    "n_bootstrap": 999
+  },
+  "synthetic_control_contamination": {
+    "land_neighbours": [
+      "GTM",
+      "HND"
+    ],
+    "weight_on_land_neighbours": 0.0,
+    "within_1500km": [
+      "BLZ",
+      "CRI",
+      "GTM",
+      "HND",
+      "MEX",
+      "NIC",
+      "PAN"
+    ],
+    "weight_within_1500km": 0.14729782607533615,
+    "positive_weights": {
+      "COL": 0.1378716839974286,
+      "CRI": 0.05867639902211725,
+      "DOM": 0.23455613609460693,
+      "HTI": 0.10893166000698849,
+      "NIC": 0.08862142705321889,
+      "PER": 0.37134269382563984
+    }
+  }
+}
