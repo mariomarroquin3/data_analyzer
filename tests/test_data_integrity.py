@@ -23,7 +23,8 @@ def test_country_names_are_valid_utf8(panel):
     assert {"México", "Panamá", "Perú"} <= names
 
 
-def test_wgi_dimensions_are_percentile_ranks(panel):
+def test_wgi_dimensions_are_on_the_0_100_score_scale(panel):
+    """The 2025-revision WGI governance score is an absolute 0-100 scale (not a percentile rank)."""
     for col in WGI_COLS:
         s = panel[col].dropna()
         assert s.between(0, 100).all(), col

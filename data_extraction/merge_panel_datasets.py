@@ -90,8 +90,8 @@ print("=" * 80)
 # rerun) and 'security_wgi_homicides.csv' (homicides only, via
 # WGI_get.py, which ALSO pulled institutional indicators but under the
 # wrong World Bank codes -- ".EST", the governance ESTIMATE scale
-# (~ -2.5 to 2.5), instead of the ".PER.RNK" percentile-rank scale
-# (0-100) that every downstream module in this pipeline documents and
+# (~ -2.5 to 2.5), instead of the ".SC" governance score
+# (0-100, an absolute rescaling of the estimate) that every downstream module in this pipeline documents and
 # expects). WGI_get.py's indicator codes are now fixed, so its output
 # is the single, live, reproducible source for both institutions and
 # homicides.

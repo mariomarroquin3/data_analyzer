@@ -16,7 +16,7 @@ The project uses a longitudinal panel-data design with country and year effects.
 
 The main entry point of the repository is the econometric pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). This is the core reproducible system. All steps below are executed through the master runner in [econometric_pipeline/pipeline/run_pipeline.py](econometric_pipeline/pipeline/run_pipeline.py).
 
-The workflow proceeds in fourteen stages:
+The workflow proceeds in sixteen stages:
 
 1. Data loading: the pipeline reads a clean panel dataset containing country-year observations.
 2. Cleaning and ETL: the data are validated, missingness is assessed, and institutional variables are standardized and combined into an index.
@@ -32,6 +32,8 @@ The workflow proceeds in fourteen stages:
 12. Specification curve: EQ1 and EQ2 are re-estimated for every one of the 63 subsets of the six WGI dimensions used as the institution index, showing how much the conclusions depend on that choice.
 13. Spatial dependence: Pesaran CD and permutation-based Moran's I on the residuals, spillover (SLX) models with spatial weights matrices, and a check that the synthetic-control donors are not contaminated by El Salvador's neighbours.
 14. Causal-link scan: all 72 ordered links among nine panel variables, lagged and with the outcome's own lag as control, under false-discovery control and a placebo calibration, to see which links and chains other than the paper's carry evidence.
+15. WGI measurement diagnostics: the WGI's own 90% confidence intervals are used to measure how much of the institution score is noise, which changes are distinguishable from it, how much the index coefficient could be attenuated, where the violence → institutions link lives, and sensitivity to country-years with few sources.
+16. Growth-ceiling robustness: leave-one-country-out refits of the quantile regression and the Bayesian model without El Salvador.
 
 ## Repository Structure
 
@@ -52,6 +54,8 @@ data_analyzer/
 │       ├── 11_spec_curve.py
 │       ├── 12_spatial_diagnostics.py
 │       ├── 13_causal_link_scan.py
+│       ├── 14_wgi_measurement.py
+│       ├── 15_growth_ceiling_robustness.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -126,7 +130,7 @@ The empirical analysis draws on the following sources:
 
 ## Data Provenance Fixes (September 2026)
 
-A follow-up audit of the data-extraction chain (`data_extraction/`, `archive/legacy_scripts/`) — prompted by a hunch that mixed variable scales might be causing trouble — found the scales themselves were fine (mixing 0-100 percentiles, % GDP and logs in one regression doesn't bias FE/OLS or tree-based ML), but surfaced four real data bugs upstream of the pipeline described above:
+A follow-up audit of the data-extraction chain (`data_extraction/`, `archive/legacy_scripts/`) — prompted by a hunch that mixed variable scales might be causing trouble — found the scales themselves were fine (mixing 0-100 governance scores, % GDP and logs in one regression doesn't bias FE/OLS or tree-based ML), but surfaced four real data bugs upstream of the pipeline described above:
 
 1. **`homicide_rate` was silently winsorized at the 1st/99th percentile** before the log transform (`archive/legacy_scripts/build_master_dataset.py`). With 179 observations, the 4 clipped points were all El Salvador: its 2015/2016 violence peak (107.6 → 83.6, 85.1 → 83.6) and its 2023/2024 post-reform lows (2.24 → 5.43, 1.90 → 5.43) — exactly the abrupt security shift this project studies, flattened before it ever reached EQ1, and undocumented anywhere. Removed.
 2. **`trade_percent_gdp` was 100% empty** across every observation, because it was computed as `exports_percent_gdp + imports_percent_gdp` but `imports_percent_gdp` was never extracted. This explains why "Extended controls" always failed in Module 05's robustness checks. Fixed by adding the missing World Bank indicator (`NE.IMP.GNFS.ZS`).
@@ -402,6 +406,32 @@ These are lagged observational associations, not identified causal effects; surv
 
 ![Causal link map](econometric_pipeline/pipeline/figures/18_causal_link_map.png)
 
+## Measurement of the Institution Variables (October 2026)
+
+The six institution variables are Worldwide Governance Indicators: perception-based aggregates of 35 expert assessments and household/firm surveys, combined with an Unobserved Components Model that publishes a margin of error with every estimate (Kaufmann & Kraay, 2024; Jiang et al., 2025). The 0–100 score is **not** a percentile rank: since the December 2025 revision it is a linear rescaling of the estimate between two fixed hypothetical benchmark countries. The authors also note that the WGI are not designed to evaluate specific reforms in individual economies and decline to average the six dimensions into one composite (our `inst_avg` does). [Module 14](econometric_pipeline/pipeline/14_wgi_measurement.py) uses the WGI's own 90% intervals (`foundational_datasets/wgi_confidence_intervals.csv`, fetched by [`WGI_ci_get.py`](data_extraction/WGI_ci_get.py)) to measure how far the score can be treated as exact.
+
+- **Noise is as large as the variation fixed effects use.** The mean standard error is 2.8–4.9 points per dimension against a within-country standard deviation of 3.5–4.9 (ratio 0.93 on average).
+- **Most changes cannot be told apart from noise.** Changes outside the 90% margin: 0.0%–0.5% year on year, 2.3%–10.8% over five years, 10.7%–19.4% over ten. Between 2020 and 2024, 7 of 108 country-dimension changes are distinguishable (6 outside El Salvador).
+- **El Salvador.** Only voice accountability (−13.35 points, margin ±6.6) clears its margin; the other dimensions move within noise. This supports the Bukele-paradox case study, which uses voice and accountability.
+- **Attenuation in EQ2.** If errors were independent across years (a worst case), the within-fixed-effects reliability of the index would be 0.59, so the institutions → FDI coefficient (0.680) could be understated by up to about 41% (≈1.156 if that reliability held). Classical error in a regressor shrinks the coefficient but not its t-statistic, so it does not explain the loss of significance. Single dimensions have worst-case reliabilities near or below zero, i.e. the independence assumption is too pessimistic to be informative there.
+- **Where the violence → institutions link lives (exploratory, post-hoc grouping).** Rule of Law sources include violent crime, victimisation and assault items, and Political Stability is defined by the likelihood of violence. EQ1 with the Rule of Law + Political Stability index: −0.236 (wild p=0.004); with Corruption + Voice + Regulatory Quality: −0.047 (p=0.664); Government Effectiveness alone: −0.171 (p=0.004). The link is carried by 2 of the three groups, which is what a partly mechanical overlap would look like, but Government Effectiveness shows it too although its sources were not audited, and the grouping was defined after seeing the per-dimension decomposition above, so it is a hypothesis, not a test.
+- **Few-source country-years.** Restricting to country-years where every dimension has at least k sources leaves the conclusions qualitatively unchanged (1+ sources: EQ1 p=0.142, EQ2 p=0.197 (n=432); 3+ sources: EQ1 p=0.178, EQ2 p=0.133 (n=418); 5+ sources: EQ1 p=0.207, EQ2 p=0.073 (n=386)).
+
+**Caveats.** The published standard errors describe each estimate separately; errors of one country in adjacent years, and across dimensions fed by the same source, are probably positively correlated, so the noise and reliability figures are conservative worst-case bounds, not point estimates.
+
+![WGI measurement](econometric_pipeline/pipeline/figures/19_wgi_measurement.png)
+
+## Robustness of the Growth-Ceiling Pattern (October 2026)
+
+[Module 15](econometric_pipeline/pipeline/15_growth_ceiling_robustness.py) refits the Module 08 results leaving countries out (its Bayesian copy must reproduce Module 08's posterior mean exactly, and does).
+
+- **Leave-one-country-out, frequentist LSDV quantile regression.** Upper tail: q=0.90 keeps its sign and p<0.05 in 18 of 18 fits (range −3.50 to −2.45); q=0.95 in 18 of 18 (range −3.55 to −2.06; weakest without SLV, p=0.016). The positive lower-tail coefficient (q=0.05) keeps its sign in 18 of 18 fits but is significant in only 12 (weakest without ECU, p=0.157).
+- **Bayesian model without SLV.** q=0.90: −1.16, 94% HDI [−2.31, −0.03] (all 18: −1.39); q=0.95: −1.49, [−2.34, −0.54] (all 18: −1.83); q=0.05: 1.23, [0.10, 2.31]. El Salvador contributes part of the ceiling but does not create it.
+
+The frequentist p-values are asymptotic `QuantReg` values and unreliable with 18 country dummies; the sign and magnitude stability is the informative part.
+
+![Growth-ceiling leave-one-out](econometric_pipeline/pipeline/figures/20_growth_ceiling_loco.png)
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).
@@ -424,6 +454,9 @@ The reproducible workflow is centered on the pipeline under [econometric_pipelin
 | [econometric_pipeline/pipeline/11_spec_curve.py](econometric_pipeline/pipeline/11_spec_curve.py) | Specification curve for the institution index: re-estimates EQ1 and EQ2 for every one of the 63 subsets of the six WGI dimensions, with clustered and Driscoll–Kraay standard errors. | Enriched panel → spec-curve JSON and figure. | Econometrics / Robustness | Core |
 | [econometric_pipeline/pipeline/12_spatial_diagnostics.py](econometric_pipeline/pipeline/12_spatial_diagnostics.py) | Cross-country dependence and spillovers: Pesaran CD, permutation Moran's I, neighbour-pair residual correlation, SLX spillover models (wild bootstrap), and a contamination check on the synthetic-control donors, with contiguity / inverse-distance / kNN weights matrices. | Enriched panel → spatial-diagnostics JSON and figure. | Econometrics / Robustness | Core |
 | [econometric_pipeline/pipeline/13_causal_link_scan.py](econometric_pipeline/pipeline/13_causal_link_scan.py) | Scan of all 72 ordered links among nine variables (lagged cause, lagged-outcome control, two-way FE, wild bootstrap) under Benjamini–Hochberg/Holm control and a within-country shuffle placebo; tests chains only when both links survive. | Enriched panel → link-scan JSON and link-map figure. | Econometrics / Exploration | Core |
+| [econometric_pipeline/pipeline/14_wgi_measurement.py](econometric_pipeline/pipeline/14_wgi_measurement.py) | Measurement-error diagnostics for the WGI institution scores using the WGI's own 90% intervals: noise vs within-country variation, distinguishable changes, worst-case reliability, EQ1/EQ2 by dimension group, sensitivity to number of sources. | Enriched panel + `foundational_datasets/wgi_confidence_intervals.csv` → JSON and figure. | Econometrics / Measurement | Core |
+| [econometric_pipeline/pipeline/15_growth_ceiling_robustness.py](econometric_pipeline/pipeline/15_growth_ceiling_robustness.py) | Leave-one-country-out refits of the growth-ceiling quantile regression and the Bayesian model without El Salvador (with an exact-reproduction check against Module 08). | Panel with predictions → JSON and figure. | Econometrics / Robustness | Core |
+| [data_extraction/WGI_ci_get.py](data_extraction/WGI_ci_get.py) | Downloads the WGI 0-100 scores, 90% interval bounds and source counts for the 18 countries from the World Bank API. | World Bank API → `foundational_datasets/wgi_confidence_intervals.csv`. | Data extraction | Core |
 | [econometric_pipeline/pipeline/utils.py](econometric_pipeline/pipeline/utils.py) | Shared helpers for plotting, directory creation, output handling, formatting, and normalizing FE-result JSON lookups across equations (`get_fe_key_stats`). | None → reusable utility functions. | Utility | Core |
 | [econometric_pipeline/pipeline/research_report.py](econometric_pipeline/pipeline/research_report.py) | Builds the structured research report used by the pipeline runner. | Text/JSON sections → report objects and PDF-ready content. | Utility | Core |
 | [archive/legacy_scripts/01clean_panel.py](archive/legacy_scripts/01clean_panel.py) | Early script for cleaning and preparing a panel-ready dataset from a broader research file. | Raw research dataset → panel-ready CSV. | ETL | Archived (auxiliary) |

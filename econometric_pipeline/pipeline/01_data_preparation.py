@@ -177,7 +177,8 @@ print("  inflates the condition number of the design matrix (collinearity).")
 # ════════════════════════════════════════════════════════════════════════
 section("03 — INSTITUTION INDEX: PRIMARY (STANDARDISED AVERAGE)")
 
-print("  Reference: Kaufmann et al. (2010) — WGI percentile ranks 0–100.")
+print("  Reference: Kaufmann et al. (2010); Jiang et al. (2025) — WGI governance scores 0–100")
+print("  (linear rescaling of the WGI estimate between two fixed benchmark countries; not percentile ranks).")
 print("  All six dimensions are first z-scored (global mean=0, SD=1),")
 print("  then averaged. This ensures equal weighting regardless of raw scale.")
 

@@ -10,7 +10,7 @@ Este repositorio implementa un flujo de trabajo empírico para estudiar cómo el
 
 El proyecto utiliza un diseño de panel longitudinal con efectos fijos por país y año. La especificación de referencia es un MCO agrupado, seguido de modelos de efectos fijos bidireccionales que absorben la heterogeneidad invariante en el tiempo por país y los choques comunes. La inferencia se informa con errores estándar agrupados convencionales y con alternativas más conservadoras, incluyendo errores estándar de Driscoll-Kraay para considerar la dependencia transversal, un estimador CR2 (Bell-McCaffrey) con grados de libertad de Satterthwaite, e inferencia de bootstrap de grupo silvestre (wild cluster bootstrap) para paneles con pocos grupos. Dado que la cadena de tres ecuaciones (violencia → instituciones → IED → crecimiento) se estima como modelos independientes para evitar un problema de regresores generados, el mecanismo hipotetizado se pone a prueba adicionalmente como sistema: un bootstrap por clúster de país del producto de los tres coeficientes de la cadena ofrece una prueba formal del efecto indirecto, en lugar de apoyarse solo en la significancia de cada eslabón por separado. Las comprobaciones de robustez incluyen exclusión de cada país (Leave-One-Country-Out), estructuras de rezago alternativas para los tres eslabones (no solo violencia→instituciones), una verificación de control post-tratamiento, tendencias lineales específicas por país y una prueba de raíz unitaria de panel (Fisher-ADF). Además, se utiliza un análisis de componentes principales (PCA) para construir un índice institucional de robustez a partir de los Indicadores de Gobernanza Mundial (WGI), y se emplean métodos de aprendizaje automático como una capa de triangulación exploratoria en lugar de un sustituto para la estimación causal, con una reconstrucción del índice institucional libre de fuga de datos (fold-safe) bajo validación cruzada Leave-One-Country-Out. Finalmente, un hallazgo exploratorio de regresión cuantílica —que la violencia limita la cola superior del crecimiento del PIB sin desplazar su mediana— se re-estima como un modelo bayesiano jerárquico (MCMC, verosimilitud Asimétrica de Laplace) con partial pooling entre países, reportado con incertidumbre posterior completa en vez de errores estándar asintóticos de regresión cuantílica.
 
-El flujo de trabajo se ejecuta en catorce etapas:
+El flujo de trabajo se ejecuta en dieciséis etapas:
 1.  **Carga de datos**: lee un conjunto de datos de panel limpio que contiene observaciones país-año.
 2.  **Limpieza y ETL**: valida los datos, evalúa los valores perdidos y estandariza y combina las variables institucionales en un índice.
 3.  **Ingeniería de características**: enriquece el panel con tendencias temporales, variables de violencia rezagadas y medidas institucionales derivadas.
@@ -25,6 +25,8 @@ El flujo de trabajo se ejecuta en catorce etapas:
 12. **Curva de especificaciones**: EQ1 y EQ2 se re-estiman para cada uno de los 63 subconjuntos de las seis dimensiones WGI usado como índice institucional, mostrando cuánto dependen las conclusiones de esa elección.
 13. **Dependencia espacial**: CD de Pesaran e I de Moran por permutación sobre los residuos, modelos de contagio (SLX) con matrices de pesos espaciales, y verificación de que los donantes del control sintético no están contaminados por los vecinos de El Salvador.
 14. **Barrido de eslabones causales**: los 72 eslabones ordenados entre nueve variables del panel, rezagados y con el rezago de la dependiente como control, con control de falsos descubrimientos y calibración por placebo, para ver qué eslabones y cadenas distintos de los del artículo tienen evidencia.
+15. **Diagnósticos de medición del WGI**: los intervalos de confianza al 90% del propio WGI miden cuánto del puntaje institucional es ruido, qué cambios se distinguen de él, cuánto podría atenuarse el coeficiente del índice, dónde vive el vínculo violencia → instituciones y la sensibilidad a país-año con pocas fuentes.
+16. **Robustez del techo de crecimiento**: re-ajustes dejando un país fuera de la regresión cuantílica y del modelo bayesiano sin El Salvador.
 
 ## Revisión Metodológica (Septiembre 2026)
 
@@ -40,7 +42,7 @@ Una revisión metodológica del pipeline —realizada de cara a una eventual pub
 
 ## Corrección de Origen de Datos (Septiembre 2026)
 
-Una auditoría posterior de la cadena de extracción (`data_extraction/`, `archive/legacy_scripts/`) —motivada por la sospecha de que mezclar escalas distintas causaba problemas— encontró que las escalas en sí no eran el problema (mezclar percentiles 0-100, % del PIB y logs en la misma regresión no sesga FE/OLS ni el ML basado en árboles), pero sí encontró 4 bugs reales de datos:
+Una auditoría posterior de la cadena de extracción (`data_extraction/`, `archive/legacy_scripts/`) —motivada por la sospecha de que mezclar escalas distintas causaba problemas— encontró que las escalas en sí no eran el problema (mezclar puntajes de gobernanza 0-100, % del PIB y logs en la misma regresión no sesga FE/OLS ni el ML basado en árboles), pero sí encontró 4 bugs reales de datos:
 
 1. **`homicide_rate` se winsorizaba silenciosamente al percentil 1-99** antes del log. Con 179 observaciones, los 4 puntos recortados eran, los 4, El Salvador: su pico de violencia 2015/2016 (107.6→83.6, 85.1→83.6) y sus mínimos post-reforma 2023/2024 (2.24→5.43, 1.90→5.43) — exactamente el cambio abrupto que motiva esta investigación, aplanado antes de llegar a EQ1. Eliminado.
 2. **`trade_percent_gdp` estaba 100% vacío** en todas las observaciones, por un bug que sumaba `imports_percent_gdp`, columna que nunca se extrajo. Esto explica por qué "Extended controls" siempre fallaba en el Módulo 05. Corregido agregando el indicador faltante del Banco Mundial.
@@ -338,6 +340,8 @@ data_analyzer/
 │       ├── 11_spec_curve.py
 │       ├── 12_spatial_diagnostics.py
 │       ├── 13_causal_link_scan.py
+│       ├── 14_wgi_measurement.py
+│       ├── 15_growth_ceiling_robustness.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -377,6 +381,32 @@ El [Módulo 13](econometric_pipeline/pipeline/13_causal_link_scan.py) pregunta q
 Son asociaciones observacionales rezagadas, no efectos causales identificados; sobrevivir a los filtros significa solo que la asociación no se explica por efectos de país/año ni por la persistencia del resultado.
 
 ![Mapa de eslabones](econometric_pipeline/pipeline/figures/18_causal_link_map.png)
+
+## Medición de las Variables Institucionales (Octubre 2026)
+
+Las seis variables institucionales son Worldwide Governance Indicators: agregados de percepciones de 35 fuentes (evaluaciones de expertos y encuestas a hogares y empresas) combinados con un modelo de componentes no observados que publica un margen de error con cada estimado (Kaufmann y Kraay, 2024; Jiang et al., 2025). El puntaje 0–100 **no** es un percentil: desde la revisión de diciembre de 2025 es un reescalado lineal del estimado entre dos países de referencia hipotéticos fijos. Los autores también advierten que el WGI no está diseñado para evaluar reformas específicas de un país y se abstienen de promediar las seis dimensiones en un solo compuesto (nuestro `inst_avg` sí lo hace). El [Módulo 14](econometric_pipeline/pipeline/14_wgi_measurement.py) usa los intervalos oficiales al 90% del WGI (`foundational_datasets/wgi_confidence_intervals.csv`, descargados con [`WGI_ci_get.py`](data_extraction/WGI_ci_get.py)) para medir hasta qué punto el puntaje puede tratarse como exacto.
+
+- **El ruido es tan grande como la variación que usan los efectos fijos.** El error estándar medio es 2.8–4.9 puntos por dimensión frente a una desviación estándar within-país de 3.5–4.9 (cociente promedio 0.93).
+- **La mayoría de los cambios no se distingue del ruido.** Cambios fuera del margen al 90%: 0.0%–0.5% de un año al siguiente, 2.3%–10.8% a cinco años, 10.7%–19.4% a diez. Entre 2020 y 2024, 7 de 108 cambios país-dimensión son distinguibles (6 fuera de El Salvador).
+- **El Salvador.** Solo voice accountability (−13.35 puntos, margen ±6.6) supera su margen; las demás dimensiones se mueven dentro del ruido. Esto respalda el estudio de caso de la paradoja Bukele, que usa voz y rendición de cuentas.
+- **Atenuación en EQ2.** Si los errores fueran independientes entre años (peor caso), la confiabilidad del índice dentro de efectos fijos sería 0.59, de modo que el coeficiente instituciones → IED (0.680) podría estar subestimado hasta en 41% (≈1.156 si ese valor fuera cierto). El error clásico en un regresor encoge el coeficiente pero no su estadístico t, así que no explica la pérdida de significancia. Las dimensiones individuales tienen confiabilidades de peor caso cercanas o inferiores a cero, es decir, el supuesto de independencia es demasiado pesimista para ser informativo ahí.
+- **Dónde vive el vínculo violencia → instituciones (exploratorio, agrupación post hoc).** Las fuentes de Estado de derecho incluyen crímenes violentos, victimización y asaltos, y Estabilidad política se define por la probabilidad de violencia. EQ1 con el índice Estado de derecho + Estabilidad política: −0.236 (p wild=0.004); con Corrupción + Voz + Calidad regulatoria: −0.047 (p=0.664); Efectividad gubernamental sola: −0.171 (p=0.004). El vínculo lo llevan 2 de los tres grupos, lo que sería coherente con un solapamiento en parte mecánico, pero Efectividad gubernamental también lo muestra aunque sus fuentes no se auditaron, y la agrupación se definió después de ver la descomposición por dimensión anterior, así que es una hipótesis, no una prueba.
+- **País-año con pocas fuentes.** Restringir a país-año donde cada dimensión tiene al menos k fuentes no cambia cualitativamente las conclusiones (1+ fuentes: EQ1 p=0.142, EQ2 p=0.197 (n=432); 3+ fuentes: EQ1 p=0.178, EQ2 p=0.133 (n=418); 5+ fuentes: EQ1 p=0.207, EQ2 p=0.073 (n=386)).
+
+**Advertencias.** Los errores estándar publicados describen cada estimado por separado; los errores de un mismo país en años contiguos, y entre dimensiones alimentadas por la misma fuente, probablemente están correlacionados positivamente, así que las cifras de ruido y confiabilidad son cotas conservadoras de peor caso, no estimaciones puntuales.
+
+![Medición del WGI](econometric_pipeline/pipeline/figures/19_wgi_measurement.png)
+
+## Robustez del Patrón de Techo de Crecimiento (Octubre 2026)
+
+El [Módulo 15](econometric_pipeline/pipeline/15_growth_ceiling_robustness.py) vuelve a ajustar los resultados del Módulo 08 dejando países fuera (su copia bayesiana debe reproducir exactamente la media posterior del Módulo 08, y lo hace).
+
+- **Dejando un país fuera, regresión cuantílica frecuentista LSDV.** Cola superior: q=0.90 conserva signo y p<0.05 en 18 de 18 ajustes (rango −3.50 a −2.45); q=0.95 en 18 de 18 (rango −3.55 a −2.06; el más débil sin SLV, p=0.016). El coeficiente positivo de la cola inferior (q=0.05) conserva el signo en 18 de 18 ajustes pero es significativo solo en 12 (el más débil sin ECU, p=0.157).
+- **Modelo bayesiano sin SLV.** q=0.90: −1.16, HDI 94% [−2.31, −0.03] (con los 18: −1.39); q=0.95: −1.49, [−2.34, −0.54] (con los 18: −1.83); q=0.05: 1.23, [0.10, 2.31]. El Salvador aporta parte del techo pero no lo crea.
+
+Los p-valores frecuentistas son valores asintóticos de `QuantReg` y poco fiables con 18 dummies de país; lo informativo es la estabilidad de signo y magnitud.
+
+![Techo de crecimiento sin un país](econometric_pipeline/pipeline/figures/20_growth_ceiling_loco.png)
 
 ## Notas para el Usuario
 

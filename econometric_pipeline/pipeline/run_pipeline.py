@@ -76,6 +76,8 @@ MODULES = [
     ("11", "11_spec_curve.py",          "Specification Curve (Institution Index)"),
     ("12", "12_spatial_diagnostics.py", "Spatial Dependence & Spillovers"),
     ("13", "13_causal_link_scan.py",    "Causal Link Scan (FDR-controlled)"),
+    ("14", "14_wgi_measurement.py",     "WGI Measurement Error Diagnostics"),
+    ("15", "15_growth_ceiling_robustness.py", "Growth-Ceiling Robustness (LOCO, Bayesian without SLV)"),
 ]
 
 
@@ -1342,8 +1344,78 @@ def build_link_scan_section(report: ResearchReport, ls: Dict, base_dir: Path) ->
     )
 
 
+def build_wgi_measurement_section(report: ResearchReport, w: Dict, base_dir: Path) -> None:
+    if not w:
+        return
+    report.add_section_h1("17. Medici\u00f3n de las Variables Institucionales (WGI)")
+    s = w["summary"]
+    names = {"rule_of_law": "Estado de derecho", "political_stability": "Estabilidad pol\u00edtica",
+             "control_corruption": "Control de corrupci\u00f3n", "voice_accountability": "Voz y rendici\u00f3n de cuentas",
+             "government_effectiveness": "Efectividad gubernamental", "regulatory_quality": "Calidad regulatoria"}
+    report.add_body_text(
+        "Las seis variables institucionales son Worldwide Governance Indicators (WGI): agregados de percepciones "
+        "(35 fuentes de evaluaciones de expertos y encuestas a hogares y empresas) combinados con un modelo de "
+        "componentes no observados que publica un margen de error al 90% (Kaufmann y Kraay, 2024; Jiang et al., 2025). "
+        "La escala 0-100 es un reescalado lineal del estimado entre dos pa\u00edses de referencia hipot\u00e9ticos, no un "
+        "percentil. Los modelos anteriores tratan el puntaje como exacto; aqu\u00ed se usan los intervalos oficiales para "
+        "medir cu\u00e1nto ruido contiene."
+    )
+    rows = [["Dimensi\u00f3n", "Error est. medio", "SD within-pa\u00eds", "Ruido / SD", "Cambios distinguibles 1 / 5 / 10 a\u00f1os"]]
+    for d, nm in names.items():
+        n, c = w["noise_by_dimension"][d], w["change_distinguishable_share"][d]
+        rows.append([nm, _fmt(n["mean_se"], 2), _fmt(n["sd_within_country"], 2), _fmt(n["noise_to_within_sd"], 2),
+                     f"{c['1']['share_significant']:.1%} / {c['5']['share_significant']:.1%} / {c['10']['share_significant']:.1%}"])
+    report.add_table(rows, col_widths=[1.9, 1.1, 1.1, 0.9, 2.2])
+    slv_dims = [names[d] for d in s["slv_distinguishable_dims"]]
+    report.add_body_text(
+        f"El ruido medio equivale a {s['mean_noise_to_within_sd']:.2f} veces la variaci\u00f3n within-pa\u00eds que usan los "
+        "efectos fijos. Entre 2020 y 2024, "
+        f"{s['n_distinguishable_2020_2024']} de {s['n_changes_2020_2024']} cambios pa\u00eds-dimensi\u00f3n se distinguen del ruido; "
+        + ("en El Salvador solo " + ", ".join(slv_dims) + "." if slv_dims else "en El Salvador ninguno.")
+        + " Los m\u00e1rgenes se calculan suponiendo errores independientes entre a\u00f1os, lo que sobrestima el ruido "
+          "(los errores de un mismo pa\u00eds persisten), as\u00ed que son cotas conservadoras."
+    )
+    fig = base_dir / "figures" / "19_wgi_measurement.png"
+    if fig.exists():
+        report.add_image(
+            fig, label="Figura 19 - Medicion de las variables institucionales",
+            caption=("(a) error de medicion frente a variacion within-pais; (b) proporcion de cambios fuera del margen "
+                     "al 90%; (c) El Salvador con sus intervalos; (d) coeficiente de EQ1 por grupo de dimensiones."),
+        )
+    gl = {"violence_related": "Estado de derecho + estabilidad pol\u00edtica", "no_crime_content": "Corrupci\u00f3n + voz + calidad regulatoria",
+          "government_effectiveness": "Efectividad gubernamental", "all_six": "Las seis (principal)"}
+    rows = [["Grupo de dimensiones", "EQ1: coef.", "EQ1: p (wild)", "EQ2: coef.", "EQ2: p (wild)"]]
+    for k, lab in gl.items():
+        e1, e2 = w["eq1_eq2_by_content"][k]["EQ1"], w["eq1_eq2_by_content"][k]["EQ2"]
+        rows.append([lab, _fmt(e1["coef"], 3), _fmt(e1["p_wild"], 3), _fmt(e2["coef"], 3), _fmt(e2["p_wild"], 3)])
+    report.add_table(rows, col_widths=[2.8, 1.0, 1.1, 1.0, 1.1])
+    rel = w["reliability_worst_case"]["index"]
+    ms = w["sensitivity_min_sources"]
+    sens = "; ".join(f"con al menos {k.split('_')[1]} fuentes por dimensi\u00f3n (n={v['n_country_years']}): EQ1 p={_fmt(v['EQ1']['p_wild'], 3)}, EQ2 p={_fmt(v['EQ2']['p_wild'], 3)}"
+                     for k, v in ms.items())
+    report.add_body_text(
+        f"Confiabilidad del \u00edndice dentro del modelo de efectos fijos en el peor caso: {rel['reliability']:.2f}; si "
+        f"fuera ese valor, el coeficiente de EQ2 ({_fmt(rel['beta_eq2'], 3)}) estar\u00eda subestimado y ser\u00eda "
+        f"aproximadamente {_fmt(rel['beta_if_reliability'], 3)}. El error cl\u00e1sico en un regresor atena el coeficiente pero no "
+        "cambia su estad\u00edstico t, as\u00ed que no explica por s\u00ed solo la falta de significancia. "
+        f"Sensibilidad al n\u00famero de fuentes: {sens}."
+    )
+    sig1 = [gl[k] for k, v in w["eq1_eq2_by_content"].items() if k != "all_six" and v["EQ1"]["p_wild"] < 0.05]
+    report.add_interpretation_box(
+        "Lectura",
+        "El puntaje institucional es una percepci\u00f3n con margen de error del orden de la variaci\u00f3n que explotan los "
+        "efectos fijos, y casi ning\u00fan cambio anual se distingue del ruido. "
+        + (f"El v\u00ednculo violencia -> instituciones (EQ1) aparece en: {', '.join(sig1)}. " if sig1
+           else "El v\u00ednculo violencia -> instituciones (EQ1) no aparece en ning\u00fan grupo. ")
+        + "Estado de derecho incluye preguntas sobre cr\u00edmenes violentos y victimizaci\u00f3n, por lo que parte de esa "
+          "relaci\u00f3n puede ser mec\u00e1nica; pero la agrupaci\u00f3n se defini\u00f3 despu\u00e9s de ver los resultados por dimensi\u00f3n "
+          "y es exploratoria, y no se audit\u00f3 el contenido de las otras fuentes.",
+        style="warning",
+    )
+
+
 def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: Path) -> None:
-    report.add_section_h1("17. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
+    report.add_section_h1("18. Cointegración de Panel y Modelo de Corrección de Errores (ECM)")
     report.add_body_text(
         "El test de raíz unitaria de panel (Sección 12) encontró que homicide_rate_log, "
         "inst_avg y gdp_per_capita_log no rechazan raíz unitaria (son I(1)), mientras que "
@@ -1441,7 +1513,7 @@ def build_cointegration_section(report: ResearchReport, coint: Dict, base_dir: P
 
 
 def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: Path) -> None:
-    report.add_section_h1("18. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
+    report.add_section_h1("19. Growth-Ceiling-at-Risk (MCMC Bayesiano)")
     report.add_body_text(
         "Un análisis exploratorio de regresión cuantílica frecuentista (ver README, sección "
         "'Exploratory Finding') encontró que la violencia rezagada no tiene efecto cerca de la "
@@ -1545,8 +1617,47 @@ def build_growth_ceiling_section(report: ResearchReport, gcar: Dict, base_dir: P
     )
 
 
+def build_ceiling_robustness_subsection(report: ResearchReport, cr: Dict, base_dir: Path) -> None:
+    if not cr:
+        return
+    report.add_section_h2("Robustez del techo de crecimiento")
+    rows = [["Cuantil", "Coef. con los 18", "Mismo signo (de 18)", "Mismo signo y p<0.05", "Rango", "Caso m\u00e1s d\u00e9bil"]]
+    for q, v in cr["frequentist_loco"].items():
+        rows.append([q, _fmt(v["full_coef"], 2), f"{v['n_same_sign']}", f"{v['n_same_sign_and_p05']}",
+                     f"{_fmt(v['coef_min'], 2)} a {_fmt(v['coef_max'], 2)}",
+                     f"sin {v['weakest_dropped']} (p={_fmt(v['weakest_p'], 3)})"])
+    report.add_table(rows, col_widths=[0.7, 1.2, 1.2, 1.4, 1.4, 1.6])
+    ex = cr["excluded_country"]
+    rows = [["Cuantil", "Media posterior (18)", f"Media posterior (sin {ex})", "HDI 94%", "P(coef. negativo)"]]
+    for q, v in cr["bayesian_without_excluded"].items():
+        rows.append([q, _fmt(v["full_sample_mean"], 2), _fmt(v["beta_mean"], 2),
+                     f"[{_fmt(v['beta_hdi_lo'], 2)}, {_fmt(v['beta_hdi_hi'], 2)}]", _fmt(v["p_beta_negative"], 3)])
+    report.add_table(rows, col_widths=[0.8, 1.6, 1.9, 1.7, 1.4])
+    fig = base_dir / "figures" / "20_growth_ceiling_loco.png"
+    if fig.exists():
+        report.add_image(fig, label="Figura 20 - Dejando un pais fuera",
+                         caption="Coeficiente de la regresion cuantilica frecuentista al excluir cada pais (rojo: El Salvador).")
+    up = [v for q, v in cr["frequentist_loco"].items() if q in ("0.90", "0.95")]
+    robust_up = all(v["n_same_sign_and_p05"] == v["n_fits"] for v in up)
+    lo = cr["frequentist_loco"].get("0.05")
+    b_up = [v for q, v in cr["bayesian_without_excluded"].items() if q in ("0.90", "0.95")]
+    hdi_excl = all(v["beta_hdi_hi"] < 0 for v in b_up)
+    report.add_interpretation_box(
+        "Lectura",
+        ("El techo de la cola superior se mantiene con el mismo signo y significancia al excluir cualquier pa\u00eds. "
+         if robust_up else "El techo de la cola superior no se mantiene en todas las exclusiones. ")
+        + (f"Sin {ex}, los intervalos bayesianos de los cuantiles altos "
+           + ("siguen excluyendo el cero" if hdi_excl else "ya no excluyen todos el cero")
+           + ", con un efecto menor que con los 18 pa\u00edses. " if b_up else "")
+        + (f"El efecto de la cola inferior (q=0.05) conserva el signo en {lo['n_same_sign']} de {lo['n_fits']} exclusiones pero "
+           f"es significativo en {lo['n_same_sign_and_p05']}. " if lo else "")
+        + "Los p-valores frecuentistas son asint\u00f3ticos y poco fiables con 18 clusters; el patr\u00f3n de signo y magnitud es lo informativo.",
+        style="warning",
+    )
+
+
 def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
-    report.add_section_h1("19. Triangulación Machine Learning")
+    report.add_section_h1("20. Triangulación Machine Learning")
     report.add_body_text(
         "El análisis de ML (Random Forest y Gradient Boosting con LOCO-CV) sirve como "
         "triangulación no paramétrica del ranking de importancia de variables. "
@@ -1626,7 +1737,7 @@ def build_ml_section(report: ResearchReport, ml: Dict, base_dir: Path) -> None:
 
 
 def build_conclusions_section(report: ResearchReport, meta: Dict, fe: Dict, boot: Dict) -> None:
-    report.add_section_h1("20. Conclusiones")
+    report.add_section_h1("21. Conclusiones")
     report.add_body_text(
         "A continuación se sintetizan las principales conclusiones derivadas estrictamente "
         "de los resultados calculados. No se realizan inferencias extrapoladas."
@@ -1811,6 +1922,8 @@ def main():
     spec  = _load_json(json_dir / "11_spec_curve.json")
     spat  = _load_json(json_dir / "12_spatial_diagnostics.json")
     lscan = _load_json(json_dir / "13_causal_link_scan.json")
+    wgim  = _load_json(json_dir / "14_wgi_measurement.json")
+    cres  = _load_json(json_dir / "15_growth_ceiling_robustness.json")
 
     # ── Build structured report sections ─────────────────────────────────
     build_executive_summary(report, meta, fe)
@@ -1856,10 +1969,14 @@ def main():
     build_link_scan_section(report, lscan, base_dir)
     report.add_page_break()
 
+    build_wgi_measurement_section(report, wgim, base_dir)
+    report.add_page_break()
+
     build_cointegration_section(report, coint, base_dir)
     report.add_page_break()
 
     build_growth_ceiling_section(report, gcar, base_dir)
+    build_ceiling_robustness_subsection(report, cres, base_dir)
     report.add_page_break()
 
     build_ml_section(report, ml, base_dir)

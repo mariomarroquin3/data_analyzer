@@ -1,0 +1,1609 @@
+{
+  "n_obs_ci": 2592,
+  "assumption": "errors treated as independent across years and dimensions; reliabilities are lower bounds",
+  "noise_by_dimension": {
+    "rule_of_law": {
+      "mean_ci_width": 9.351248926157407,
+      "mean_se": 2.842324901567601,
+      "mean_sources": 12.296296296296296,
+      "min_sources": 3,
+      "sd_pooled": 11.786567778970618,
+      "sd_within_country": 3.4999913724872544,
+      "noise_to_within_sd": 0.81209483083603
+    },
+    "control_corruption": {
+      "mean_ci_width": 12.488527152546295,
+      "mean_se": 3.7959049095885398,
+      "mean_sources": 10.229166666666666,
+      "min_sources": 1,
+      "sd_pooled": 16.725144842552414,
+      "sd_within_country": 3.451450951515244,
+      "noise_to_within_sd": 1.099799754628434
+    },
+    "political_stability": {
+      "mean_ci_width": 14.618943752083336,
+      "mean_se": 4.4434479489614995,
+      "mean_sources": 8.055555555555555,
+      "min_sources": 2,
+      "sd_pooled": 12.470840919671694,
+      "sd_within_country": 4.835781683631743,
+      "noise_to_within_sd": 0.91886860070664
+    },
+    "voice_accountability": {
+      "mean_ci_width": 9.567811968287037,
+      "mean_se": 2.9081495344337496,
+      "mean_sources": 12.44675925925926,
+      "min_sources": 3,
+      "sd_pooled": 11.286677885201597,
+      "sd_within_country": 3.7312542052472906,
+      "noise_to_within_sd": 0.7794026819035801
+    },
+    "government_effectiveness": {
+      "mean_ci_width": 16.272076689351852,
+      "mean_se": 4.9459199663683435,
+      "mean_sources": 7.444444444444445,
+      "min_sources": 1,
+      "sd_pooled": 14.205718268461084,
+      "sd_within_country": 4.946536566791874,
+      "noise_to_within_sd": 0.9998753470402564
+    },
+    "regulatory_quality": {
+      "mean_ci_width": 12.110341053009257,
+      "mean_se": 3.6809547273584373,
+      "mean_sources": 7.261574074074074,
+      "min_sources": 2,
+      "sd_pooled": 10.685778509968296,
+      "sd_within_country": 3.807096176772053,
+      "noise_to_within_sd": 0.9668667552495173
+    }
+  },
+  "change_distinguishable_share": {
+    "rule_of_law": {
+      "1": {
+        "share_significant": 0.0025252525252525255,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.07017543859649122,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.19444444444444445,
+        "n": 252
+      }
+    },
+    "control_corruption": {
+      "1": {
+        "share_significant": 0.0,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.05555555555555555,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.10714285714285714,
+        "n": 252
+      }
+    },
+    "political_stability": {
+      "1": {
+        "share_significant": 0.005050505050505051,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.07017543859649122,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.1626984126984127,
+        "n": 252
+      }
+    },
+    "voice_accountability": {
+      "1": {
+        "share_significant": 0.0025252525252525255,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.10818713450292397,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.17063492063492064,
+        "n": 252
+      }
+    },
+    "government_effectiveness": {
+      "1": {
+        "share_significant": 0.0,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.05555555555555555,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.16666666666666666,
+        "n": 252
+      }
+    },
+    "regulatory_quality": {
+      "1": {
+        "share_significant": 0.0025252525252525255,
+        "n": 396
+      },
+      "5": {
+        "share_significant": 0.023391812865497075,
+        "n": 342
+      },
+      "10": {
+        "share_significant": 0.1349206349206349,
+        "n": 252
+      }
+    }
+  },
+  "changes_2020_2024": [
+    {
+      "country": "BHS",
+      "dim": "rule_of_law",
+      "start": 63.6182359,
+      "end": 62.6911034,
+      "delta": -0.927132499999999,
+      "margin90": 6.7321530502080735,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 7
+    },
+    {
+      "country": "BHS",
+      "dim": "control_corruption",
+      "start": 72.4682614,
+      "end": 72.8773237,
+      "delta": 0.4090623000000022,
+      "margin90": 9.753898803683349,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 5
+    },
+    {
+      "country": "BHS",
+      "dim": "political_stability",
+      "start": 78.1657975,
+      "end": 84.005469,
+      "delta": 5.839671500000009,
+      "margin90": 10.780219625681934,
+      "distinguishable": false,
+      "sources_start": 6,
+      "sources_end": 6
+    },
+    {
+      "country": "BHS",
+      "dim": "voice_accountability",
+      "start": 70.4729579,
+      "end": 69.4662177,
+      "delta": -1.0067401999999959,
+      "margin90": 8.409027167169517,
+      "distinguishable": false,
+      "sources_start": 4,
+      "sources_end": 5
+    },
+    {
+      "country": "BHS",
+      "dim": "government_effectiveness",
+      "start": 62.9445497,
+      "end": 65.5661308,
+      "delta": 2.621581099999993,
+      "margin90": 13.616285763361658,
+      "distinguishable": false,
+      "sources_start": 3,
+      "sources_end": 4
+    },
+    {
+      "country": "BHS",
+      "dim": "regulatory_quality",
+      "start": 54.4104205,
+      "end": 52.7750152,
+      "delta": -1.6354053000000022,
+      "margin90": 9.617336703501234,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 5
+    },
+    {
+      "country": "BLZ",
+      "dim": "rule_of_law",
+      "start": 50.3241512,
+      "end": 52.1296122,
+      "delta": 1.805460999999994,
+      "margin90": 6.799048418806313,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 8
+    },
+    {
+      "country": "BLZ",
+      "dim": "control_corruption",
+      "start": 46.5271644,
+      "end": 44.8289016,
+      "delta": -1.6982627999999949,
+      "margin90": 9.960566897739755,
+      "distinguishable": false,
+      "sources_start": 4,
+      "sources_end": 6
+    },
+    {
+      "country": "BLZ",
+      "dim": "political_stability",
+      "start": 75.8565223,
+      "end": 79.3135636,
+      "delta": 3.4570413,
+      "margin90": 11.090102949997263,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 5
+    },
+    {
+      "country": "BLZ",
+      "dim": "voice_accountability",
+      "start": 62.0556267,
+      "end": 62.028219,
+      "delta": -0.027407699999997703,
+      "margin90": 8.631070555916644,
+      "distinguishable": false,
+      "sources_start": 4,
+      "sources_end": 7
+    },
+    {
+      "country": "BLZ",
+      "dim": "government_effectiveness",
+      "start": 42.4255991,
+      "end": 47.4920057,
+      "delta": 5.0664066000000005,
+      "margin90": 14.100742899237321,
+      "distinguishable": false,
+      "sources_start": 3,
+      "sources_end": 5
+    },
+    {
+      "country": "BLZ",
+      "dim": "regulatory_quality",
+      "start": 45.4700629,
+      "end": 47.6492893,
+      "delta": 2.1792263999999975,
+      "margin90": 9.320435792015978,
+      "distinguishable": false,
+      "sources_start": 5,
+      "sources_end": 5
+    },
+    {
+      "country": "BRA",
+      "dim": "rule_of_law",
+      "start": 52.7405481,
+      "end": 50.5567512,
+      "delta": -2.1837968999999973,
+      "margin90": 5.852073557060157,
+      "distinguishable": false,
+      "sources_start": 14,
+      "sources_end": 14
+    },
+    {
+      "country": "BRA",
+      "dim": "control_corruption",
+      "start": 41.2417853,
+      "end": 40.0584954,
+      "delta": -1.1832898999999983,
+      "margin90": 7.560390194572319,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 11
+    },
+    {
+      "country": "BRA",
+      "dim": "political_stability",
+      "start": 58.2173358,
+      "end": 58.8375408,
+      "delta": 0.6202049999999986,
+      "margin90": 9.275774276843055,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 10
+    },
+    {
+      "country": "BRA",
+      "dim": "voice_accountability",
+      "start": 62.9761413,
+      "end": 65.097744,
+      "delta": 2.121602700000004,
+      "margin90": 6.3448965883099495,
+      "distinguishable": false,
+      "sources_start": 14,
+      "sources_end": 13
+    },
+    {
+      "country": "BRA",
+      "dim": "government_effectiveness",
+      "start": 51.9092236,
+      "end": 48.5365411,
+      "delta": -3.3726824999999963,
+      "margin90": 10.56922036611693,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "BRA",
+      "dim": "regulatory_quality",
+      "start": 53.3876813,
+      "end": 48.9102525,
+      "delta": -4.477428799999998,
+      "margin90": 7.750338694558489,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "CHL",
+      "dim": "rule_of_law",
+      "start": 71.0293451,
+      "end": 70.1858521,
+      "delta": -0.8434929999999952,
+      "margin90": 5.961266914735168,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 13
+    },
+    {
+      "country": "CHL",
+      "dim": "control_corruption",
+      "start": 72.5988982,
+      "end": 71.0890616,
+      "delta": -1.5098365999999999,
+      "margin90": 7.636584262255422,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "CHL",
+      "dim": "political_stability",
+      "start": 68.1126903,
+      "end": 70.4888283,
+      "delta": 2.3761379999999974,
+      "margin90": 9.818012451961451,
+      "distinguishable": false,
+      "sources_start": 10,
+      "sources_end": 9
+    },
+    {
+      "country": "CHL",
+      "dim": "voice_accountability",
+      "start": 76.8580334,
+      "end": 76.3941407,
+      "delta": -0.4638927000000024,
+      "margin90": 6.543166651334874,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "CHL",
+      "dim": "government_effectiveness",
+      "start": 71.4177044,
+      "end": 73.0996449,
+      "delta": 1.681940499999996,
+      "margin90": 10.796404875882196,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "CHL",
+      "dim": "regulatory_quality",
+      "start": 71.6425443,
+      "end": 68.0529345,
+      "delta": -3.589609799999991,
+      "margin90": 7.872160963665639,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "COL",
+      "dim": "rule_of_law",
+      "start": 51.2088287,
+      "end": 49.2940147,
+      "delta": -1.9148139999999998,
+      "margin90": 5.932241732546286,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 14
+    },
+    {
+      "country": "COL",
+      "dim": "control_corruption",
+      "start": 42.8684473,
+      "end": 42.3503719,
+      "delta": -0.5180754000000007,
+      "margin90": 7.527024492572173,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "COL",
+      "dim": "political_stability",
+      "start": 53.6015733,
+      "end": 50.9539061,
+      "delta": -2.6476672000000008,
+      "margin90": 9.790052969995584,
+      "distinguishable": false,
+      "sources_start": 10,
+      "sources_end": 10
+    },
+    {
+      "country": "COL",
+      "dim": "voice_accountability",
+      "start": 59.830504,
+      "end": 60.0046088,
+      "delta": 0.17410480000000206,
+      "margin90": 6.543166615857715,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "COL",
+      "dim": "government_effectiveness",
+      "start": 51.9685065,
+      "end": 51.5641126,
+      "delta": -0.4043938999999952,
+      "margin90": 10.541695582845874,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 10
+    },
+    {
+      "country": "COL",
+      "dim": "regulatory_quality",
+      "start": 59.5069227,
+      "end": 56.7782168,
+      "delta": -2.7287058999999942,
+      "margin90": 7.745930855331991,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "CRI",
+      "dim": "rule_of_law",
+      "start": 68.7392865,
+      "end": 68.2626888,
+      "delta": -0.47659769999999924,
+      "margin90": 6.168581395358256,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 13
+    },
+    {
+      "country": "CRI",
+      "dim": "control_corruption",
+      "start": 63.2960634,
+      "end": 61.8341927,
+      "delta": -1.4618706999999986,
+      "margin90": 8.011274183638454,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 11
+    },
+    {
+      "country": "CRI",
+      "dim": "political_stability",
+      "start": 82.0305766,
+      "end": 87.7441552,
+      "delta": 5.713578599999991,
+      "margin90": 10.039690913257466,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "CRI",
+      "dim": "voice_accountability",
+      "start": 79.4594651,
+      "end": 76.2004148,
+      "delta": -3.2590502999999984,
+      "margin90": 6.553723225077677,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "CRI",
+      "dim": "government_effectiveness",
+      "start": 58.1387683,
+      "end": 60.364712,
+      "delta": 2.225943699999995,
+      "margin90": 11.302448467839243,
+      "distinguishable": false,
+      "sources_start": 7,
+      "sources_end": 9
+    },
+    {
+      "country": "CRI",
+      "dim": "regulatory_quality",
+      "start": 65.4475496,
+      "end": 64.4721886,
+      "delta": -0.9753610000000066,
+      "margin90": 8.249051525048614,
+      "distinguishable": false,
+      "sources_start": 7,
+      "sources_end": 8
+    },
+    {
+      "country": "DOM",
+      "dim": "rule_of_law",
+      "start": 53.1311846,
+      "end": 55.8897387,
+      "delta": 2.758554100000005,
+      "margin90": 6.164866742512252,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 12
+    },
+    {
+      "country": "DOM",
+      "dim": "control_corruption",
+      "start": 33.8041609,
+      "end": 42.7411629,
+      "delta": 8.937002,
+      "margin90": 7.961065669866341,
+      "distinguishable": true,
+      "sources_start": 12,
+      "sources_end": 10
+    },
+    {
+      "country": "DOM",
+      "dim": "political_stability",
+      "start": 69.4518509,
+      "end": 76.5216624,
+      "delta": 7.0698115,
+      "margin90": 10.069922914886801,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "DOM",
+      "dim": "voice_accountability",
+      "start": 61.230831,
+      "end": 63.9269227,
+      "delta": 2.6960916999999966,
+      "margin90": 6.5537232253225275,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "DOM",
+      "dim": "government_effectiveness",
+      "start": 47.4613889,
+      "end": 53.9090315,
+      "delta": 6.447642599999995,
+      "margin90": 11.070264077597544,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "DOM",
+      "dim": "regulatory_quality",
+      "start": 54.7623562,
+      "end": 59.5051737,
+      "delta": 4.742817500000001,
+      "margin90": 8.114374480112822,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 7
+    },
+    {
+      "country": "ECU",
+      "dim": "rule_of_law",
+      "start": 49.5581185,
+      "end": 41.9851335,
+      "delta": -7.572984999999996,
+      "margin90": 6.150515412730556,
+      "distinguishable": true,
+      "sources_start": 12,
+      "sources_end": 13
+    },
+    {
+      "country": "ECU",
+      "dim": "control_corruption",
+      "start": 37.6052427,
+      "end": 32.4325699,
+      "delta": -5.172672800000001,
+      "margin90": 7.921986609510675,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "ECU",
+      "dim": "political_stability",
+      "start": 63.0577368,
+      "end": 55.325729,
+      "delta": -7.732007799999998,
+      "margin90": 10.039690913257466,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "ECU",
+      "dim": "voice_accountability",
+      "start": 57.0508826,
+      "end": 57.5179096,
+      "delta": 0.46702700000000164,
+      "margin90": 6.553723260555226,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "ECU",
+      "dim": "government_effectiveness",
+      "start": 46.434704,
+      "end": 49.3236097,
+      "delta": 2.888905699999995,
+      "margin90": 11.038674328561662,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "ECU",
+      "dim": "regulatory_quality",
+      "start": 43.2410757,
+      "end": 44.7640501,
+      "delta": 1.5229743999999954,
+      "margin90": 8.109289374647151,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "GTM",
+      "dim": "rule_of_law",
+      "start": 42.7879231,
+      "end": 42.0421926,
+      "delta": -0.7457305000000005,
+      "margin90": 6.164866778152509,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 12
+    },
+    {
+      "country": "GTM",
+      "dim": "control_corruption",
+      "start": 25.8627648,
+      "end": 29.356717,
+      "delta": 3.493952199999999,
+      "margin90": 7.961065704774601,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 10
+    },
+    {
+      "country": "GTM",
+      "dim": "political_stability",
+      "start": 55.44489,
+      "end": 63.7385299,
+      "delta": 8.293639900000002,
+      "margin90": 10.069922879051225,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "GTM",
+      "dim": "voice_accountability",
+      "start": 52.416564,
+      "end": 51.1608034,
+      "delta": -1.2557606000000021,
+      "margin90": 6.553723260555226,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "GTM",
+      "dim": "government_effectiveness",
+      "start": 38.7529776,
+      "end": 37.0120878,
+      "delta": -1.740889799999998,
+      "margin90": 11.070264077597546,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "GTM",
+      "dim": "regulatory_quality",
+      "start": 49.9469116,
+      "end": 50.874865,
+      "delta": 0.9279533999999998,
+      "margin90": 8.114374480112822,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 7
+    },
+    {
+      "country": "HND",
+      "dim": "rule_of_law",
+      "start": 39.8551546,
+      "end": 38.6045194,
+      "delta": -1.2506351999999978,
+      "margin90": 5.865086148339579,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 14
+    },
+    {
+      "country": "HND",
+      "dim": "control_corruption",
+      "start": 27.3481657,
+      "end": 23.1946934,
+      "delta": -4.153472300000001,
+      "margin90": 7.626946435537587,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "HND",
+      "dim": "political_stability",
+      "start": 53.313827,
+      "end": 58.552621,
+      "delta": 5.238793999999999,
+      "margin90": 10.069922914886801,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "HND",
+      "dim": "voice_accountability",
+      "start": 45.3902997,
+      "end": 47.7090657,
+      "delta": 2.3187659999999966,
+      "margin90": 6.44334436033954,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "HND",
+      "dim": "government_effectiveness",
+      "start": 40.632136,
+      "end": 40.5524727,
+      "delta": -0.07966329999999999,
+      "margin90": 10.364463513152758,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 10
+    },
+    {
+      "country": "HND",
+      "dim": "regulatory_quality",
+      "start": 45.9181909,
+      "end": 45.1520988,
+      "delta": -0.7660921000000016,
+      "margin90": 7.373896119692874,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "HTI",
+      "dim": "rule_of_law",
+      "start": 39.3025714,
+      "end": 32.293503,
+      "delta": -7.009068399999997,
+      "margin90": 6.554077199935541,
+      "distinguishable": true,
+      "sources_start": 11,
+      "sources_end": 11
+    },
+    {
+      "country": "HTI",
+      "dim": "control_corruption",
+      "start": 18.8985742,
+      "end": 17.0438893,
+      "delta": -1.8546848999999987,
+      "margin90": 8.246312553083683,
+      "distinguishable": false,
+      "sources_start": 10,
+      "sources_end": 9
+    },
+    {
+      "country": "HTI",
+      "dim": "political_stability",
+      "start": 47.5299844,
+      "end": 44.9932916,
+      "delta": -2.5366927999999973,
+      "margin90": 10.169196939906186,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "HTI",
+      "dim": "voice_accountability",
+      "start": 41.9821098,
+      "end": 34.5541897,
+      "delta": -7.4279201000000015,
+      "margin90": 6.867599869309299,
+      "distinguishable": true,
+      "sources_start": 10,
+      "sources_end": 8
+    },
+    {
+      "country": "HTI",
+      "dim": "government_effectiveness",
+      "start": 15.126391,
+      "end": 10.7939187,
+      "delta": -4.332472299999999,
+      "margin90": 10.755248685903346,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 7
+    },
+    {
+      "country": "HTI",
+      "dim": "regulatory_quality",
+      "start": 34.2860426,
+      "end": 30.9493306,
+      "delta": -3.336712000000002,
+      "margin90": 7.697251969505693,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    },
+    {
+      "country": "MEX",
+      "dim": "rule_of_law",
+      "start": 42.9836475,
+      "end": 40.2631224,
+      "delta": -2.720525099999996,
+      "margin90": 5.839746941316798,
+      "distinguishable": false,
+      "sources_start": 14,
+      "sources_end": 15
+    },
+    {
+      "country": "MEX",
+      "dim": "control_corruption",
+      "start": 30.7585351,
+      "end": 29.3815441,
+      "delta": -1.3769910000000003,
+      "margin90": 7.527024457464912,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "MEX",
+      "dim": "political_stability",
+      "start": 51.7248742,
+      "end": 55.4426436,
+      "delta": 3.7177693999999946,
+      "margin90": 9.252300201100848,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 11
+    },
+    {
+      "country": "MEX",
+      "dim": "voice_accountability",
+      "start": 57.4400797,
+      "end": 53.2988104,
+      "delta": -4.141269299999998,
+      "margin90": 6.344896517599643,
+      "distinguishable": false,
+      "sources_start": 14,
+      "sources_end": 13
+    },
+    {
+      "country": "MEX",
+      "dim": "government_effectiveness",
+      "start": 52.5832181,
+      "end": 48.5494138,
+      "delta": -4.0338043,
+      "margin90": 10.54169558284587,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 10
+    },
+    {
+      "country": "MEX",
+      "dim": "regulatory_quality",
+      "start": 54.9581648,
+      "end": 52.7818959,
+      "delta": -2.1762688999999966,
+      "margin90": 7.745930855331988,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "NIC",
+      "dim": "rule_of_law",
+      "start": 35.9122865,
+      "end": 31.509348,
+      "delta": -4.402938500000001,
+      "margin90": 5.879511960106582,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 13
+    },
+    {
+      "country": "NIC",
+      "dim": "control_corruption",
+      "start": 24.8089499,
+      "end": 19.2956729,
+      "delta": -5.513277000000002,
+      "margin90": 7.70934718586833,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 11
+    },
+    {
+      "country": "NIC",
+      "dim": "political_stability",
+      "start": 56.4442218,
+      "end": 64.3681288,
+      "delta": 7.923906999999993,
+      "margin90": 10.069922879051227,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "NIC",
+      "dim": "voice_accountability",
+      "start": 35.6776168,
+      "end": 25.8891172,
+      "delta": -9.788499600000002,
+      "margin90": 6.4433443603395375,
+      "distinguishable": true,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "NIC",
+      "dim": "government_effectiveness",
+      "start": 36.914883,
+      "end": 30.9640393,
+      "delta": -5.950843700000004,
+      "margin90": 10.56058262358468,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "NIC",
+      "dim": "regulatory_quality",
+      "start": 43.6913762,
+      "end": 39.3988712,
+      "delta": -4.2925049999999985,
+      "margin90": 7.485352126997606,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "PAN",
+      "dim": "rule_of_law",
+      "start": 55.0269074,
+      "end": 53.2051087,
+      "delta": -1.8217987000000022,
+      "margin90": 6.182890791681309,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 12
+    },
+    {
+      "country": "PAN",
+      "dim": "control_corruption",
+      "start": 37.5600685,
+      "end": 37.131345,
+      "delta": -0.4287234999999967,
+      "margin90": 8.049919870681599,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 10
+    },
+    {
+      "country": "PAN",
+      "dim": "political_stability",
+      "start": 71.5267292,
+      "end": 71.8407332,
+      "delta": 0.31400399999999706,
+      "margin90": 10.069922879051221,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 8
+    },
+    {
+      "country": "PAN",
+      "dim": "voice_accountability",
+      "start": 68.4383845,
+      "end": 67.0129566,
+      "delta": -1.4254279000000025,
+      "margin90": 6.620151242668034,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 10
+    },
+    {
+      "country": "PAN",
+      "dim": "government_effectiveness",
+      "start": 60.6608296,
+      "end": 57.4707956,
+      "delta": -3.190033999999997,
+      "margin90": 11.333303047484792,
+      "distinguishable": false,
+      "sources_start": 7,
+      "sources_end": 8
+    },
+    {
+      "country": "PAN",
+      "dim": "regulatory_quality",
+      "start": 60.6521859,
+      "end": 53.9586276,
+      "delta": -6.693558299999999,
+      "margin90": 8.254050527144114,
+      "distinguishable": false,
+      "sources_start": 7,
+      "sources_end": 7
+    },
+    {
+      "country": "PER",
+      "dim": "rule_of_law",
+      "start": 51.96263,
+      "end": 50.1051553,
+      "delta": -1.8574746999999974,
+      "margin90": 5.932241732546286,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 14
+    },
+    {
+      "country": "PER",
+      "dim": "control_corruption",
+      "start": 38.0035758,
+      "end": 33.7059337,
+      "delta": -4.297642099999997,
+      "margin90": 7.527024492572175,
+      "distinguishable": false,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "PER",
+      "dim": "political_stability",
+      "start": 60.168047,
+      "end": 56.1033679,
+      "delta": -4.064679099999999,
+      "margin90": 9.790053004987904,
+      "distinguishable": false,
+      "sources_start": 10,
+      "sources_end": 10
+    },
+    {
+      "country": "PER",
+      "dim": "voice_accountability",
+      "start": 64.8398856,
+      "end": 57.9843678,
+      "delta": -6.855517800000001,
+      "margin90": 6.5431666513348725,
+      "distinguishable": true,
+      "sources_start": 13,
+      "sources_end": 12
+    },
+    {
+      "country": "PER",
+      "dim": "government_effectiveness",
+      "start": 51.9941924,
+      "end": 49.2665579,
+      "delta": -2.7276345000000006,
+      "margin90": 10.541695582845874,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 10
+    },
+    {
+      "country": "PER",
+      "dim": "regulatory_quality",
+      "start": 61.117186,
+      "end": 58.2295298,
+      "delta": -2.887656199999995,
+      "margin90": 7.745930891223868,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "PRY",
+      "dim": "rule_of_law",
+      "start": 52.4750947,
+      "end": 48.6645513,
+      "delta": -3.8105434000000002,
+      "margin90": 6.84725075830335,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 13
+    },
+    {
+      "country": "PRY",
+      "dim": "control_corruption",
+      "start": 31.6692411,
+      "end": 27.5110749,
+      "delta": -4.1581662,
+      "margin90": 8.426628320758317,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 11
+    },
+    {
+      "country": "PRY",
+      "dim": "political_stability",
+      "start": 65.5554031,
+      "end": 65.640444,
+      "delta": 0.08504089999999564,
+      "margin90": 10.13926094594146,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "PRY",
+      "dim": "voice_accountability",
+      "start": 56.9520899,
+      "end": 56.8785909,
+      "delta": -0.0734989999999982,
+      "margin90": 6.914390102749238,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 11
+    },
+    {
+      "country": "PRY",
+      "dim": "government_effectiveness",
+      "start": 43.9063466,
+      "end": 47.6020627,
+      "delta": 3.6957160999999985,
+      "margin90": 11.038674328561664,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "PRY",
+      "dim": "regulatory_quality",
+      "start": 52.9542203,
+      "end": 54.5919737,
+      "delta": 1.637753399999994,
+      "margin90": 8.40207276802886,
+      "distinguishable": false,
+      "sources_start": 7,
+      "sources_end": 8
+    },
+    {
+      "country": "SLV",
+      "dim": "rule_of_law",
+      "start": 47.9097515,
+      "end": 47.3724053,
+      "delta": -0.5373462000000018,
+      "margin90": 6.134221125275004,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 14
+    },
+    {
+      "country": "SLV",
+      "dim": "control_corruption",
+      "start": 37.7419733,
+      "end": 36.7575081,
+      "delta": -0.9844651999999954,
+      "margin90": 7.834138688891737,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 12
+    },
+    {
+      "country": "SLV",
+      "dim": "political_stability",
+      "start": 62.0278402,
+      "end": 68.0353506,
+      "delta": 6.007510400000001,
+      "margin90": 10.039690878283979,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "SLV",
+      "dim": "voice_accountability",
+      "start": 58.350824,
+      "end": 45.0019761,
+      "delta": -13.348847900000003,
+      "margin90": 6.553723225322525,
+      "distinguishable": true,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "SLV",
+      "dim": "government_effectiveness",
+      "start": 50.9781163,
+      "end": 46.8954926,
+      "delta": -4.082623700000006,
+      "margin90": 10.818559147184986,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 10
+    },
+    {
+      "country": "SLV",
+      "dim": "regulatory_quality",
+      "start": 55.3478368,
+      "end": 53.4441283,
+      "delta": -1.9037085000000005,
+      "margin90": 7.967746599214757,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "URY",
+      "dim": "rule_of_law",
+      "start": 73.2409136,
+      "end": 74.1172302,
+      "delta": 0.8763165999999956,
+      "margin90": 6.1505154127305515,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 13
+    },
+    {
+      "country": "URY",
+      "dim": "control_corruption",
+      "start": 78.5962535,
+      "end": 79.0649127,
+      "delta": 0.4686591999999905,
+      "margin90": 7.921986574430214,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "URY",
+      "dim": "political_stability",
+      "start": 85.5812799,
+      "end": 88.4803636,
+      "delta": 2.8990837000000056,
+      "margin90": 10.039690913257466,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "URY",
+      "dim": "voice_accountability",
+      "start": 80.6792185,
+      "end": 79.7854474,
+      "delta": -0.8937711000000093,
+      "margin90": 6.620151277898256,
+      "distinguishable": false,
+      "sources_start": 11,
+      "sources_end": 10
+    },
+    {
+      "country": "URY",
+      "dim": "government_effectiveness",
+      "start": 69.8464022,
+      "end": 70.0130198,
+      "delta": 0.16661759999999504,
+      "margin90": 11.038674328561662,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    },
+    {
+      "country": "URY",
+      "dim": "regulatory_quality",
+      "start": 66.825602,
+      "end": 64.3969879,
+      "delta": -2.4286141000000043,
+      "margin90": 8.109289374647151,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 8
+    }
+  ],
+  "el_salvador_2020_2024": [
+    {
+      "country": "SLV",
+      "dim": "rule_of_law",
+      "start": 47.9097515,
+      "end": 47.3724053,
+      "delta": -0.5373462000000018,
+      "margin90": 6.134221125275004,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 14
+    },
+    {
+      "country": "SLV",
+      "dim": "control_corruption",
+      "start": 37.7419733,
+      "end": 36.7575081,
+      "delta": -0.9844651999999954,
+      "margin90": 7.834138688891737,
+      "distinguishable": false,
+      "sources_start": 12,
+      "sources_end": 12
+    },
+    {
+      "country": "SLV",
+      "dim": "political_stability",
+      "start": 62.0278402,
+      "end": 68.0353506,
+      "delta": 6.007510400000001,
+      "margin90": 10.039690878283979,
+      "distinguishable": false,
+      "sources_start": 9,
+      "sources_end": 9
+    },
+    {
+      "country": "SLV",
+      "dim": "voice_accountability",
+      "start": 58.350824,
+      "end": 45.0019761,
+      "delta": -13.348847900000003,
+      "margin90": 6.553723225322525,
+      "distinguishable": true,
+      "sources_start": 12,
+      "sources_end": 11
+    },
+    {
+      "country": "SLV",
+      "dim": "government_effectiveness",
+      "start": 50.9781163,
+      "end": 46.8954926,
+      "delta": -4.082623700000006,
+      "margin90": 10.818559147184986,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 10
+    },
+    {
+      "country": "SLV",
+      "dim": "regulatory_quality",
+      "start": 55.3478368,
+      "end": 53.4441283,
+      "delta": -1.9037085000000005,
+      "margin90": 7.967746599214757,
+      "distinguishable": false,
+      "sources_start": 8,
+      "sources_end": 9
+    }
+  ],
+  "reliability_worst_case": {
+    "index": {
+      "beta_eq2": 0.6799777437301386,
+      "reliability": 0.5883236982214008,
+      "beta_if_reliability": 1.1557884643875864,
+      "n_obs": 432
+    },
+    "rule_of_law": {
+      "beta_eq2": 1.1180471234895752,
+      "reliability": 0.0027058435242947043,
+      "n_obs": 432
+    },
+    "control_corruption": {
+      "beta_eq2": 0.2834774105938541,
+      "reliability": -0.6138809818433952,
+      "n_obs": 432
+    },
+    "political_stability": {
+      "beta_eq2": 0.3151006870048061,
+      "reliability": -0.04155565966444219,
+      "n_obs": 432
+    },
+    "voice_accountability": {
+      "beta_eq2": -0.03173321201756275,
+      "reliability": 0.11964546770802464,
+      "n_obs": 432
+    },
+    "government_effectiveness": {
+      "beta_eq2": -0.15635202164675555,
+      "reliability": -0.9289275874133458,
+      "n_obs": 432
+    },
+    "regulatory_quality": {
+      "beta_eq2": 0.5496385344474866,
+      "reliability": -0.33663323926545785,
+      "n_obs": 432
+    }
+  },
+  "eq1_eq2_by_content": {
+    "violence_related": {
+      "dims": [
+        "rule_of_law",
+        "political_stability"
+      ],
+      "EQ1": {
+        "coef": -0.23610069039399575,
+        "se_cl": 0.09561385394203763,
+        "t": -2.469314651170981,
+        "p_cl": 0.024432570463333997,
+        "p_wild": 0.004,
+        "n_obs": 379
+      },
+      "EQ2": {
+        "coef": 0.8268798644092005,
+        "se_cl": 0.2964922262937429,
+        "t": 2.7888753602260996,
+        "p_cl": 0.012596756426046315,
+        "p_wild": 0.009,
+        "n_obs": 432
+      }
+    },
+    "no_crime_content": {
+      "dims": [
+        "control_corruption",
+        "voice_accountability",
+        "regulatory_quality"
+      ],
+      "EQ1": {
+        "coef": -0.04674101675525307,
+        "se_cl": 0.10170422689033791,
+        "t": -0.459577917107136,
+        "p_cl": 0.6516418645094539,
+        "p_wild": 0.664,
+        "n_obs": 379
+      },
+      "EQ2": {
+        "coef": 0.47651392577907037,
+        "se_cl": 0.5949338104594916,
+        "t": 0.8009528411421756,
+        "p_cl": 0.43421115951058,
+        "p_wild": 0.433,
+        "n_obs": 432
+      }
+    },
+    "government_effectiveness": {
+      "dims": [
+        "government_effectiveness"
+      ],
+      "EQ1": {
+        "coef": -0.1707889456268461,
+        "se_cl": 0.07092668018917357,
+        "t": -2.4079647485448747,
+        "p_cl": 0.027676770466796112,
+        "p_wild": 0.004,
+        "n_obs": 379
+      },
+      "EQ2": {
+        "coef": -0.15617095381340362,
+        "se_cl": 0.3320825775080396,
+        "t": -0.4702774682891119,
+        "p_cl": 0.6441336758933779,
+        "p_wild": 0.618,
+        "n_obs": 432
+      }
+    },
+    "all_six": {
+      "dims": [
+        "rule_of_law",
+        "control_corruption",
+        "political_stability",
+        "voice_accountability",
+        "government_effectiveness",
+        "regulatory_quality"
+      ],
+      "EQ1": {
+        "coef": -0.13053556278009942,
+        "se_cl": 0.08888288330768106,
+        "t": -1.4686243056295951,
+        "p_cl": 0.1601956485384273,
+        "p_wild": 0.142,
+        "n_obs": 379
+      },
+      "EQ2": {
+        "coef": 0.6799777437301385,
+        "se_cl": 0.4896185840351069,
+        "t": 1.3887907156754948,
+        "p_cl": 0.1828242527193115,
+        "p_wild": 0.197,
+        "n_obs": 432
+      }
+    }
+  },
+  "sensitivity_min_sources": {
+    "min_1": {
+      "EQ1": {
+        "coef": -0.13053556278009948,
+        "se_cl": 0.08888288330768107,
+        "t": -1.4686243056295956,
+        "p_cl": 0.16019564853842716,
+        "p_wild": 0.142,
+        "n_obs": 379
+      },
+      "EQ2": {
+        "coef": 0.6799777437301386,
+        "se_cl": 0.4896185840351069,
+        "t": 1.388790715675495,
+        "p_cl": 0.1828242527193115,
+        "p_wild": 0.197,
+        "n_obs": 432
+      },
+      "n_country_years": 432
+    },
+    "min_3": {
+      "EQ1": {
+        "coef": -0.12415397321570715,
+        "se_cl": 0.09044005501847534,
+        "t": -1.3727764007921561,
+        "p_cl": 0.18766148419760262,
+        "p_wild": 0.178,
+        "n_obs": 368
+      },
+      "EQ2": {
+        "coef": 0.7965473320040569,
+        "se_cl": 0.47697940853226933,
+        "t": 1.6699826402467597,
+        "p_cl": 0.11323089702632774,
+        "p_wild": 0.133,
+        "n_obs": 418
+      },
+      "n_country_years": 418
+    },
+    "min_5": {
+      "EQ1": {
+        "coef": -0.11241766576146732,
+        "se_cl": 0.0898722917558946,
+        "t": -1.2508601212352415,
+        "p_cl": 0.228968461489994,
+        "p_wild": 0.207,
+        "n_obs": 340
+      },
+      "EQ2": {
+        "coef": 0.7560016627846062,
+        "se_cl": 0.4053076546746772,
+        "t": 1.8652538486878956,
+        "p_cl": 0.08059182479570147,
+        "p_wild": 0.073,
+        "n_obs": 386
+      },
+      "n_country_years": 386
+    }
+  },
+  "summary": {
+    "n_changes_2020_2024": 108,
+    "n_distinguishable_2020_2024": 7,
+    "slv_distinguishable_dims": [
+      "voice_accountability"
+    ],
+    "mean_noise_to_within_sd": 0.9294846617274096,
+    "index_worst_case_reliability": 0.5883236982214008,
+    "eq1_p_wild_violence_related": 0.004,
+    "eq1_p_wild_no_crime_content": 0.664,
+    "eq1_p_wild_government_effectiveness": 0.004,
+    "grouping_is_post_hoc": true,
+    "n_bootstrap": 999
+  }
+}

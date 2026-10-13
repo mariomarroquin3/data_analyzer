@@ -197,3 +197,53 @@ def test_spatial_adjacency_definitions_are_symmetric_and_consistent(load_json):
     for key, v in sp["neighbour_pair_gap"].items():
         an = key.split("_", 1)[1]
         assert 0 < v["n_adjacent_pairs"] <= adj[an]
+
+
+def test_wgi_confidence_interval_data_matches_panel(panel):
+    import pandas as pd
+    from conftest import ROOT
+    ci = pd.read_csv(ROOT / "foundational_datasets" / "wgi_confidence_intervals.csv")
+    assert len(ci) == 18 * 6 * 24                                  # WGI has no 2001 estimate
+    assert (ci["lb"] <= ci["score"]).all() and (ci["score"] <= ci["ub"]).all()
+    assert ci["n_sources"].min() >= 1
+    wide = ci.pivot_table(index=["country_code", "year"], columns="dim", values="score").reset_index()
+    m = panel.merge(wide, on=["country_code", "year"], suffixes=("", "_api"))
+    for d in ("rule_of_law", "political_stability", "control_corruption", "voice_accountability",
+              "government_effectiveness", "regulatory_quality"):
+        assert (m[d] - m[d + "_api"]).abs().max() < 1e-4
+
+
+def test_wgi_measurement_outputs_are_consistent(load_json):
+    w = load_json("14_wgi_measurement.json")
+    s = w["summary"]
+    chg = w["changes_2020_2024"]
+    assert s["n_changes_2020_2024"] == len(chg) == 18 * 6
+    assert s["n_distinguishable_2020_2024"] == sum(c["distinguishable"] for c in chg)
+    for c in chg:
+        assert c["distinguishable"] == (abs(c["delta"]) > c["margin90"])
+    for d, share in w["change_distinguishable_share"].items():
+        assert share["1"]["share_significant"] <= share["5"]["share_significant"] <= share["10"]["share_significant"] + 1e-9
+    assert 0.0 < w["reliability_worst_case"]["index"]["reliability"] <= 1.0
+    for v in w["eq1_eq2_by_content"].values():
+        assert 0.0 < v["EQ1"]["p_wild"] <= 1.0 and 0.0 < v["EQ2"]["p_wild"] <= 1.0
+    # the all-six index must reproduce Module 02's EQ1 / EQ2 coefficients
+    fe = load_json("02_fe_results.json")
+    six = w["eq1_eq2_by_content"]["all_six"]
+    assert math.isclose(six["EQ1"]["coef"], fe["EQ1"]["coef_key_cl"], rel_tol=1e-6)
+    assert math.isclose(six["EQ2"]["coef"], fe["EQ2"]["coef_key_cl"], rel_tol=1e-6)
+    assert s["grouping_is_post_hoc"] is True
+
+
+def test_growth_ceiling_robustness_outputs(load_json):
+    cr = load_json("15_growth_ceiling_robustness.json")
+    g8 = load_json("08_growth_ceiling_risk.json")
+    for q, v in cr["frequentist_loco"].items():
+        assert v["n_fits"] == 18 and v["n_same_sign_and_p05"] <= v["n_same_sign"] <= v["n_fits"]
+        assert v["coef_min"] <= v["coef_max"]
+        # the full-sample frequentist coefficient is Module 08's
+        assert math.isclose(v["full_coef"], g8["quantiles"][q]["freq"]["coef"], rel_tol=1e-9)
+    assert math.isclose(cr["consistency_check"]["module08_posterior_mean_q090"],
+                        cr["consistency_check"]["refit_posterior_mean_q090"], abs_tol=1e-6)
+    for q, b in cr["bayesian_without_excluded"].items():
+        assert b["n_countries"] == 17 and b["beta_hdi_lo"] < b["beta_mean"] < b["beta_hdi_hi"]
+        assert b["full_sample_mean"] == g8["quantiles"][q]["bayes"]["beta_mean"]

@@ -81,3 +81,20 @@ def test_readme_growth_ceiling_numbers_match_json(readme, load_json):
         assert f"{s['ceiling_low_violence_mean']:.2f} pts" in text
     lo = gc["quantiles"]["0.05"]["bayes"]
     assert f"{lo['p_beta_negative']:.3f}" in text
+
+
+@pytest.mark.parametrize("readme", ["README.md", "README_ES.md"])
+def test_readme_wgi_measurement_and_ceiling_robustness_numbers_match_json(readme, load_json):
+    text = _read(ROOT / readme).replace("\u2212", "-")
+    w = load_json("14_wgi_measurement.json")
+    s = w["summary"]
+    assert f"{s['n_distinguishable_2020_2024']} de {s['n_changes_2020_2024']}" in text or f"{s['n_distinguishable_2020_2024']} of {s['n_changes_2020_2024']}" in text
+    assert f"{w['reliability_worst_case']['index']['reliability']:.2f}" in text
+    assert f"{s['mean_noise_to_within_sd']:.2f}" in text
+    g = w["eq1_eq2_by_content"]["violence_related"]["EQ1"]
+    assert f"{g['coef']:.3f}" in text
+    c = load_json("15_growth_ceiling_robustness.json")
+    lo = c["frequentist_loco"]["0.90"]
+    assert f"{lo['n_same_sign_and_p05']} de {lo['n_fits']}" in text or f"{lo['n_same_sign_and_p05']} of {lo['n_fits']}" in text
+    b = c["bayesian_without_excluded"]["0.90"]
+    assert f"{b['beta_mean']:.2f}" in text and f"{b['beta_hdi_lo']:.2f}" in text
