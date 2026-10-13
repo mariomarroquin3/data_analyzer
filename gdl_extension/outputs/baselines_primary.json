@@ -1,0 +1,2881 @@
+{
+  "sample": "primary",
+  "n_economies": 92,
+  "n_rows_test": 1104,
+  "folds": [
+    [
+      2012,
+      2014
+    ],
+    [
+      2015,
+      2017
+    ],
+    [
+      2018,
+      2020
+    ],
+    [
+      2021,
+      2023
+    ]
+  ],
+  "n_placebo_draws": 5,
+  "winsor_bounds_by_fold": {
+    "(2012, 2014)": [
+      -7.792515376008397,
+      17.625963114924556
+    ],
+    "(2015, 2017)": [
+      -7.7408454860510405,
+      16.80425467486342
+    ],
+    "(2018, 2020)": [
+      -7.642911938190401,
+      15.106212269920894
+    ],
+    "(2021, 2023)": [
+      -9.981160662461766,
+      14.110348537195083
+    ]
+  },
+  "metrics": {
+    "mean": {
+      "rmse_dm_all": 2.9226115168873346,
+      "pinball_dm_all": 1.061108284158279,
+      "rmse_dm_all_unclipped": 4.346303190700575,
+      "pinball_dm_all_unclipped": 1.1940044248151782,
+      "rmse_dm_no2020": 2.895700813154027,
+      "pinball_dm_no2020": 1.0393349475302307,
+      "rmse_dm_no2020_unclipped": 4.041915593991964,
+      "pinball_dm_no2020_unclipped": 1.1196481768317328
+    },
+    "last_growth": {
+      "rmse_dm_all": 4.0754799159666515,
+      "pinball_dm_all": 1.204682441832479,
+      "rmse_dm_all_unclipped": 5.4081624950936655,
+      "pinball_dm_all_unclipped": 1.3351497401330912,
+      "rmse_dm_no2020": 4.132508922989026,
+      "pinball_dm_no2020": 1.1910248684482732,
+      "rmse_dm_no2020_unclipped": 5.300768410279007,
+      "pinball_dm_no2020_unclipped": 1.272792423262663
+    },
+    "ridge|none": {
+      "rmse_dm_all": 2.8971512950003797,
+      "pinball_dm_all": 0.9610004203492657,
+      "rmse_dm_all_unclipped": 4.409912232758744,
+      "pinball_dm_all_unclipped": 1.0949577757954707,
+      "rmse_dm_no2020": 2.8704933784111075,
+      "pinball_dm_no2020": 0.9290157178552889,
+      "rmse_dm_no2020_unclipped": 4.144199853607721,
+      "pinball_dm_no2020_unclipped": 1.0124454804850318
+    },
+    "rf|none": {
+      "rmse_dm_all": 2.789474352956311,
+      "pinball_dm_all": 0.9480173876092767,
+      "rmse_dm_all_unclipped": 4.288677203709557,
+      "pinball_dm_all_unclipped": 1.0804644966993742,
+      "rmse_dm_no2020": 2.7527291496437023,
+      "pinball_dm_no2020": 0.9146494663367514,
+      "rmse_dm_no2020_unclipped": 3.9887966387680724,
+      "pinball_dm_no2020_unclipped": 0.9967887176470227
+    },
+    "gbm|none": {
+      "rmse_dm_all": 2.7832063500554174,
+      "pinball_dm_all": 0.9388005351667986,
+      "rmse_dm_all_unclipped": 4.278583377931428,
+      "pinball_dm_all_unclipped": 1.0716502321403754,
+      "rmse_dm_no2020": 2.7450882793366453,
+      "pinball_dm_no2020": 0.90502514866248,
+      "rmse_dm_no2020_unclipped": 3.9738211535649723,
+      "pinball_dm_no2020_unclipped": 0.9851545737096163
+    },
+    "gbmq|none": {
+      "rmse_dm_all": 2.981194819139305,
+      "pinball_dm_all": 1.0688270142732936,
+      "rmse_dm_all_unclipped": 4.422568335737698,
+      "pinball_dm_all_unclipped": 1.1985478245629846,
+      "rmse_dm_no2020": 2.9446301965904236,
+      "pinball_dm_no2020": 1.0401294928944056,
+      "rmse_dm_no2020_unclipped": 4.090496857895395,
+      "pinball_dm_no2020_unclipped": 1.119052640264157
+    },
+    "linq|none": {
+      "rmse_dm_all": 3.153342422717726,
+      "pinball_dm_all": 1.10769669977502,
+      "rmse_dm_all_unclipped": 4.599675307375041,
+      "pinball_dm_all_unclipped": 1.2416614834541153,
+      "rmse_dm_no2020": 3.1259427566359412,
+      "pinball_dm_no2020": 1.080978379030878,
+      "rmse_dm_no2020_unclipped": 4.324841940223402,
+      "pinball_dm_no2020_unclipped": 1.1651128829564514
+    },
+    "ridge|border": {
+      "rmse_dm_all": 2.8986133688510116,
+      "pinball_dm_all": 0.964782779968952,
+      "rmse_dm_all_unclipped": 4.415167620378524,
+      "pinball_dm_all_unclipped": 1.0973663579313648,
+      "rmse_dm_no2020": 2.864450581397971,
+      "pinball_dm_no2020": 0.9311530660554528,
+      "rmse_dm_no2020_unclipped": 4.136725070712963,
+      "pinball_dm_no2020_unclipped": 1.01356433477603
+    },
+    "rf|border": {
+      "rmse_dm_all": 2.7678741852276145,
+      "pinball_dm_all": 0.9396514111274228,
+      "rmse_dm_all_unclipped": 4.282897771316175,
+      "pinball_dm_all_unclipped": 1.073083105497687,
+      "rmse_dm_no2020": 2.7214409503461257,
+      "pinball_dm_no2020": 0.9048913016268255,
+      "rmse_dm_no2020_unclipped": 3.970506746213025,
+      "pinball_dm_no2020_unclipped": 0.9859909967321004
+    },
+    "gbm|border": {
+      "rmse_dm_all": 2.824503203189693,
+      "pinball_dm_all": 0.9479540578391986,
+      "rmse_dm_all_unclipped": 4.329332135789895,
+      "pinball_dm_all_unclipped": 1.0852391547286644,
+      "rmse_dm_no2020": 2.7868601403691926,
+      "pinball_dm_no2020": 0.9151883413560375,
+      "rmse_dm_no2020_unclipped": 4.047833758887348,
+      "pinball_dm_no2020_unclipped": 0.9990974453297962
+    },
+    "gbmq|border": {
+      "rmse_dm_all": 2.9880298967964447,
+      "pinball_dm_all": 1.0629504534256868,
+      "rmse_dm_all_unclipped": 4.431297198040686,
+      "pinball_dm_all_unclipped": 1.1966732467331371,
+      "rmse_dm_no2020": 2.9496154924108486,
+      "pinball_dm_no2020": 1.035862411787455,
+      "rmse_dm_no2020_unclipped": 4.088579224729652,
+      "pinball_dm_no2020_unclipped": 1.1157717623483778
+    },
+    "linq|border": {
+      "rmse_dm_all": 3.225299439262619,
+      "pinball_dm_all": 1.1490335788545734,
+      "rmse_dm_all_unclipped": 4.6497875070902825,
+      "pinball_dm_all_unclipped": 1.2801994992977193,
+      "rmse_dm_no2020": 3.18590248378753,
+      "pinball_dm_no2020": 1.1210011556657664,
+      "rmse_dm_no2020_unclipped": 4.3522795808586245,
+      "pinball_dm_no2020_unclipped": 1.2010691382471164
+    },
+    "ridge|inv_distance": {
+      "rmse_dm_all": 2.9234765407164476,
+      "pinball_dm_all": 0.9769933386622336,
+      "rmse_dm_all_unclipped": 4.435914314520784,
+      "pinball_dm_all_unclipped": 1.109219549812111,
+      "rmse_dm_no2020": 2.8924608678134485,
+      "pinball_dm_no2020": 0.9443006887534009,
+      "rmse_dm_no2020_unclipped": 4.170859264936198,
+      "pinball_dm_no2020_unclipped": 1.02593661282338
+    },
+    "rf|inv_distance": {
+      "rmse_dm_all": 2.7845020915271785,
+      "pinball_dm_all": 0.9483050435700348,
+      "rmse_dm_all_unclipped": 4.291819703228226,
+      "pinball_dm_all_unclipped": 1.081621915186065,
+      "rmse_dm_no2020": 2.7391431501988355,
+      "pinball_dm_no2020": 0.9127067369299121,
+      "rmse_dm_no2020_unclipped": 3.986466317474546,
+      "pinball_dm_no2020_unclipped": 0.9946070679664811
+    },
+    "gbm|inv_distance": {
+      "rmse_dm_all": 2.8266896223755635,
+      "pinball_dm_all": 0.9634160981270196,
+      "rmse_dm_all_unclipped": 4.325615560822868,
+      "pinball_dm_all_unclipped": 1.09787191419776,
+      "rmse_dm_no2020": 2.780647752764126,
+      "pinball_dm_no2020": 0.9263736185546083,
+      "rmse_dm_no2020_unclipped": 4.034549943216725,
+      "pinball_dm_no2020_unclipped": 1.00944367783602
+    },
+    "gbmq|inv_distance": {
+      "rmse_dm_all": 2.965195846110875,
+      "pinball_dm_all": 1.0590934048664398,
+      "rmse_dm_all_unclipped": 4.408163279563863,
+      "pinball_dm_all_unclipped": 1.1908829397730187,
+      "rmse_dm_no2020": 2.9228256476337315,
+      "pinball_dm_no2020": 1.0288986317665714,
+      "rmse_dm_no2020_unclipped": 4.081670531940835,
+      "pinball_dm_no2020_unclipped": 1.1084837399777077
+    },
+    "linq|inv_distance": {
+      "rmse_dm_all": 3.2531297470519887,
+      "pinball_dm_all": 1.1491254235557131,
+      "rmse_dm_all_unclipped": 4.679163921579255,
+      "pinball_dm_all_unclipped": 1.28180215685659,
+      "rmse_dm_no2020": 3.221408627996806,
+      "pinball_dm_no2020": 1.1213165541414942,
+      "rmse_dm_no2020_unclipped": 4.406656291217684,
+      "pinball_dm_no2020_unclipped": 1.204267870804579
+    },
+    "ridge|knn4": {
+      "rmse_dm_all": 2.9370440389573096,
+      "pinball_dm_all": 0.9858060501103376,
+      "rmse_dm_all_unclipped": 4.442467701157801,
+      "pinball_dm_all_unclipped": 1.1182302653366527,
+      "rmse_dm_no2020": 2.9073349523295575,
+      "pinball_dm_no2020": 0.9542615978687475,
+      "rmse_dm_no2020_unclipped": 4.183258071268117,
+      "pinball_dm_no2020_unclipped": 1.036536974163959
+    },
+    "rf|knn4": {
+      "rmse_dm_all": 2.783924826014258,
+      "pinball_dm_all": 0.9447962828878657,
+      "rmse_dm_all_unclipped": 4.286473668586441,
+      "pinball_dm_all_unclipped": 1.0763867729619367,
+      "rmse_dm_no2020": 2.7447244587080495,
+      "pinball_dm_no2020": 0.9106647077320987,
+      "rmse_dm_no2020_unclipped": 3.9877920863102077,
+      "pinball_dm_no2020_unclipped": 0.9924823208959542
+    },
+    "gbm|knn4": {
+      "rmse_dm_all": 2.826196265948044,
+      "pinball_dm_all": 0.9657474022853987,
+      "rmse_dm_all_unclipped": 4.325818630902377,
+      "pinball_dm_all_unclipped": 1.0996226063548025,
+      "rmse_dm_no2020": 2.7862366111339028,
+      "pinball_dm_no2020": 0.9307572444081746,
+      "rmse_dm_no2020_unclipped": 4.028683915911831,
+      "pinball_dm_no2020_unclipped": 1.0137175686709512
+    },
+    "gbmq|knn4": {
+      "rmse_dm_all": 2.9669570703806953,
+      "pinball_dm_all": 1.0607633896261643,
+      "rmse_dm_all_unclipped": 4.402762890765874,
+      "pinball_dm_all_unclipped": 1.1918072979929561,
+      "rmse_dm_no2020": 2.9326248929733136,
+      "pinball_dm_no2020": 1.0324727088142074,
+      "rmse_dm_no2020_unclipped": 4.077529145054853,
+      "pinball_dm_no2020_unclipped": 1.1115859266120334
+    },
+    "linq|knn4": {
+      "rmse_dm_all": 3.3018080088132273,
+      "pinball_dm_all": 1.176378375533126,
+      "rmse_dm_all_unclipped": 4.71078209908778,
+      "pinball_dm_all_unclipped": 1.3098200900909331,
+      "rmse_dm_no2020": 3.270137897420701,
+      "pinball_dm_no2020": 1.1492868288306426,
+      "rmse_dm_no2020_unclipped": 4.44548828259136,
+      "pinball_dm_no2020_unclipped": 1.2329330680794408
+    },
+    "ridge|trade": {
+      "rmse_dm_all": 2.959085693224131,
+      "pinball_dm_all": 0.9799879639986706,
+      "rmse_dm_all_unclipped": 4.465346498249423,
+      "pinball_dm_all_unclipped": 1.1117876808297176,
+      "rmse_dm_no2020": 2.930662764920479,
+      "pinball_dm_no2020": 0.9471554280262974,
+      "rmse_dm_no2020_unclipped": 4.196978050166402,
+      "pinball_dm_no2020_unclipped": 1.0297795693492913
+    },
+    "rf|trade": {
+      "rmse_dm_all": 2.8040466179802706,
+      "pinball_dm_all": 0.9515161612880224,
+      "rmse_dm_all_unclipped": 4.3072550681197015,
+      "pinball_dm_all_unclipped": 1.0853539141147257,
+      "rmse_dm_no2020": 2.767208396503691,
+      "pinball_dm_no2020": 0.9185842902604707,
+      "rmse_dm_no2020_unclipped": 4.010268668172061,
+      "pinball_dm_no2020_unclipped": 1.001483936844166
+    },
+    "gbm|trade": {
+      "rmse_dm_all": 2.8624376546956167,
+      "pinball_dm_all": 0.9742921460721423,
+      "rmse_dm_all_unclipped": 4.346022144581252,
+      "pinball_dm_all_unclipped": 1.1061792763465421,
+      "rmse_dm_no2020": 2.831228253450899,
+      "pinball_dm_no2020": 0.9413648434936784,
+      "rmse_dm_no2020_unclipped": 4.048751622164667,
+      "pinball_dm_no2020_unclipped": 1.0243313235711444
+    },
+    "gbmq|trade": {
+      "rmse_dm_all": 2.9836116746525123,
+      "pinball_dm_all": 1.0609728493271335,
+      "rmse_dm_all_unclipped": 4.436306906156587,
+      "pinball_dm_all_unclipped": 1.1921519717315263,
+      "rmse_dm_no2020": 2.953674126169379,
+      "pinball_dm_no2020": 1.0342408404790837,
+      "rmse_dm_no2020_unclipped": 4.106997953246222,
+      "pinball_dm_no2020_unclipped": 1.1136662662295704
+    },
+    "linq|trade": {
+      "rmse_dm_all": 3.2413742494684996,
+      "pinball_dm_all": 1.1398060193753494,
+      "rmse_dm_all_unclipped": 4.66798917139239,
+      "pinball_dm_all_unclipped": 1.2697092401835945,
+      "rmse_dm_no2020": 3.203636220318255,
+      "pinball_dm_no2020": 1.1098358929236196,
+      "rmse_dm_no2020_unclipped": 4.376477125611719,
+      "pinball_dm_no2020_unclipped": 1.1922890491903524
+    },
+    "ridge|border|placebo0": {
+      "rmse_dm_all": 2.9047033736549666,
+      "pinball_dm_all": 0.9693836988367263,
+      "rmse_dm_all_unclipped": 4.411821254468237,
+      "pinball_dm_all_unclipped": 1.1024803199096325,
+      "rmse_dm_no2020": 2.886057392985592,
+      "pinball_dm_no2020": 0.9421367383915801,
+      "rmse_dm_no2020_unclipped": 4.153983705551326,
+      "pinball_dm_no2020_unclipped": 1.023669478205902
+    },
+    "rf|border|placebo0": {
+      "rmse_dm_all": 2.763224150084409,
+      "pinball_dm_all": 0.9391657029484439,
+      "rmse_dm_all_unclipped": 4.27135872853272,
+      "pinball_dm_all_unclipped": 1.0713611879287745,
+      "rmse_dm_no2020": 2.731220063700851,
+      "pinball_dm_no2020": 0.906902561037641,
+      "rmse_dm_no2020_unclipped": 3.9725034363132345,
+      "pinball_dm_no2020_unclipped": 0.9887286451461829
+    },
+    "gbm|border|placebo0": {
+      "rmse_dm_all": 2.766090433552911,
+      "pinball_dm_all": 0.9400971136216121,
+      "rmse_dm_all_unclipped": 4.277057714926507,
+      "pinball_dm_all_unclipped": 1.0734053266961316,
+      "rmse_dm_no2020": 2.731270475667522,
+      "pinball_dm_no2020": 0.9068756587543726,
+      "rmse_dm_no2020_unclipped": 3.9785870823125884,
+      "pinball_dm_no2020_unclipped": 0.988057614308891
+    },
+    "gbmq|border|placebo0": {
+      "rmse_dm_all": 2.912952841744821,
+      "pinball_dm_all": 1.0413127885887148,
+      "rmse_dm_all_unclipped": 4.361723190827473,
+      "pinball_dm_all_unclipped": 1.171842223873007,
+      "rmse_dm_no2020": 2.878011086173916,
+      "pinball_dm_no2020": 1.0124869382025636,
+      "rmse_dm_no2020_unclipped": 4.030832585915515,
+      "pinball_dm_no2020_unclipped": 1.090759165026778
+    },
+    "ridge|border|placebo1": {
+      "rmse_dm_all": 2.924478759606718,
+      "pinball_dm_all": 0.9675644725305367,
+      "rmse_dm_all_unclipped": 4.434748243240815,
+      "pinball_dm_all_unclipped": 1.1015144576470166,
+      "rmse_dm_no2020": 2.89986421308756,
+      "pinball_dm_no2020": 0.9370802195995936,
+      "rmse_dm_no2020_unclipped": 4.175164132373736,
+      "pinball_dm_no2020_unclipped": 1.020160048557167
+    },
+    "rf|border|placebo1": {
+      "rmse_dm_all": 2.7764256316373803,
+      "pinball_dm_all": 0.9397615071667786,
+      "rmse_dm_all_unclipped": 4.281945631795263,
+      "pinball_dm_all_unclipped": 1.0724690609634953,
+      "rmse_dm_no2020": 2.7434182799994242,
+      "pinball_dm_no2020": 0.9081977088303765,
+      "rmse_dm_no2020_unclipped": 3.980998442681786,
+      "pinball_dm_no2020_unclipped": 0.9885898945433873
+    },
+    "gbm|border|placebo1": {
+      "rmse_dm_all": 2.8148681246372678,
+      "pinball_dm_all": 0.9417377256334161,
+      "rmse_dm_all_unclipped": 4.324057676189708,
+      "pinball_dm_all_unclipped": 1.0752204846340274,
+      "rmse_dm_no2020": 2.783010600253722,
+      "pinball_dm_no2020": 0.9097004189283328,
+      "rmse_dm_no2020_unclipped": 4.032346397044643,
+      "pinball_dm_no2020_unclipped": 0.9909976225499205
+    },
+    "gbmq|border|placebo1": {
+      "rmse_dm_all": 2.9474737605599235,
+      "pinball_dm_all": 1.0494604899329882,
+      "rmse_dm_all_unclipped": 4.394281978571916,
+      "pinball_dm_all_unclipped": 1.180662823874569,
+      "rmse_dm_no2020": 2.908537297278252,
+      "pinball_dm_no2020": 1.018452852457324,
+      "rmse_dm_no2020_unclipped": 4.060209903308348,
+      "pinball_dm_no2020_unclipped": 1.097875026857701
+    },
+    "ridge|border|placebo2": {
+      "rmse_dm_all": 2.9352299809936286,
+      "pinball_dm_all": 0.9683001845483591,
+      "rmse_dm_all_unclipped": 4.447866942467655,
+      "pinball_dm_all_unclipped": 1.1015204177670852,
+      "rmse_dm_no2020": 2.916207313306893,
+      "pinball_dm_no2020": 0.937829800235262,
+      "rmse_dm_no2020_unclipped": 4.189610334789193,
+      "pinball_dm_no2020_unclipped": 1.0209996063303906
+    },
+    "rf|border|placebo2": {
+      "rmse_dm_all": 2.7768609849444745,
+      "pinball_dm_all": 0.9390428756440821,
+      "rmse_dm_all_unclipped": 4.284348175833188,
+      "pinball_dm_all_unclipped": 1.0709722583716104,
+      "rmse_dm_no2020": 2.7405129017691836,
+      "pinball_dm_no2020": 0.9066919987521794,
+      "rmse_dm_no2020_unclipped": 3.979122000495008,
+      "pinball_dm_no2020_unclipped": 0.9865619562526996
+    },
+    "gbm|border|placebo2": {
+      "rmse_dm_all": 2.8026735836002588,
+      "pinball_dm_all": 0.9506591381853831,
+      "rmse_dm_all_unclipped": 4.304783519771574,
+      "pinball_dm_all_unclipped": 1.0829367287978764,
+      "rmse_dm_no2020": 2.7669756640253667,
+      "pinball_dm_no2020": 0.9184651050686041,
+      "rmse_dm_no2020_unclipped": 4.008651244340492,
+      "pinball_dm_no2020_unclipped": 0.9982172158866803
+    },
+    "gbmq|border|placebo2": {
+      "rmse_dm_all": 2.9587773432119677,
+      "pinball_dm_all": 1.0499034709565764,
+      "rmse_dm_all_unclipped": 4.398580418202127,
+      "pinball_dm_all_unclipped": 1.1804763565422438,
+      "rmse_dm_no2020": 2.9241428625841435,
+      "pinball_dm_no2020": 1.0209634991902983,
+      "rmse_dm_no2020_unclipped": 4.06953316551328,
+      "pinball_dm_no2020_unclipped": 1.1000242365517996
+    },
+    "ridge|border|placebo3": {
+      "rmse_dm_all": 2.9483790186557193,
+      "pinball_dm_all": 0.9787621465270966,
+      "rmse_dm_all_unclipped": 4.45047590462195,
+      "pinball_dm_all_unclipped": 1.112300599500422,
+      "rmse_dm_no2020": 2.92049779050962,
+      "pinball_dm_no2020": 0.9468382830489449,
+      "rmse_dm_no2020_unclipped": 4.190565039263044,
+      "pinball_dm_no2020_unclipped": 1.0298955310903173
+    },
+    "rf|border|placebo3": {
+      "rmse_dm_all": 2.7874514181642893,
+      "pinball_dm_all": 0.9459612062140238,
+      "rmse_dm_all_unclipped": 4.286426718499008,
+      "pinball_dm_all_unclipped": 1.0780326786598797,
+      "rmse_dm_no2020": 2.754423423038256,
+      "pinball_dm_no2020": 0.9143035450212353,
+      "rmse_dm_no2020_unclipped": 3.9910508819443358,
+      "pinball_dm_no2020_unclipped": 0.9953758872707523
+    },
+    "gbm|border|placebo3": {
+      "rmse_dm_all": 2.8385396342512657,
+      "pinball_dm_all": 0.952270975520917,
+      "rmse_dm_all_unclipped": 4.352175294864735,
+      "pinball_dm_all_unclipped": 1.0860828111018233,
+      "rmse_dm_no2020": 2.8045488475844547,
+      "pinball_dm_no2020": 0.9199428825468391,
+      "rmse_dm_no2020_unclipped": 4.0630334052886345,
+      "pinball_dm_no2020_unclipped": 1.0012987694387225
+    },
+    "gbmq|border|placebo3": {
+      "rmse_dm_all": 2.927177764124138,
+      "pinball_dm_all": 1.041041730630188,
+      "rmse_dm_all_unclipped": 4.382212029614966,
+      "pinball_dm_all_unclipped": 1.171654313104446,
+      "rmse_dm_no2020": 2.8889419778751955,
+      "pinball_dm_no2020": 1.0103521606828416,
+      "rmse_dm_no2020_unclipped": 4.045806439195374,
+      "pinball_dm_no2020_unclipped": 1.0886414289799646
+    },
+    "ridge|border|placebo4": {
+      "rmse_dm_all": 2.8903430147407945,
+      "pinball_dm_all": 0.9619517373670528,
+      "rmse_dm_all_unclipped": 4.417802426914305,
+      "pinball_dm_all_unclipped": 1.0963353420860884,
+      "rmse_dm_no2020": 2.863883035184912,
+      "pinball_dm_no2020": 0.93037524794721,
+      "rmse_dm_no2020_unclipped": 4.145114758076857,
+      "pinball_dm_no2020_unclipped": 1.0138042556934306
+    },
+    "rf|border|placebo4": {
+      "rmse_dm_all": 2.786391929977779,
+      "pinball_dm_all": 0.9436309508236934,
+      "rmse_dm_all_unclipped": 4.2942648870872615,
+      "pinball_dm_all_unclipped": 1.0777546362637136,
+      "rmse_dm_no2020": 2.7481045669006767,
+      "pinball_dm_no2020": 0.9098711990641751,
+      "rmse_dm_no2020_unclipped": 3.997752534978524,
+      "pinball_dm_no2020_unclipped": 0.9929185916949727
+    },
+    "gbm|border|placebo4": {
+      "rmse_dm_all": 2.8127227137134687,
+      "pinball_dm_all": 0.9377766034406534,
+      "rmse_dm_all_unclipped": 4.336187094853487,
+      "pinball_dm_all_unclipped": 1.0740802181014395,
+      "rmse_dm_no2020": 2.7756569418623402,
+      "pinball_dm_no2020": 0.904324692358176,
+      "rmse_dm_no2020_unclipped": 4.041820920091981,
+      "pinball_dm_no2020_unclipped": 0.9876032961699663
+    },
+    "gbmq|border|placebo4": {
+      "rmse_dm_all": 2.947931932706606,
+      "pinball_dm_all": 1.0466784250439285,
+      "rmse_dm_all_unclipped": 4.403433526384917,
+      "pinball_dm_all_unclipped": 1.1776742430845113,
+      "rmse_dm_no2020": 2.913388895133566,
+      "pinball_dm_no2020": 1.0176457185269268,
+      "rmse_dm_no2020_unclipped": 4.073956807343828,
+      "pinball_dm_no2020_unclipped": 1.0968301224679518
+    },
+    "ridge|inv_distance|placebo0": {
+      "rmse_dm_all": 2.924350254476869,
+      "pinball_dm_all": 0.9687577536570271,
+      "rmse_dm_all_unclipped": 4.4378543659332435,
+      "pinball_dm_all_unclipped": 1.1033039708341272,
+      "rmse_dm_no2020": 2.8950096196282717,
+      "pinball_dm_no2020": 0.9359047572842486,
+      "rmse_dm_no2020_unclipped": 4.173374264315561,
+      "pinball_dm_no2020_unclipped": 1.0193319950325772
+    },
+    "rf|inv_distance|placebo0": {
+      "rmse_dm_all": 2.792485246132434,
+      "pinball_dm_all": 0.9490318086160299,
+      "rmse_dm_all_unclipped": 4.304647084273277,
+      "pinball_dm_all_unclipped": 1.083461009954874,
+      "rmse_dm_no2020": 2.7581117964764346,
+      "pinball_dm_no2020": 0.9186336541084316,
+      "rmse_dm_no2020_unclipped": 4.001877075168574,
+      "pinball_dm_no2020_unclipped": 0.9998434547749536
+    },
+    "gbm|inv_distance|placebo0": {
+      "rmse_dm_all": 2.817822325138775,
+      "pinball_dm_all": 0.948775725150561,
+      "rmse_dm_all_unclipped": 4.354623936728278,
+      "pinball_dm_all_unclipped": 1.0805535683658842,
+      "rmse_dm_no2020": 2.784078400015161,
+      "pinball_dm_no2020": 0.915665020247492,
+      "rmse_dm_no2020_unclipped": 4.064727825851201,
+      "pinball_dm_no2020_unclipped": 0.9957243462202231
+    },
+    "gbmq|inv_distance|placebo0": {
+      "rmse_dm_all": 2.9556037264414674,
+      "pinball_dm_all": 1.0566722138412232,
+      "rmse_dm_all_unclipped": 4.397126921521342,
+      "pinball_dm_all_unclipped": 1.186768450794722,
+      "rmse_dm_no2020": 2.9163455176660156,
+      "pinball_dm_no2020": 1.027496913135183,
+      "rmse_dm_no2020_unclipped": 4.064243922222231,
+      "pinball_dm_no2020_unclipped": 1.1048841831786365
+    },
+    "ridge|inv_distance|placebo1": {
+      "rmse_dm_all": 2.9529753843466584,
+      "pinball_dm_all": 0.975008187005931,
+      "rmse_dm_all_unclipped": 4.465654241993218,
+      "pinball_dm_all_unclipped": 1.1081364930005582,
+      "rmse_dm_no2020": 2.930050189860158,
+      "pinball_dm_no2020": 0.9443102892343971,
+      "rmse_dm_no2020_unclipped": 4.2089322332911445,
+      "pinball_dm_no2020_unclipped": 1.0275150692970711
+    },
+    "rf|inv_distance|placebo1": {
+      "rmse_dm_all": 2.7844363119947184,
+      "pinball_dm_all": 0.9473475935341685,
+      "rmse_dm_all_unclipped": 4.291962932199979,
+      "pinball_dm_all_unclipped": 1.0793562807254602,
+      "rmse_dm_no2020": 2.750933797747471,
+      "pinball_dm_no2020": 0.9154819200784297,
+      "rmse_dm_no2020_unclipped": 3.994899491956568,
+      "pinball_dm_no2020_unclipped": 0.9975085965044922
+    },
+    "gbm|inv_distance|placebo1": {
+      "rmse_dm_all": 2.8158832477449005,
+      "pinball_dm_all": 0.9408214130148574,
+      "rmse_dm_all_unclipped": 4.351463401935529,
+      "pinball_dm_all_unclipped": 1.073259151930537,
+      "rmse_dm_no2020": 2.7871435481750706,
+      "pinball_dm_no2020": 0.9098810163038912,
+      "rmse_dm_no2020_unclipped": 4.069871967949024,
+      "pinball_dm_no2020_unclipped": 0.9911126191663436
+    },
+    "gbmq|inv_distance|placebo1": {
+      "rmse_dm_all": 2.9721911783441963,
+      "pinball_dm_all": 1.0556757567782191,
+      "rmse_dm_all_unclipped": 4.403549171281363,
+      "pinball_dm_all_unclipped": 1.184823569817307,
+      "rmse_dm_no2020": 2.939302196418514,
+      "pinball_dm_no2020": 1.0275964332143692,
+      "rmse_dm_no2020_unclipped": 4.079163651315642,
+      "pinball_dm_no2020_unclipped": 1.105880967127647
+    },
+    "ridge|inv_distance|placebo2": {
+      "rmse_dm_all": 2.9559556856427456,
+      "pinball_dm_all": 0.9757171052250545,
+      "rmse_dm_all_unclipped": 4.466117067653522,
+      "pinball_dm_all_unclipped": 1.1103509249133188,
+      "rmse_dm_no2020": 2.9315129160859876,
+      "pinball_dm_no2020": 0.9459334149841152,
+      "rmse_dm_no2020_unclipped": 4.19962131453975,
+      "pinball_dm_no2020_unclipped": 1.0286142785348251
+    },
+    "rf|inv_distance|placebo2": {
+      "rmse_dm_all": 2.789798425024239,
+      "pinball_dm_all": 0.9498415435088701,
+      "rmse_dm_all_unclipped": 4.294788067107591,
+      "pinball_dm_all_unclipped": 1.082077113790304,
+      "rmse_dm_no2020": 2.755444322883556,
+      "pinball_dm_no2020": 0.9179054234891991,
+      "rmse_dm_no2020_unclipped": 3.9986212921560806,
+      "pinball_dm_no2020_unclipped": 0.9998918774467149
+    },
+    "gbm|inv_distance|placebo2": {
+      "rmse_dm_all": 2.829815010494042,
+      "pinball_dm_all": 0.9597770442466562,
+      "rmse_dm_all_unclipped": 4.3508963232142035,
+      "pinball_dm_all_unclipped": 1.0920751372127278,
+      "rmse_dm_no2020": 2.798083526942189,
+      "pinball_dm_no2020": 0.9292406713169207,
+      "rmse_dm_no2020_unclipped": 4.055252828319637,
+      "pinball_dm_no2020_unclipped": 1.0094664252283256
+    },
+    "gbmq|inv_distance|placebo2": {
+      "rmse_dm_all": 2.9145222047841037,
+      "pinball_dm_all": 1.0401916687933837,
+      "rmse_dm_all_unclipped": 4.367442487712616,
+      "pinball_dm_all_unclipped": 1.1702182417214904,
+      "rmse_dm_no2020": 2.873642601749722,
+      "pinball_dm_no2020": 1.0099186711385946,
+      "rmse_dm_no2020_unclipped": 4.033508705419081,
+      "pinball_dm_no2020_unclipped": 1.0869780607429589
+    },
+    "ridge|inv_distance|placebo3": {
+      "rmse_dm_all": 2.96264136017917,
+      "pinball_dm_all": 0.9632415075167199,
+      "rmse_dm_all_unclipped": 4.47368481530773,
+      "pinball_dm_all_unclipped": 1.0963787451025437,
+      "rmse_dm_no2020": 2.9417477903895164,
+      "pinball_dm_no2020": 0.9323712996408141,
+      "rmse_dm_no2020_unclipped": 4.212935285765935,
+      "pinball_dm_no2020_unclipped": 1.0151878066927942
+    },
+    "rf|inv_distance|placebo3": {
+      "rmse_dm_all": 2.8091611206975227,
+      "pinball_dm_all": 0.9528767367096287,
+      "rmse_dm_all_unclipped": 4.317033016389276,
+      "pinball_dm_all_unclipped": 1.085341497357701,
+      "rmse_dm_no2020": 2.7791304276706414,
+      "pinball_dm_no2020": 0.9227847055033878,
+      "rmse_dm_no2020_unclipped": 4.018813962398497,
+      "pinball_dm_no2020_unclipped": 1.0032279222289227
+    },
+    "gbm|inv_distance|placebo3": {
+      "rmse_dm_all": 2.876803223718488,
+      "pinball_dm_all": 0.9694788456662338,
+      "rmse_dm_all_unclipped": 4.383521744351971,
+      "pinball_dm_all_unclipped": 1.1018503847063106,
+      "rmse_dm_no2020": 2.845382541307998,
+      "pinball_dm_no2020": 0.9369526768723921,
+      "rmse_dm_no2020_unclipped": 4.095638518332804,
+      "pinball_dm_no2020_unclipped": 1.018273035622502
+    },
+    "gbmq|inv_distance|placebo3": {
+      "rmse_dm_all": 2.953841508248915,
+      "pinball_dm_all": 1.0458825061790322,
+      "rmse_dm_all_unclipped": 4.406428196965818,
+      "pinball_dm_all_unclipped": 1.175664941863166,
+      "rmse_dm_no2020": 2.9174363703584563,
+      "pinball_dm_no2020": 1.0161017171528537,
+      "rmse_dm_no2020_unclipped": 4.078948339177503,
+      "pinball_dm_no2020_unclipped": 1.0939330605219546
+    },
+    "ridge|inv_distance|placebo4": {
+      "rmse_dm_all": 2.9836275157497107,
+      "pinball_dm_all": 0.9944531864244474,
+      "rmse_dm_all_unclipped": 4.481852217483342,
+      "pinball_dm_all_unclipped": 1.1281095627151836,
+      "rmse_dm_no2020": 2.9716127147190172,
+      "pinball_dm_no2020": 0.9690606101757914,
+      "rmse_dm_no2020_unclipped": 4.242868671089912,
+      "pinball_dm_no2020_unclipped": 1.0518417490929302
+    },
+    "rf|inv_distance|placebo4": {
+      "rmse_dm_all": 2.776424796012086,
+      "pinball_dm_all": 0.9395554139983882,
+      "rmse_dm_all_unclipped": 4.278120604781367,
+      "pinball_dm_all_unclipped": 1.0708618932971279,
+      "rmse_dm_no2020": 2.744601815061382,
+      "pinball_dm_no2020": 0.9079637867736674,
+      "rmse_dm_no2020_unclipped": 3.988852551128381,
+      "pinball_dm_no2020_unclipped": 0.9884670232950276
+    },
+    "gbm|inv_distance|placebo4": {
+      "rmse_dm_all": 2.7912323028823858,
+      "pinball_dm_all": 0.9407459183271091,
+      "rmse_dm_all_unclipped": 4.319657949103829,
+      "pinball_dm_all_unclipped": 1.071464619337027,
+      "rmse_dm_no2020": 2.7586469707079,
+      "pinball_dm_no2020": 0.9083382385103341,
+      "rmse_dm_no2020_unclipped": 4.037753998677017,
+      "pinball_dm_no2020_unclipped": 0.989249727387413
+    },
+    "gbmq|inv_distance|placebo4": {
+      "rmse_dm_all": 2.919736281269831,
+      "pinball_dm_all": 1.0297016037342406,
+      "rmse_dm_all_unclipped": 4.377875668877176,
+      "pinball_dm_all_unclipped": 1.1607140693294031,
+      "rmse_dm_no2020": 2.8768812134943507,
+      "pinball_dm_no2020": 0.9992768413038048,
+      "rmse_dm_no2020_unclipped": 4.046180596144359,
+      "pinball_dm_no2020_unclipped": 1.078210539832851
+    },
+    "ridge|knn4|placebo0": {
+      "rmse_dm_all": 2.9395806788295578,
+      "pinball_dm_all": 0.9740587260753434,
+      "rmse_dm_all_unclipped": 4.451771725293537,
+      "pinball_dm_all_unclipped": 1.1066845037599529,
+      "rmse_dm_no2020": 2.9198934116429114,
+      "pinball_dm_no2020": 0.9445508708115298,
+      "rmse_dm_no2020_unclipped": 4.191774176457569,
+      "pinball_dm_no2020_unclipped": 1.0271715729547732
+    },
+    "rf|knn4|placebo0": {
+      "rmse_dm_all": 2.7946928976529954,
+      "pinball_dm_all": 0.9483144696852562,
+      "rmse_dm_all_unclipped": 4.297942371329346,
+      "pinball_dm_all_unclipped": 1.0825418051504525,
+      "rmse_dm_no2020": 2.758105159326993,
+      "pinball_dm_no2020": 0.916095440375113,
+      "rmse_dm_no2020_unclipped": 3.993455889222721,
+      "pinball_dm_no2020_unclipped": 1.000026160869601
+    },
+    "gbm|knn4|placebo0": {
+      "rmse_dm_all": 2.796753915246056,
+      "pinball_dm_all": 0.9474571514434107,
+      "rmse_dm_all_unclipped": 4.304375582799581,
+      "pinball_dm_all_unclipped": 1.0811910378058187,
+      "rmse_dm_no2020": 2.7622901376139066,
+      "pinball_dm_no2020": 0.9153757562478572,
+      "rmse_dm_no2020_unclipped": 4.013231050579423,
+      "pinball_dm_no2020_unclipped": 0.9979776338805179
+    },
+    "gbmq|knn4|placebo0": {
+      "rmse_dm_all": 2.94079402685961,
+      "pinball_dm_all": 1.0418189032130645,
+      "rmse_dm_all_unclipped": 4.3851304553642345,
+      "pinball_dm_all_unclipped": 1.1736821604842096,
+      "rmse_dm_no2020": 2.896309544394555,
+      "pinball_dm_no2020": 1.0103498020841752,
+      "rmse_dm_no2020_unclipped": 4.0423160273859065,
+      "pinball_dm_no2020_unclipped": 1.0901687279905512
+    },
+    "ridge|knn4|placebo1": {
+      "rmse_dm_all": 2.937443362152611,
+      "pinball_dm_all": 0.974679005231165,
+      "rmse_dm_all_unclipped": 4.446575250961294,
+      "pinball_dm_all_unclipped": 1.106585856545397,
+      "rmse_dm_no2020": 2.917871884764176,
+      "pinball_dm_no2020": 0.946018040146831,
+      "rmse_dm_no2020_unclipped": 4.190595327331447,
+      "pinball_dm_no2020_unclipped": 1.0277180762596034
+    },
+    "rf|knn4|placebo1": {
+      "rmse_dm_all": 2.7989718783703688,
+      "pinball_dm_all": 0.9486630264768878,
+      "rmse_dm_all_unclipped": 4.296364123393533,
+      "pinball_dm_all_unclipped": 1.0818306406187201,
+      "rmse_dm_no2020": 2.766987730049606,
+      "pinball_dm_no2020": 0.9177973710406726,
+      "rmse_dm_no2020_unclipped": 3.9996551405857517,
+      "pinball_dm_no2020_unclipped": 0.9990147688061023
+    },
+    "gbm|knn4|placebo1": {
+      "rmse_dm_all": 2.8794545730633536,
+      "pinball_dm_all": 0.9772080997792472,
+      "rmse_dm_all_unclipped": 4.363680392081758,
+      "pinball_dm_all_unclipped": 1.1086646018070458,
+      "rmse_dm_no2020": 2.849037211287914,
+      "pinball_dm_no2020": 0.9461600696163022,
+      "rmse_dm_no2020_unclipped": 4.072730536137374,
+      "pinball_dm_no2020_unclipped": 1.0250939279853393
+    },
+    "gbmq|knn4|placebo1": {
+      "rmse_dm_all": 2.975818548385844,
+      "pinball_dm_all": 1.063081427377474,
+      "rmse_dm_all_unclipped": 4.411533929797801,
+      "pinball_dm_all_unclipped": 1.1954220088830325,
+      "rmse_dm_no2020": 2.943138533616304,
+      "pinball_dm_no2020": 1.0358644180981347,
+      "rmse_dm_no2020_unclipped": 4.081652991087972,
+      "pinball_dm_no2020_unclipped": 1.1165430823419398
+    },
+    "ridge|knn4|placebo2": {
+      "rmse_dm_all": 2.9229934484619666,
+      "pinball_dm_all": 0.9634611428591303,
+      "rmse_dm_all_unclipped": 4.425083298677026,
+      "pinball_dm_all_unclipped": 1.098004517331993,
+      "rmse_dm_no2020": 2.9017985589504645,
+      "pinball_dm_no2020": 0.9328874209831,
+      "rmse_dm_no2020_unclipped": 4.166170570052882,
+      "pinball_dm_no2020_unclipped": 1.016609578515582
+    },
+    "rf|knn4|placebo2": {
+      "rmse_dm_all": 2.7745149072276365,
+      "pinball_dm_all": 0.941698152178736,
+      "rmse_dm_all_unclipped": 4.266701610056347,
+      "pinball_dm_all_unclipped": 1.0746654035425929,
+      "rmse_dm_no2020": 2.744993851146733,
+      "pinball_dm_no2020": 0.9112840973551932,
+      "rmse_dm_no2020_unclipped": 3.9770499056410213,
+      "pinball_dm_no2020_unclipped": 0.992838582037829
+    },
+    "gbm|knn4|placebo2": {
+      "rmse_dm_all": 2.779893283647872,
+      "pinball_dm_all": 0.9354584220463895,
+      "rmse_dm_all_unclipped": 4.256515515995747,
+      "pinball_dm_all_unclipped": 1.0694145369096104,
+      "rmse_dm_no2020": 2.7466099700588282,
+      "pinball_dm_no2020": 0.9043821213190654,
+      "rmse_dm_no2020_unclipped": 3.9642738633653507,
+      "pinball_dm_no2020_unclipped": 0.9856403606578038
+    },
+    "gbmq|knn4|placebo2": {
+      "rmse_dm_all": 2.909714120557405,
+      "pinball_dm_all": 1.0299375829694164,
+      "rmse_dm_all_unclipped": 4.3545773643083185,
+      "pinball_dm_all_unclipped": 1.1611893774942206,
+      "rmse_dm_no2020": 2.8734502643312694,
+      "pinball_dm_no2020": 1.0005630639364798,
+      "rmse_dm_no2020_unclipped": 4.0278887291228385,
+      "pinball_dm_no2020_unclipped": 1.0802045453164173
+    },
+    "ridge|knn4|placebo3": {
+      "rmse_dm_all": 2.938585938783759,
+      "pinball_dm_all": 0.9751030258967373,
+      "rmse_dm_all_unclipped": 4.445568587265179,
+      "pinball_dm_all_unclipped": 1.1089190789406245,
+      "rmse_dm_no2020": 2.9080202757709683,
+      "pinball_dm_no2020": 0.9421211061188876,
+      "rmse_dm_no2020_unclipped": 4.1814053621966325,
+      "pinball_dm_no2020_unclipped": 1.0254498153787348
+    },
+    "rf|knn4|placebo3": {
+      "rmse_dm_all": 2.7779843418659538,
+      "pinball_dm_all": 0.9421660532146607,
+      "rmse_dm_all_unclipped": 4.285925258149496,
+      "pinball_dm_all_unclipped": 1.0755502333269114,
+      "rmse_dm_no2020": 2.742926508309568,
+      "pinball_dm_no2020": 0.9096008769997589,
+      "rmse_dm_no2020_unclipped": 3.989609648310146,
+      "pinball_dm_no2020_unclipped": 0.9924145429802169
+    },
+    "gbm|knn4|placebo3": {
+      "rmse_dm_all": 2.818290065493781,
+      "pinball_dm_all": 0.9413768337606934,
+      "rmse_dm_all_unclipped": 4.338105893602555,
+      "pinball_dm_all_unclipped": 1.0737822230679548,
+      "rmse_dm_no2020": 2.7859914890062525,
+      "pinball_dm_no2020": 0.9078006030832104,
+      "rmse_dm_no2020_unclipped": 4.0535935672571215,
+      "pinball_dm_no2020_unclipped": 0.9886930710555326
+    },
+    "gbmq|knn4|placebo3": {
+      "rmse_dm_all": 2.9364371853407647,
+      "pinball_dm_all": 1.0460915250853986,
+      "rmse_dm_all_unclipped": 4.388340260999538,
+      "pinball_dm_all_unclipped": 1.1788517789041102,
+      "rmse_dm_no2020": 2.8941315628294735,
+      "pinball_dm_no2020": 1.0153144360372064,
+      "rmse_dm_no2020_unclipped": 4.059023199716834,
+      "pinball_dm_no2020_unclipped": 1.094417215298386
+    },
+    "ridge|knn4|placebo4": {
+      "rmse_dm_all": 2.9139371262114797,
+      "pinball_dm_all": 0.9666584280049612,
+      "rmse_dm_all_unclipped": 4.422692138510118,
+      "pinball_dm_all_unclipped": 1.0985538656485794,
+      "rmse_dm_no2020": 2.8901611872177413,
+      "pinball_dm_no2020": 0.9351773367631796,
+      "rmse_dm_no2020_unclipped": 4.161770744459494,
+      "pinball_dm_no2020_unclipped": 1.0175972757645737
+    },
+    "rf|knn4|placebo4": {
+      "rmse_dm_all": 2.7631299753606995,
+      "pinball_dm_all": 0.9365926943044668,
+      "rmse_dm_all_unclipped": 4.269091306230077,
+      "pinball_dm_all_unclipped": 1.071728348871184,
+      "rmse_dm_no2020": 2.7298664644691346,
+      "pinball_dm_no2020": 0.906282646931174,
+      "rmse_dm_no2020_unclipped": 3.971609219702162,
+      "pinball_dm_no2020_unclipped": 0.9891501238884436
+    },
+    "gbm|knn4|placebo4": {
+      "rmse_dm_all": 2.8596070935184605,
+      "pinball_dm_all": 0.9637495952428594,
+      "rmse_dm_all_unclipped": 4.372180506025648,
+      "pinball_dm_all_unclipped": 1.0961949291883069,
+      "rmse_dm_no2020": 2.8301338626701082,
+      "pinball_dm_no2020": 0.9340094373457072,
+      "rmse_dm_no2020_unclipped": 4.083671499240549,
+      "pinball_dm_no2020_unclipped": 1.013707402845127
+    },
+    "gbmq|knn4|placebo4": {
+      "rmse_dm_all": 2.9698780373351874,
+      "pinball_dm_all": 1.0630657072478875,
+      "rmse_dm_all_unclipped": 4.4071332015213605,
+      "pinball_dm_all_unclipped": 1.1944857594532579,
+      "rmse_dm_no2020": 2.93422838800519,
+      "pinball_dm_no2020": 1.0356050104317525,
+      "rmse_dm_no2020_unclipped": 4.0847144819442,
+      "pinball_dm_no2020_unclipped": 1.1149298480448866
+    },
+    "ridge|trade|placebo0": {
+      "rmse_dm_all": 2.968606126530271,
+      "pinball_dm_all": 0.98174220221521,
+      "rmse_dm_all_unclipped": 4.4701679700414285,
+      "pinball_dm_all_unclipped": 1.1143562731445316,
+      "rmse_dm_no2020": 2.9428449349758035,
+      "pinball_dm_no2020": 0.9488500189665204,
+      "rmse_dm_no2020_unclipped": 4.214485220241042,
+      "pinball_dm_no2020_unclipped": 1.030813411067647
+    },
+    "rf|trade|placebo0": {
+      "rmse_dm_all": 2.784751971042873,
+      "pinball_dm_all": 0.9496432364129732,
+      "rmse_dm_all_unclipped": 4.285040602407652,
+      "pinball_dm_all_unclipped": 1.0804254081777511,
+      "rmse_dm_no2020": 2.750939402618756,
+      "pinball_dm_no2020": 0.9176385616230228,
+      "rmse_dm_no2020_unclipped": 3.98889620025141,
+      "pinball_dm_no2020_unclipped": 0.9978815878924818
+    },
+    "gbm|trade|placebo0": {
+      "rmse_dm_all": 2.8256626999672507,
+      "pinball_dm_all": 0.953865683401478,
+      "rmse_dm_all_unclipped": 4.34557579502146,
+      "pinball_dm_all_unclipped": 1.0869896981107037,
+      "rmse_dm_no2020": 2.788205211585985,
+      "pinball_dm_no2020": 0.9189837285323689,
+      "rmse_dm_no2020_unclipped": 4.05188617284251,
+      "pinball_dm_no2020_unclipped": 1.0021728293282983
+    },
+    "gbmq|trade|placebo0": {
+      "rmse_dm_all": 2.9238095609355703,
+      "pinball_dm_all": 1.0389069211082353,
+      "rmse_dm_all_unclipped": 4.382973316274648,
+      "pinball_dm_all_unclipped": 1.1669367267561925,
+      "rmse_dm_no2020": 2.886486652978883,
+      "pinball_dm_no2020": 1.009498899324199,
+      "rmse_dm_no2020_unclipped": 4.048215735392684,
+      "pinball_dm_no2020_unclipped": 1.0871328346126323
+    },
+    "ridge|trade|placebo1": {
+      "rmse_dm_all": 2.9440501539160273,
+      "pinball_dm_all": 0.966347456457981,
+      "rmse_dm_all_unclipped": 4.450023344224422,
+      "pinball_dm_all_unclipped": 1.1018021903118045,
+      "rmse_dm_no2020": 2.920165805202768,
+      "pinball_dm_no2020": 0.9346515005904404,
+      "rmse_dm_no2020_unclipped": 4.194033401033555,
+      "pinball_dm_no2020_unclipped": 1.0192482923559174
+    },
+    "rf|trade|placebo1": {
+      "rmse_dm_all": 2.795176427134258,
+      "pinball_dm_all": 0.9472656820530224,
+      "rmse_dm_all_unclipped": 4.295187304466511,
+      "pinball_dm_all_unclipped": 1.0785704382542203,
+      "rmse_dm_no2020": 2.759458708980066,
+      "pinball_dm_no2020": 0.9143057845965713,
+      "rmse_dm_no2020_unclipped": 3.994719357957975,
+      "pinball_dm_no2020_unclipped": 0.9941097904834522
+    },
+    "gbm|trade|placebo1": {
+      "rmse_dm_all": 2.8306406187421476,
+      "pinball_dm_all": 0.9515675137752947,
+      "rmse_dm_all_unclipped": 4.348348128164521,
+      "pinball_dm_all_unclipped": 1.0863277133400073,
+      "rmse_dm_no2020": 2.7957097689574755,
+      "pinball_dm_no2020": 0.9183542760953357,
+      "rmse_dm_no2020_unclipped": 4.0592435862462315,
+      "pinball_dm_no2020_unclipped": 1.0007329626870023
+    },
+    "gbmq|trade|placebo1": {
+      "rmse_dm_all": 2.9111639795238307,
+      "pinball_dm_all": 1.0300122179864495,
+      "rmse_dm_all_unclipped": 4.359776125712546,
+      "pinball_dm_all_unclipped": 1.160312342369223,
+      "rmse_dm_no2020": 2.8781005942707814,
+      "pinball_dm_no2020": 1.0004427249641314,
+      "rmse_dm_no2020_unclipped": 4.035679700912551,
+      "pinball_dm_no2020_unclipped": 1.0793610148477981
+    },
+    "ridge|trade|placebo2": {
+      "rmse_dm_all": 2.9447739506230115,
+      "pinball_dm_all": 0.977943677911244,
+      "rmse_dm_all_unclipped": 4.447952895714086,
+      "pinball_dm_all_unclipped": 1.1120176430891942,
+      "rmse_dm_no2020": 2.9266836201036828,
+      "pinball_dm_no2020": 0.9494114399083199,
+      "rmse_dm_no2020_unclipped": 4.193300869914675,
+      "pinball_dm_no2020_unclipped": 1.0328610674062502
+    },
+    "rf|trade|placebo2": {
+      "rmse_dm_all": 2.7800806846599633,
+      "pinball_dm_all": 0.9442453198862104,
+      "rmse_dm_all_unclipped": 4.287289078463164,
+      "pinball_dm_all_unclipped": 1.077275039110585,
+      "rmse_dm_no2020": 2.749023123602216,
+      "pinball_dm_no2020": 0.9135595774431043,
+      "rmse_dm_no2020_unclipped": 3.992451461956375,
+      "pinball_dm_no2020_unclipped": 0.995686989773787
+    },
+    "gbm|trade|placebo2": {
+      "rmse_dm_all": 2.7895800568984983,
+      "pinball_dm_all": 0.9404372979696032,
+      "rmse_dm_all_unclipped": 4.285633552214766,
+      "pinball_dm_all_unclipped": 1.0738499423366779,
+      "rmse_dm_no2020": 2.75225370049717,
+      "pinball_dm_no2020": 0.9076358547453667,
+      "rmse_dm_no2020_unclipped": 3.9892613446408776,
+      "pinball_dm_no2020_unclipped": 0.9894519476990835
+    },
+    "gbmq|trade|placebo2": {
+      "rmse_dm_all": 2.90402885614739,
+      "pinball_dm_all": 1.0259204611520385,
+      "rmse_dm_all_unclipped": 4.337236245526587,
+      "pinball_dm_all_unclipped": 1.156168904690967,
+      "rmse_dm_no2020": 2.870657745832676,
+      "pinball_dm_no2020": 0.9984376299484781,
+      "rmse_dm_no2020_unclipped": 4.015824582748633,
+      "pinball_dm_no2020_unclipped": 1.076235039363448
+    },
+    "ridge|trade|placebo3": {
+      "rmse_dm_all": 2.941541740540639,
+      "pinball_dm_all": 0.9675772670323785,
+      "rmse_dm_all_unclipped": 4.451875096989608,
+      "pinball_dm_all_unclipped": 1.1021963124716232,
+      "rmse_dm_no2020": 2.918750048932447,
+      "pinball_dm_no2020": 0.9365320543664819,
+      "rmse_dm_no2020_unclipped": 4.198444477800355,
+      "pinball_dm_no2020_unclipped": 1.0200411973852797
+    },
+    "rf|trade|placebo3": {
+      "rmse_dm_all": 2.7780092697091052,
+      "pinball_dm_all": 0.9384616901577848,
+      "rmse_dm_all_unclipped": 4.280793344929729,
+      "pinball_dm_all_unclipped": 1.07290356591934,
+      "rmse_dm_no2020": 2.7414616032954022,
+      "pinball_dm_no2020": 0.9064377623197915,
+      "rmse_dm_no2020_unclipped": 3.983777635063227,
+      "pinball_dm_no2020_unclipped": 0.9870160137117685
+    },
+    "gbm|trade|placebo3": {
+      "rmse_dm_all": 2.8048278312582666,
+      "pinball_dm_all": 0.9361516255361437,
+      "rmse_dm_all_unclipped": 4.32694871027953,
+      "pinball_dm_all_unclipped": 1.0705506097676716,
+      "rmse_dm_no2020": 2.770549371011833,
+      "pinball_dm_no2020": 0.9031034541059992,
+      "rmse_dm_no2020_unclipped": 4.045117577375752,
+      "pinball_dm_no2020_unclipped": 0.9857062139696579
+    },
+    "gbmq|trade|placebo3": {
+      "rmse_dm_all": 2.925709225267027,
+      "pinball_dm_all": 1.041995867789609,
+      "rmse_dm_all_unclipped": 4.370531778497075,
+      "pinball_dm_all_unclipped": 1.174820487754406,
+      "rmse_dm_no2020": 2.893055988237865,
+      "pinball_dm_no2020": 1.014867452152009,
+      "rmse_dm_no2020_unclipped": 4.056177937947179,
+      "pinball_dm_no2020_unclipped": 1.0937206845571221
+    },
+    "ridge|trade|placebo4": {
+      "rmse_dm_all": 2.9613153766867137,
+      "pinball_dm_all": 0.9721026598236024,
+      "rmse_dm_all_unclipped": 4.470820827544222,
+      "pinball_dm_all_unclipped": 1.1080832840144785,
+      "rmse_dm_no2020": 2.942653511969194,
+      "pinball_dm_no2020": 0.9408308558595506,
+      "rmse_dm_no2020_unclipped": 4.206060756616641,
+      "pinball_dm_no2020_unclipped": 1.0262497904639318
+    },
+    "rf|trade|placebo4": {
+      "rmse_dm_all": 2.7809499095540775,
+      "pinball_dm_all": 0.9369313783936859,
+      "rmse_dm_all_unclipped": 4.291933552458491,
+      "pinball_dm_all_unclipped": 1.0705001053202683,
+      "rmse_dm_no2020": 2.747510775032176,
+      "pinball_dm_no2020": 0.9043729906813106,
+      "rmse_dm_no2020_unclipped": 3.9868669787166007,
+      "pinball_dm_no2020_unclipped": 0.9866853376168412
+    },
+    "gbm|trade|placebo4": {
+      "rmse_dm_all": 2.8525406661555524,
+      "pinball_dm_all": 0.9588936349248808,
+      "rmse_dm_all_unclipped": 4.363163264477604,
+      "pinball_dm_all_unclipped": 1.0937003730928334,
+      "rmse_dm_no2020": 2.8151417868500648,
+      "pinball_dm_no2020": 0.9258193628146414,
+      "rmse_dm_no2020_unclipped": 4.05994077625734,
+      "pinball_dm_no2020_unclipped": 1.0086973442356737
+    },
+    "gbmq|trade|placebo4": {
+      "rmse_dm_all": 2.9701148227525476,
+      "pinball_dm_all": 1.0483839699370083,
+      "rmse_dm_all_unclipped": 4.414394458163931,
+      "pinball_dm_all_unclipped": 1.182828878278097,
+      "rmse_dm_no2020": 2.929506353795529,
+      "pinball_dm_no2020": 1.0186682330362684,
+      "rmse_dm_no2020_unclipped": 4.053249428854501,
+      "pinball_dm_no2020_unclipped": 1.0994603683438737
+    }
+  },
+  "comparisons": {
+    "ridge|border": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.8971512950003797,
+      "with_graph": 2.8986133688510116,
+      "diff_graph_minus_none": 0.0014620738506319064,
+      "boot90_lo": -0.02832291932655582,
+      "boot90_hi": 0.031205955511773176,
+      "placebo_mean": 2.9206268295303657,
+      "real_gain": -0.0014620738506319064,
+      "placebo_gain": -0.023475534529985964,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "ridge|inv_distance": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.8971512950003797,
+      "with_graph": 2.9234765407164476,
+      "diff_graph_minus_none": 0.02632524571606698,
+      "boot90_lo": -0.0008019680336515116,
+      "boot90_hi": 0.05030825452269045,
+      "placebo_mean": 2.9559100400790306,
+      "real_gain": -0.02632524571606787,
+      "placebo_gain": -0.058758745078650865,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "ridge|knn4": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.8971512950003797,
+      "with_graph": 2.9370440389573096,
+      "diff_graph_minus_none": 0.03989274395692943,
+      "boot90_lo": 0.013089684269958825,
+      "boot90_hi": 0.06230061692613708,
+      "placebo_mean": 2.9305081108878746,
+      "real_gain": -0.03989274395692988,
+      "placebo_gain": -0.03335681588749484,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "ridge|trade": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.8971512950003797,
+      "with_graph": 2.959085693224131,
+      "diff_graph_minus_none": 0.0619343982237508,
+      "boot90_lo": 0.023645437065533483,
+      "boot90_hi": 0.09425593633843093,
+      "placebo_mean": 2.9520574696593327,
+      "real_gain": -0.06193439822375124,
+      "placebo_gain": -0.05490617465895298,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "rf|border": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.789474352956311,
+      "with_graph": 2.7678741852276145,
+      "diff_graph_minus_none": -0.02160016772869655,
+      "boot90_lo": -0.04927312108037003,
+      "boot90_hi": 0.007704898632033978,
+      "placebo_mean": 2.7780708229616664,
+      "real_gain": 0.02160016772869655,
+      "placebo_gain": 0.011403529994644668,
+      "share_of_gain_kept_by_placebo": 0.5279371039093689
+    },
+    "rf|inv_distance": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.789474352956311,
+      "with_graph": 2.7845020915271785,
+      "diff_graph_minus_none": -0.004972261429132985,
+      "boot90_lo": -0.029208166520127476,
+      "boot90_hi": 0.019652209960939433,
+      "placebo_mean": 2.7904611799722,
+      "real_gain": 0.004972261429132541,
+      "placebo_gain": -0.0009868270158888137,
+      "share_of_gain_kept_by_placebo": -0.19846643825020585
+    },
+    "rf|knn4": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.789474352956311,
+      "with_graph": 2.783924826014258,
+      "diff_graph_minus_none": -0.005549526942052907,
+      "boot90_lo": -0.028273967349730155,
+      "boot90_hi": 0.016392681106028095,
+      "placebo_mean": 2.781858800095531,
+      "real_gain": 0.005549526942052907,
+      "placebo_gain": 0.007615552860780195,
+      "share_of_gain_kept_by_placebo": 1.3722886545646742
+    },
+    "rf|trade": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.789474352956311,
+      "with_graph": 2.8040466179802706,
+      "diff_graph_minus_none": 0.014572265023959474,
+      "boot90_lo": -0.008459841134767032,
+      "boot90_hi": 0.036436334378173924,
+      "placebo_mean": 2.783793652420056,
+      "real_gain": -0.014572265023959474,
+      "placebo_gain": 0.005680700536255134,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "gbm|border": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.7832063500554174,
+      "with_graph": 2.824503203189693,
+      "diff_graph_minus_none": 0.04129685313427567,
+      "boot90_lo": -0.010904878048714072,
+      "boot90_hi": 0.09972006788201287,
+      "placebo_mean": 2.8069788979510344,
+      "real_gain": -0.04129685313427567,
+      "placebo_gain": -0.023772547895617002,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "gbm|inv_distance": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.7832063500554174,
+      "with_graph": 2.8266896223755635,
+      "diff_graph_minus_none": 0.04348327232014615,
+      "boot90_lo": 0.004357353536252089,
+      "boot90_hi": 0.08237487148925544,
+      "placebo_mean": 2.8263112219957187,
+      "real_gain": -0.04348327232014615,
+      "placebo_gain": -0.043104871940301326,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "gbm|knn4": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.7832063500554174,
+      "with_graph": 2.826196265948044,
+      "diff_graph_minus_none": 0.04298991589262702,
+      "boot90_lo": 0.012582640701989911,
+      "boot90_hi": 0.07277487238801442,
+      "placebo_mean": 2.826799786193905,
+      "real_gain": -0.04298991589262657,
+      "placebo_gain": -0.04359343613848754,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "gbm|trade": {
+      "metric": "rmse_dm_all",
+      "no_graph": 2.7832063500554174,
+      "with_graph": 2.8624376546956167,
+      "diff_graph_minus_none": 0.07923130464019934,
+      "boot90_lo": 0.041695445644099195,
+      "boot90_hi": 0.11912261581741415,
+      "placebo_mean": 2.820650374604343,
+      "real_gain": -0.07923130464019934,
+      "placebo_gain": -0.037444024548925814,
+      "share_of_gain_kept_by_placebo": null
+    },
+    "gbmq|border": {
+      "metric": "pinball_dm_all",
+      "no_graph": 1.0688270142732936,
+      "with_graph": 1.0629504534256868,
+      "diff_graph_minus_none": -0.005876560847606349,
+      "boot90_lo": -0.04246645695958632,
+      "boot90_hi": 0.031422886355271185,
+      "placebo_mean": 1.0456793810304792,
+      "real_gain": 0.005876560847606793,
+      "placebo_gain": 0.023147633242814436,
+      "share_of_gain_kept_by_placebo": 3.9389761874483478
+    },
+    "gbmq|inv_distance": {
+      "metric": "pinball_dm_all",
+      "no_graph": 1.0688270142732936,
+      "with_graph": 1.0590934048664398,
+      "diff_graph_minus_none": -0.009733609406853638,
+      "boot90_lo": -0.03723591208908739,
+      "boot90_hi": 0.01882082932542114,
+      "placebo_mean": 1.0456247498652196,
+      "real_gain": 0.00973360940685386,
+      "placebo_gain": 0.023202264408074047,
+      "share_of_gain_kept_by_placebo": 2.3837266771498267
+    },
+    "gbmq|knn4": {
+      "metric": "pinball_dm_all",
+      "no_graph": 1.0688270142732936,
+      "with_graph": 1.0607633896261643,
+      "diff_graph_minus_none": -0.008063624647129286,
+      "boot90_lo": -0.034133550274900205,
+      "boot90_hi": 0.018735268686498083,
+      "placebo_mean": 1.0487990291786482,
+      "real_gain": 0.008063624647129286,
+      "placebo_gain": 0.02002798509464543,
+      "share_of_gain_kept_by_placebo": 2.4837447142056086
+    },
+    "gbmq|trade": {
+      "metric": "pinball_dm_all",
+      "no_graph": 1.0688270142732936,
+      "with_graph": 1.0609728493271335,
+      "diff_graph_minus_none": -0.00785416494615987,
+      "boot90_lo": -0.043649684454058035,
+      "boot90_hi": 0.026409547702891296,
+      "placebo_mean": 1.0370438875946681,
+      "real_gain": 0.007854164946160092,
+      "placebo_gain": 0.031783126678625484,
+      "share_of_gain_kept_by_placebo": 4.04665892510499
+    }
+  },
+  "chosen_hyperparameters": {
+    "ridge|none": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|none": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|none": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|none": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "linq|none": {
+      "(2012, 2014)": {
+        "alpha": 0.005
+      },
+      "(2015, 2017)": {
+        "alpha": 0.0005
+      },
+      "(2018, 2020)": {
+        "alpha": 0.005
+      },
+      "(2021, 2023)": {
+        "alpha": 0.005
+      }
+    },
+    "ridge|border": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|border": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": 6,
+        "leaf": 5
+      }
+    },
+    "gbm|border": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "linq|border": {
+      "(2012, 2014)": {
+        "alpha": 0.005
+      },
+      "(2015, 2017)": {
+        "alpha": 0.005
+      },
+      "(2018, 2020)": {
+        "alpha": 0.005
+      },
+      "(2021, 2023)": {
+        "alpha": 0.005
+      }
+    },
+    "ridge|inv_distance": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|inv_distance": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": 6,
+        "leaf": 5
+      }
+    },
+    "gbm|inv_distance": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|inv_distance": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "linq|inv_distance": {
+      "(2012, 2014)": {
+        "alpha": 0.005
+      },
+      "(2015, 2017)": {
+        "alpha": 0.005
+      },
+      "(2018, 2020)": {
+        "alpha": 0.005
+      },
+      "(2021, 2023)": {
+        "alpha": 0.005
+      }
+    },
+    "ridge|knn4": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|knn4": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|knn4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|knn4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "linq|knn4": {
+      "(2012, 2014)": {
+        "alpha": 0.005
+      },
+      "(2015, 2017)": {
+        "alpha": 0.005
+      },
+      "(2018, 2020)": {
+        "alpha": 0.005
+      },
+      "(2021, 2023)": {
+        "alpha": 0.005
+      }
+    },
+    "ridge|trade": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|trade": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|trade": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "linq|trade": {
+      "(2012, 2014)": {
+        "alpha": 0.005
+      },
+      "(2015, 2017)": {
+        "alpha": 0.005
+      },
+      "(2018, 2020)": {
+        "alpha": 0.005
+      },
+      "(2021, 2023)": {
+        "alpha": 0.005
+      }
+    },
+    "ridge|border|placebo0": {
+      "(2012, 2014)": {
+        "alpha": 1
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|border|placebo0": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|border|placebo0": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border|placebo0": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|border|placebo1": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|border|placebo1": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|border|placebo1": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border|placebo1": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|border|placebo2": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 10
+      }
+    },
+    "rf|border|placebo2": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|border|placebo2": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border|placebo2": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|border|placebo3": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|border|placebo3": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|border|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|border|placebo4": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 100
+      },
+      "(2018, 2020)": {
+        "alpha": 1000
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|border|placebo4": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|border|placebo4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|border|placebo4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|inv_distance|placebo0": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|inv_distance|placebo0": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|inv_distance|placebo0": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|inv_distance|placebo0": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|inv_distance|placebo1": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|inv_distance|placebo1": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|inv_distance|placebo1": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|inv_distance|placebo1": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|inv_distance|placebo2": {
+      "(2012, 2014)": {
+        "alpha": 1
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 1
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|inv_distance|placebo2": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|inv_distance|placebo2": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|inv_distance|placebo2": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|inv_distance|placebo3": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 10
+      }
+    },
+    "rf|inv_distance|placebo3": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|inv_distance|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|inv_distance|placebo3": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "ridge|inv_distance|placebo4": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|inv_distance|placebo4": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|inv_distance|placebo4": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|inv_distance|placebo4": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "ridge|knn4|placebo0": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|knn4|placebo0": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": 6,
+        "leaf": 5
+      }
+    },
+    "gbm|knn4|placebo0": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|knn4|placebo0": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|knn4|placebo1": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 10
+      }
+    },
+    "rf|knn4|placebo1": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|knn4|placebo1": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|knn4|placebo1": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|knn4|placebo2": {
+      "(2012, 2014)": {
+        "alpha": 1
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 1
+      }
+    },
+    "rf|knn4|placebo2": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|knn4|placebo2": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|knn4|placebo2": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|knn4|placebo3": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|knn4|placebo3": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": 6,
+        "leaf": 5
+      }
+    },
+    "gbm|knn4|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|knn4|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|knn4|placebo4": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|knn4|placebo4": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|knn4|placebo4": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|knn4|placebo4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|trade|placebo0": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|trade|placebo0": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade|placebo0": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|trade|placebo0": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|trade|placebo1": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 10
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|trade|placebo1": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade|placebo1": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|trade|placebo1": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|trade|placebo2": {
+      "(2012, 2014)": {
+        "alpha": 10
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 10
+      }
+    },
+    "rf|trade|placebo2": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade|placebo2": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|trade|placebo2": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|trade|placebo3": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 1
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 100
+      }
+    },
+    "rf|trade|placebo3": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade|placebo3": {
+      "(2012, 2014)": {
+        "depth": 2
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "gbmq|trade|placebo3": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 3
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    },
+    "ridge|trade|placebo4": {
+      "(2012, 2014)": {
+        "alpha": 100
+      },
+      "(2015, 2017)": {
+        "alpha": 10
+      },
+      "(2018, 2020)": {
+        "alpha": 100
+      },
+      "(2021, 2023)": {
+        "alpha": 10
+      }
+    },
+    "rf|trade|placebo4": {
+      "(2012, 2014)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2015, 2017)": {
+        "depth": null,
+        "leaf": 10
+      },
+      "(2018, 2020)": {
+        "depth": 6,
+        "leaf": 5
+      },
+      "(2021, 2023)": {
+        "depth": null,
+        "leaf": 10
+      }
+    },
+    "gbm|trade|placebo4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 3
+      },
+      "(2021, 2023)": {
+        "depth": 3
+      }
+    },
+    "gbmq|trade|placebo4": {
+      "(2012, 2014)": {
+        "depth": 3
+      },
+      "(2015, 2017)": {
+        "depth": 2
+      },
+      "(2018, 2020)": {
+        "depth": 2
+      },
+      "(2021, 2023)": {
+        "depth": 2
+      }
+    }
+  },
+  "runtime_seconds": 1505.072256565094
+}

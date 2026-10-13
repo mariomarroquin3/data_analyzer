@@ -1,0 +1,12 @@
+{
+  "n_economies_any_data": 217,
+  "n_with_core_20plus": 142,
+  "n_with_core_20plus_and_wgi_20plus": 141,
+  "n_with_core_wgi_and_homicide_15plus": 92,
+  "n_with_core_wgi_homicide_unemp_15plus": 91,
+  "years": [
+    2000,
+    2024
+  ],
+  "n_years": 25
+}

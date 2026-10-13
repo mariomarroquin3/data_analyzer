@@ -432,6 +432,20 @@ The frequentist p-values are asymptotic `QuantReg` values and unreliable with 18
 
 ![Growth-ceiling leave-one-out](econometric_pipeline/pipeline/figures/20_growth_ceiling_loco.png)
 
+## Geometric Deep Learning Extension (October 2026)
+
+Motivated by four papers on graph neural networks in economics and finance, [`gdl_extension/`](gdl_extension/) asks whether the graph between countries (trade 2000–2008, distance, borders) improves out-of-sample prediction of next-year GDP growth and of its upper tail, using a global panel of up to 141 economies. The design, including the success criterion, was written before any model was fitted (README there, with a deviations log); it needs PyTorch and PyTorch Geometric in a separate environment (`requirements-gdl.txt`).
+
+**Verdict: null result: no GNN setting meets the pre-registered criterion.** On the primary sample (92 economies, 1104 out-of-sample country-years in four rolling-origin blocks, 2012–2023), 0 of 16 GNN settings (GCN and GAT × four graphs × mean and ceiling) meet the criterion fixed beforehand.
+
+- **The variables carry little signal.** RMSE of the demeaned next-year growth: training mean 2.923; best learned model without graph (gbm) 2.783, only 4.8% better; 20 learned models beat the mean, none by much.
+- **Graphs do not help the mean forecast.** GNNs 2.847–2.930 against 2.783 (best non-graph) and 2.845 (the MLP twin); 4 of 8 GNN settings are significantly worse than the best non-graph model (90% country-block bootstrap). Graph-as-features (SLX) models: the graph helps in 0 of 12 learner–graph pairs, hurts in 5 and is indistinguishable in 7.
+- **Growth ceiling (pinball loss at q=0.90).** Best non-graph (gbmq) 1.069, best SLX 1.059, GNNs 1.065–1.216; the bootstrap interval of the GNN-minus-best-non-graph difference includes zero in 7 of 8 settings. The MLP twin is worse (1.181), so the GNNs look better than it in 7 of 8 settings, but the node-permuted placebo graphs reach 1.062–1.151: message passing acts as a regulariser, not as use of the true topology.
+- **Sensitivity sample without homicide features (141 economies, 1692 test country-years):** null result: no GNN setting meets the pre-registered criterion; best non-graph 3.073, GNNs 3.198–3.304, training mean 3.300.
+- **Closest call (upper tail).** Primary sample: gat trade scores 1.065 against 1.069 for the best non-graph model (difference -0.004, 90% interval [-0.126, +0.128]); its placebo graphs score 1.062 and keep 102% of its gain over the MLP twin (the criterion allows at most 25%). Sensitivity sample: gcn trade scores 1.144 against 1.168 for the best non-graph model (difference -0.029, 90% interval [-0.103, +0.049]); its placebo graphs score 1.174 and keep 49% of its gain over the MLP twin (the criterion allows at most 25%). Neither sample meets the criterion: the intervals include zero and the placebo graphs recover a large share of the gain, so any information that trade partners carry about the upper tail is at most a weak hint.
+
+These are predictive results on a small panel with noisy governance scores (Module 14); they say that country graphs add no detectable out-of-sample information about next-year growth or its upper tail beyond the countries' own features, not that spillovers do not exist. The design, its deviations log and the limits are in [`gdl_extension/README.md`](gdl_extension/README.md).
+
 ## Repository Cleanup Notes
 
 The reproducible workflow is centered on the pipeline under [econometric_pipeline/pipeline](econometric_pipeline/pipeline). Legacy exploratory scripts and redundant datasets have been moved to [archive/legacy_scripts](archive/legacy_scripts) and [archive/legacy_data](archive/legacy_data) so the repository root remains focused on the core analysis workflow. The scripts in [data_extraction](data_extraction) are auxiliary and were created to build earlier versions of the panel data. They are not required to run the main analysis pipeline. The essential datasets for reproducibility are the pipeline input and the pipeline-generated outputs in [econometric_pipeline/pipeline](econometric_pipeline/pipeline).

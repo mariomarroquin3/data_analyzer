@@ -18,3 +18,8 @@ econometric_pipeline/pipeline/__pycache__/utils.cpython-313.pyc
 
 # Windows Explorer folder metadata
 desktop.ini
+
+gdl_extension/data_raw/
+.venv-gdl/
+gdl_extension/outputs/*_cache_*.pkl
+gdl_extension/__pycache__/

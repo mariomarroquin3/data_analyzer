@@ -408,6 +408,20 @@ Los p-valores frecuentistas son valores asintóticos de `QuantReg` y poco fiable
 
 ![Techo de crecimiento sin un país](econometric_pipeline/pipeline/figures/20_growth_ceiling_loco.png)
 
+## Extensión de Aprendizaje Profundo Geométrico (Octubre 2026)
+
+Motivada por cuatro artículos sobre redes neuronales de grafos en economía y finanzas, [`gdl_extension/`](gdl_extension/) pregunta si el grafo entre países (comercio 2000–2008, distancia, fronteras) mejora la predicción fuera de muestra del crecimiento del PIB del año siguiente y de su cola superior, con un panel global de hasta 141 economías. El diseño, incluido el criterio de éxito, se escribió antes de ajustar ningún modelo (README allí, con un registro de desviaciones); requiere PyTorch y PyTorch Geometric en un entorno aparte (`requirements-gdl.txt`).
+
+**Veredicto: resultado nulo: ningún GNN cumple el criterio fijado de antemano.** En la muestra primaria (92 economías, 1104 países-año fuera de muestra en cuatro bloques de origen móvil, 2012–2023), 0 de 16 configuraciones de GNN (GCN y GAT × cuatro grafos × media y techo) cumplen el criterio.
+
+- **Las variables aportan poca señal.** RMSE del crecimiento del año siguiente ajustado por año: media de entrenamiento 2.923; mejor modelo aprendido sin grafo (gbm) 2.783, solo 4.8% mejor; 20 modelos aprendidos superan la media, ninguno por mucho.
+- **Los grafos no ayudan a predecir la media.** GNN 2.847–2.930 frente a 2.783 (mejor modelo sin grafo) y 2.845 (el MLP gemelo); 4 de 8 GNN son significativamente peores que el mejor modelo sin grafo (bootstrap por países al 90%). Modelos con el grafo como variables (SLX): el grafo ayuda en 0 de 12 pares aprendiz–grafo, perjudica en 5 y es indistinguible en 7.
+- **Techo de crecimiento (pérdida pinball en q=0.90).** Mejor sin grafo (gbmq) 1.069, mejor SLX 1.059, GNN 1.065–1.216; el intervalo bootstrap de la diferencia GNN menos mejor modelo sin grafo incluye el cero en 7 de 8 configuraciones. El MLP gemelo es peor (1.181), así que los GNN parecen mejores que él en 7 de 8, pero los grafos placebo con nodos permutados llegan a 1.062–1.151: el paso de mensajes actúa como regularizador, no como uso de la topología real.
+- **Muestra de sensibilidad sin variables de homicidios (141 economías, 1692 países-año de prueba):** resultado nulo; mejor sin grafo 3.073, GNN 3.198–3.304, media de entrenamiento 3.300.
+- **El caso más cercano (cola superior).** Muestra primaria: gat trade obtiene 1.065 frente a 1.069 del mejor modelo sin grafo (diferencia -0.004, intervalo al 90% [-0.126, +0.128]); sus grafos placebo obtienen 1.062 y conservan 102% de su ganancia sobre el MLP gemelo (el criterio permite como máximo 25%). Muestra de sensibilidad: gcn trade obtiene 1.144 frente a 1.168 del mejor modelo sin grafo (diferencia -0.029, intervalo al 90% [-0.103, +0.049]); sus grafos placebo obtienen 1.174 y conservan 49% de su ganancia sobre el MLP gemelo (el criterio permite como máximo 25%). Ninguna muestra cumple el criterio: los intervalos incluyen el cero y los grafos placebo recuperan una parte grande de la ganancia, así que la información que los socios comerciales aporten sobre la cola superior es, a lo sumo, un indicio débil.
+
+Son resultados predictivos sobre un panel pequeño con puntajes de gobernanza ruidosos (Módulo 14); dicen que los grafos entre países no agregan información fuera de muestra detectable sobre el crecimiento del año siguiente ni sobre su cola superior más allá de las variables propias de cada país, no que los contagios no existan. El diseño, su registro de desviaciones y los límites están en [`gdl_extension/README.md`](gdl_extension/README.md).
+
 ## Notas para el Usuario
 
 - El flujo de trabajo reproducible se centra en el pipeline bajo `econometric_pipeline/pipeline`. Los scripts exploratorios heredados y los conjuntos de datos redundantes se han movido a `archive/` para mantener el enfoque en el análisis principal.
