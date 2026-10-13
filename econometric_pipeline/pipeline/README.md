@@ -1,13 +1,15 @@
 # Econometric Pipeline: Violence → Institutions → FDI → Growth
 
-**Central America, Colombia, Dominican Republic | 2000–2024**
+**18 Latin American and Caribbean countries | 2000–2024**
 
 ---
 
 ## Overview
 
-This pipeline implements the empirical strategy for a paper studying the causal
-mechanism through which violence affects economic growth:
+This pipeline implements the empirical strategy for a paper studying the chain through
+which violence is hypothesised to affect economic growth. All estimates are associations
+under two-way fixed effects, not causal effects; the chain is not robustly significant on
+the 18-country panel (see the repository README):
 
 ```
 Violence (homicide rate)
@@ -27,16 +29,22 @@ All code is designed to be methodologically defensible at the Q1 journal level
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install linearmodels statsmodels scikit-learn shap pandas numpy \
-            matplotlib scipy arch joblib
+# from the repository root
+pip install -r requirements.txt          # pinned versions used for the published results
+pip install -r requirements-dev.txt      # adds pytest
 
-# Place your CSV in this directory as:
-#   panel_ready_for_modeling.csv
-# OR specify the path:
+cd econometric_pipeline/pipeline
+python run_pipeline.py                   # all 15 modules, then the PDF report
+python run_pipeline.py --skip 06 08      # skip modules; the report reuses their stored JSON outputs
+python run_pipeline.py --data /path/to/panel.csv   # default: panel_ready_for_modeling.csv in this folder
 
-python run_pipeline.py --data /path/to/your/panel.csv
+cd ../..
+python -m pytest                         # tests (output consistency, data integrity, documentation vs JSON)
 ```
+
+Modules 04 (bootstrap), 08 and 15 (MCMC, about 15-25 minutes each) dominate the run time. A fixed
+seed makes every module reproducible: a clean re-run of all 15 modules reproduces the stored JSON
+outputs exactly.
 
 ---
 
@@ -44,6 +52,29 @@ python run_pipeline.py --data /path/to/your/panel.csv
 
 | Module | File | Purpose |
 |--------|------|---------|
+| 01 | `01_data_preparation.py` | Data validation, institution index (z-score average and PCA), stationarity, summary statistics |
+| 02 | `02_panel_estimation.py` | Two-Way FE estimation of EQ1-EQ3 (primary), pooled OLS benchmark |
+| 03 | `03_diagnostics.py` | Wooldridge, Pesaran CD, Modified Wald, VIF, DFBETA |
+| 04 | `04_bootstrap_inference.py` | Wild Cluster Bootstrap (Webb weights, B=999), CR2 SE, cluster bootstrap of the indirect effect |
+| 05 | `05_robustness.py` | LOCO, time windows, alternative lags / indices / controls, placebo, panel composition (11 vs 18 countries) |
+| 06 | `06_ml_triangulation.py` | RF + GB (LOCO-CV), SHAP, ALE, convergence table |
+| 07 | `07_cointegration.py` | Panel unit roots (Fisher-ADF), Engle-Granger / Kao cointegration, error-correction model |
+| 08 | `08_growth_ceiling_risk.py` | Hierarchical Bayesian quantile regression for the growth ceiling (PyMC / NUTS) |
+| 09 | `09_synthetic_control.py` | Synthetic control for El Salvador (placebo-in-space, robustness checks) |
+| 10 | `10_arch_lm_test.py` | Engle ARCH-LM test per country, Fisher-combined |
+| 11 | `11_spec_curve.py` | Specification curve over all 63 definitions of the institution index |
+| 12 | `12_spatial_diagnostics.py` | Cross-country dependence: Pesaran CD, permutation Moran's I, SLX spillovers, donor contamination |
+| 13 | `13_causal_link_scan.py` | FDR-controlled scan of all lagged links among nine variables, with placebo calibration |
+| 14 | `14_wgi_measurement.py` | WGI measurement error from the official 90% intervals: noise, distinguishable changes, reliability, EQ1 by dimension group |
+| 15 | `15_growth_ceiling_robustness.py` | Growth ceiling: leave-one-country-out and Bayesian fit without El Salvador |
+| — | `utils.py` | Shared utilities (all modules import from here) |
+| — | `research_report.py` | PDF report builder |
+| — | `run_pipeline.py` | Master runner |
+
+The geometric-deep-learning extension (global panel, baselines, graph neural networks) is separate:
+see `gdl_extension/` at the repository root.
+
+--------|------|---------|
 | 01 | `01_data_preparation.py` | Data validation, institution index, stationarity, summary stats |
 | 02 | `02_panel_estimation.py` | Two-Way FE estimation (primary), pooled OLS benchmark |
 | 03 | `03_diagnostics.py` | Wooldridge, Pesaran CD, Modified Wald, VIF, DFBETA |
@@ -68,7 +99,7 @@ The CSV must contain the following columns:
 - `homicide_rate_log_lag1`, `homicide_rate_log_lag2`, `homicide_rate_log_lag3`
   — **pre-computed** lags (must be in dataset; pipeline does NOT recompute)
 
-### Governance (WGI percentile ranks, 0–100)
+### Governance (WGI governance scores, 0–100; 2025 revision: a linear rescaling of the estimate between two benchmark countries, not percentile ranks)
 - `rule_of_law`
 - `control_corruption`
 - `political_stability`
@@ -147,33 +178,32 @@ common time shocks (global financial crisis, COVID-19).
 5. **N=18 clusters**: All inference warnings about small cluster count are
    printed prominently. Wild bootstrap is the recommended inference procedure.
 
+6. **Perception-based institutions**: the WGI are aggregates of expert and survey perceptions
+   whose own margin of error is of the order of the within-country variation used by the
+   fixed effects (Module 14); Rule of Law and Political Stability draw on crime and violence items.
+
+7. **Cross-country dependence**: with 18 countries the spatial diagnostics (Module 12) have
+   little power; EQ3 residuals show regional dependence, EQ1 and EQ2 residuals do not.
+
 ---
 
 ## Outputs
 
 ```
-figures/
-  01_panel_overview.png           Time series of key variables by country
-  02_institution_indices.png      Primary vs PCA institution index scatter
-  03_correlation_heatmap.png      Pooled correlation matrix
-  04_fe_residuals.png             Residuals vs fitted for each equation
-  05_diagnostics.png              Diagnostic test summary
-  06_bootstrap_distributions.png  Wild bootstrap t-distributions
-  07_robustness.png               Coefficient stability plots
-  08_ml_loco_cv.png               LOCO cross-validation performance
-  09_feature_importance.png       Gini, permutation, SHAP importance
-  10_shap_pdp.png                 SHAP dependence + partial dependence plots
+figures/   22 PNG files numbered by module
+             01-03 panel overview, institution indices, correlations | 04-05 FE residuals, diagnostics
+             06, 06b bootstrap and mediation | 07 robustness | 08-10 ML (LOCO-CV, importance, SHAP/ALE)
+             11 cointegration | 12-13 growth ceiling (Bayesian, scenario) | 14 Bukele paradox
+             15, 15b synthetic control | 16 specification curve | 17 spatial dependence
+             18 causal-link map | 19 WGI measurement | 20 growth-ceiling leave-one-out
 
-tables/
-  summary_statistics.tex          LaTeX summary statistics table
+tables/    summary_statistics.tex, se_comparison.tex, growth_ceiling_bayesian.tex
 
-json/
-  01_metadata.json                Panel metadata, PCA info, KMO
-  02_fe_results.json              FE coefficient estimates
-  03_diagnostics.json             All diagnostic test statistics
-  04_bootstrap.json               Bootstrap p-values, CIs, CR2 SE
-  05_robustness.json              All robustness check results
-  06_ml_results.json              ML importance rankings, CV metrics
+json/      one file per module: 01_metadata.json ... 15_growth_ceiling_robustness.json
+           (04 also writes 04_mediation.json). These are the single source of every number in the
+           READMEs, the PDF report and the manuscript; tests/ checks that they agree.
+
+econometric_report.pdf   full technical report (Spanish), regenerated by run_pipeline.py
 ```
 
 ---
@@ -194,4 +224,12 @@ json/
 - Pagan (1984) — Generated regressors, *Review of Economic Studies*
 - Pesaran (2004) — CD test, *Cambridge Working Papers in Economics*
 - Webb (2023) — Wild bootstrap, *Canadian Journal of Economics*
+- Abadie, Diamond & Hainmueller (2010); Abadie (2021) — Synthetic control, *JASA*; *Journal of Economic Literature*
+- Adrian, Boyarchenko & Giannone (2019) — Vulnerable growth, *American Economic Review*
+- Benjamini & Hochberg (1995) — False discovery rate, *Journal of the Royal Statistical Society B*
+- Engle (1982) — ARCH, *Econometrica*; Engle & Granger (1987); Kao (1999); Maddala & Wu (1999) — cointegration and panel unit roots
+- Jiang, Jain, Romano & Boyce (2025); Kaufmann & Kraay (2024) — WGI methodology, World Bank
+- Moran (1950) — Spatial autocorrelation, *Biometrika*
+- Simonsohn, Simmons & Nelson (2020) — Specification curve analysis, *Nature Human Behaviour*
+- Yu & Moyeed (2001) — Bayesian quantile regression, *Statistics & Probability Letters*
 - Wooldridge (2002) — *Econometric Analysis of Cross Section and Panel Data*

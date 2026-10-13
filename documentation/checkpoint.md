@@ -1,5 +1,18 @@
 # CHECKPOINT – CADENA ECONOMÉTRICA (VIOLENCIA → INSTITUCIONES → INVERSIÓN → CRECIMIENTO)
 
+<!-- STATUS:BEGIN -->
+> **Documento histórico (septiembre de 2026): no refleja los resultados vigentes.** Lo que sigue se escribió con un OLS encadenado, sin efectos fijos, sobre un panel de 8 países, y presenta la cadena como "muy fuerte" (violencia → instituciones: −2.45, p < 0.001, R² = 0.93). Con el panel actual de 18 países y efectos fijos de país y año, esa cadena no se sostiene:
+>
+> | Eslabón | Coeficiente | p clusterizado | Nota |
+> |---|---|---|---|
+> | violencia (rezago 1) → instituciones | −0.131 | 0.155 | p = 0.015 con errores Driscoll-Kraay |
+> | instituciones → IED | +0.680 | 0.176 | |
+> | IED → crecimiento | +0.032 | 0.696 | |
+> | cadena completa (efecto indirecto) | −0.003 | — | IC 95% [−0.055, +0.039], p bootstrap 0.792 |
+>
+> El análisis vigente, con sus limitaciones, está en el README principal. Las secciones de abajo se conservan solo como registro de lo que se pensaba entonces.
+<!-- STATUS:END -->
+
 ## 1. ¿Tu teoría es correcta?
 
 Sí, en términos económicos es totalmente consistente con la literatura:

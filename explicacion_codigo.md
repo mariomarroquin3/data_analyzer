@@ -1,5 +1,12 @@
 # Análisis del Código: Impacto de la Violencia en el Crecimiento Económico
 
+<!-- STATUS:BEGIN -->
+> **Aviso de vigencia (octubre de 2026).** Este documento describe los *scripts históricos* del proyecto, hoy en `archive/legacy_scripts/`. El análisis vigente es el pipeline de `econometric_pipeline/pipeline/` (módulos 01 a 15; ver su README y el README principal). Tres cosas de abajo ya no aplican:
+> 1. La winsorización de la tasa de homicidios al 1%/99% se eliminó: recortaba justamente los valores extremos de El Salvador (2015-2016 y 2023-2024).
+> 2. El pipeline vigente usa los valores observados de cada eslabón (no los ajustados de la etapa anterior), con efectos fijos de país y año, para evitar el problema de regresores generados.
+> 3. La interpolación lineal y el PCA ya no entran en el análisis principal; el índice institucional es el promedio estandarizado de las seis dimensiones del WGI y el PCA solo se usa como robustez.
+<!-- STATUS:END -->
+
 ---
 
 ## 1. Descripción de los Scripts Principales
@@ -87,3 +94,17 @@ El bosque aleatorio promedia predicciones de árboles de decisión: $\hat{f} = \
 Para explicar este modelo "caja negra", el script utiliza **SHAP Values** basados en la Teoría de Juegos Coalicionales de Shapley. Matemáticamente, el valor SHAP ($\phi_j$) asigna el impacto marginal esperado de la característica $j$ promediado sobre todas las permutaciones posibles de características:
 $$ \phi_j(x) = \sum_{S \subseteq F \setminus \{j\}} \frac{|S|! (|F| - |S| - 1)!}{|F|!} \left[ f_x(S \cup \{j\}) - f_x(S) \right] $$
 Esto te permite concluir afirmaciones no lineales precisas, por ejemplo: _"Cuando la tasa de homicidios supera X límite, el impacto destructivo sobre el PIB se multiplica, restando $\phi_j$ puntos porcentuales al crecimiento"_.
+
+---
+
+## 4. Equivalencia con el pipeline vigente
+
+| Script histórico (`archive/legacy_scripts/`) | Dónde está hoy |
+|---|---|
+| `eda.py`, `descriptive_analysis.py`, `crime.py` (exploración) | `01_data_preparation.py` y las figuras 01 a 03 |
+| `build_master_dataset.py`, `01clean_panel.py`, `02panel_interpolation.py` (construcción del panel) | `data_extraction/` y `01_data_preparation.py` |
+| `abc.py`, `econometrics.py`, `econometrics2.py`, `econometrics3.py` (cadena secuencial, caso El Salvador) | `02_panel_estimation.py` (efectos fijos bidireccionales) y `04_bootstrap_inference.py` |
+| `fe_model.py` (efectos fijos con errores clusterizados) | `02_panel_estimation.py` |
+| `randomforest.py` | `06_ml_triangulation.py` (validación leave-one-country-out) |
+
+Lo que el pipeline vigente agrega a estos scripts: inferencia para pocos clústeres (bootstrap wild, CR2, Driscoll-Kraay), cointegración de panel (07), regresión cuantílica bayesiana del techo de crecimiento (08), control sintético para El Salvador (09), curva de especificaciones del índice institucional (11), diagnósticos de dependencia entre países (12), barrido de eslabones con control de falsos descubrimientos (13), error de medición del WGI (14) y robustez del techo de crecimiento (15).

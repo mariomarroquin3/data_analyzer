@@ -98,3 +98,27 @@ def test_readme_wgi_measurement_and_ceiling_robustness_numbers_match_json(readme
     assert f"{lo['n_same_sign_and_p05']} de {lo['n_fits']}" in text or f"{lo['n_same_sign_and_p05']} of {lo['n_fits']}" in text
     b = c["bayesian_without_excluded"]["0.90"]
     assert f"{b['beta_mean']:.2f}" in text and f"{b['beta_hdi_lo']:.2f}" in text
+
+
+def test_pipeline_readme_lists_every_module():
+    text = _read(PIPE / "README.md")
+    mods = sorted(p.name for p in PIPE.glob("[0-9][0-9]_*.py"))
+    assert len(mods) == 15
+    for m in mods:
+        assert f"`{m}`" in text, f"{m} missing from econometric_pipeline/pipeline/README.md"
+    assert "percentile ranks, 0" not in text                         # the WGI 0-100 score is not a percentile rank
+
+
+def test_checkpoint_banner_matches_json(load_json):
+    text = _read(ROOT / "documentation" / "checkpoint.md").replace("\u2212", "-")
+    assert "STATUS:BEGIN" in text and "no refleja los resultados vigentes" in text
+    fe, md = load_json("02_fe_results.json"), load_json("04_mediation.json")
+    for x in (fe["EQ1"]["coef_key_cl"], fe["EQ2"]["coef_key_cl"], md["indirect_full"]):
+        assert f"{abs(x):.3f}" in text
+    assert f"{fe['EQ1']['pval_key_cl']:.3f}" in text and f"{md['p_boot']:.3f}" in text
+
+
+def test_main_readme_code_table_lists_the_gdl_scripts():
+    text = _read(ROOT / "README.md")
+    for s in ("01_build_global_panel.py", "03_baselines.py", "04_gnn.py", "05_verdict.py"):
+        assert s in text
