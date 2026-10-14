@@ -103,7 +103,7 @@ def test_readme_wgi_measurement_and_ceiling_robustness_numbers_match_json(readme
 def test_pipeline_readme_lists_every_module():
     text = _read(PIPE / "README.md")
     mods = sorted(p.name for p in PIPE.glob("[0-9][0-9]_*.py"))
-    assert len(mods) == 15
+    assert len(mods) == 16
     for m in mods:
         assert f"`{m}`" in text, f"{m} missing from econometric_pipeline/pipeline/README.md"
     assert "percentile ranks, 0" not in text                         # the WGI 0-100 score is not a percentile rank

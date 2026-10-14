@@ -67,6 +67,7 @@ outputs exactly.
 | 13 | `13_causal_link_scan.py` | FDR-controlled scan of all lagged links among nine variables, with placebo calibration |
 | 14 | `14_wgi_measurement.py` | WGI measurement error from the official 90% intervals: noise, distinguishable changes, reliability, EQ1 by dimension group |
 | 15 | `15_growth_ceiling_robustness.py` | Growth ceiling: leave-one-country-out and Bayesian fit without El Salvador |
+| 16 | `16_link_scan_lags.py` | Optional extension, run on its own (not in `run_pipeline.py`): the Module 13 scan with the cause lagged 1, 2 and 3 years (216 tests, one multiplicity family); null result |
 | — | `utils.py` | Shared utilities (all modules import from here) |
 | — | `research_report.py` | PDF report builder |
 | — | `run_pipeline.py` | Master runner |

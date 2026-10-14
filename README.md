@@ -56,6 +56,7 @@ data_analyzer/
 │       ├── 13_causal_link_scan.py
 │       ├── 14_wgi_measurement.py
 │       ├── 15_growth_ceiling_robustness.py
+│       ├── 16_link_scan_lags.py
 │       ├── run_pipeline.py
 │       ├── utils.py
 │       ├── research_report.py
@@ -470,6 +471,7 @@ The reproducible workflow is centered on the pipeline under [econometric_pipelin
 | [econometric_pipeline/pipeline/13_causal_link_scan.py](econometric_pipeline/pipeline/13_causal_link_scan.py) | Scan of all 72 ordered links among nine variables (lagged cause, lagged-outcome control, two-way FE, wild bootstrap) under Benjamini–Hochberg/Holm control and a within-country shuffle placebo; tests chains only when both links survive. | Enriched panel → link-scan JSON and link-map figure. | Econometrics / Exploration | Core |
 | [econometric_pipeline/pipeline/14_wgi_measurement.py](econometric_pipeline/pipeline/14_wgi_measurement.py) | Measurement-error diagnostics for the WGI institution scores using the WGI's own 90% intervals: noise vs within-country variation, distinguishable changes, worst-case reliability, EQ1/EQ2 by dimension group, sensitivity to number of sources. | Enriched panel + `foundational_datasets/wgi_confidence_intervals.csv` → JSON and figure. | Econometrics / Measurement | Core |
 | [econometric_pipeline/pipeline/15_growth_ceiling_robustness.py](econometric_pipeline/pipeline/15_growth_ceiling_robustness.py) | Leave-one-country-out refits of the growth-ceiling quantile regression and the Bayesian model without El Salvador (with an exact-reproduction check against Module 08). | Panel with predictions → JSON and figure. | Econometrics / Robustness | Core |
+| [econometric_pipeline/pipeline/16_link_scan_lags.py](econometric_pipeline/pipeline/16_link_scan_lags.py) | Optional, run on its own: the link scan with the cause lagged 1, 2 and 3 years (216 tests, one multiplicity family; no survivor) |
 | [data_extraction/WGI_ci_get.py](data_extraction/WGI_ci_get.py) | Downloads the WGI 0-100 scores, 90% interval bounds and source counts for the 18 countries from the World Bank API. | World Bank API → `foundational_datasets/wgi_confidence_intervals.csv`. | Data extraction | Core |
 | [gdl_extension/01_build_global_panel.py](gdl_extension/01_build_global_panel.py), [02_fetch_trade_edges.py](gdl_extension/02_fetch_trade_edges.py) | Global country-year panel (World Bank API), country metadata, static edges (borders, CEPII distances) and bilateral trade edges averaged over 2000-2008. | Public APIs / CEPII → `gdl_extension/data/`. | Data extraction | Extension |
 | [gdl_extension/gdl_common.py](gdl_extension/gdl_common.py), [03_baselines.py](gdl_extension/03_baselines.py) | Shared evaluation code (folds without leakage, imputation, metrics, country-block bootstrap, graphs) and the no-graph, graph-as-features (SLX) and placebo baselines. | Global panel → baseline predictions and metrics. | Machine learning | Extension |
